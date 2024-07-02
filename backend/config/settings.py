@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
 
     "acc.apps.AccConfig",
+    "groups.apps.GruopsConfig",
 ]
 
 MIDDLEWARE = [
