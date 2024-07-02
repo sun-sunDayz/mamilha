@@ -1,0 +1,12 @@
+**/__pycache__/
+**/secrets.json
+**/db.sqlite3
+.DS_Store
+
+**/package-lock.json
+**/*.pyc
+
+.prettierrc
+
+venv/
+.env
