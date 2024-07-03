@@ -7,8 +7,8 @@ from . import permissions
 User = get_user_model()
 # Create your views here.
 
-class AccAPIView(APIView):
-    permission_classes = [permissions.AccVIEWPermission]
+class UsersAPIView(APIView):
+    permission_classes = [permissions.UsersVIEWPermission]
     def get(self, request):
         return Response({
             "username": request.user.username,
