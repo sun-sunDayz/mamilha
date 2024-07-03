@@ -1,9 +1,7 @@
 from django.db import models
-from django.db.models.query import QuerySet
 from django.utils import timezone
 
 # Create your models here.
-
 
 class Group_category(models.Model):
     name = models.CharField(max_length=20,unique=True)
