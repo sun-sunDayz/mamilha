@@ -49,6 +49,7 @@ INSTALLED_APPS = [
 
     "users.apps.UsersConfig",
     "groups.apps.GroupsConfig",
+    "finances.apps.FinancesConfig",
 ]
 
 MIDDLEWARE = [
