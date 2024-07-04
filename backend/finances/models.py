@@ -1,5 +1,5 @@
 from django.db import models
-from datetime import timezone
+from django.utils import timezone
 from groups.models import Group
 from django.contrib.auth import get_user_model
 
