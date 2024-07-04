@@ -43,7 +43,7 @@ class Group(models.Model):
         self.save()
         
     def __str__(self):
-        return self.name
+        return f'[{self.category}] {self.name}'
 
 
 class Grades(models.Model):
@@ -51,6 +51,9 @@ class Grades(models.Model):
     admin = models.BooleanField(default=0)
     edit = models.BooleanField(default=0)
     view = models.BooleanField(default=0)
+
+    def __str__(self):
+        return self.name
 
 
 class MemberManager(models.Manager):
@@ -73,3 +76,6 @@ class Member(models.Model):
     def delete(self,*args, **kwargs):
         self.deleted = 1
         self.save()
+    
+    def __str__(self):
+        return f'{self.group} - {self.user.username}'
