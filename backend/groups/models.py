@@ -2,7 +2,6 @@ from django.db import models
 from django.utils import timezone
 from users.models import *
 
-# Create your models here.
 
 class Group_category(models.Model):
     name = models.CharField(max_length=20,unique=True)
@@ -17,7 +16,7 @@ class Currency(models.Model):
     def __str__(self):
         return self.currency
 
-
+#Groups.objects.all()시 deleted가 0인 값만 가져오기
 class GroupManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(deleted=0)
@@ -55,7 +54,7 @@ class Grades(models.Model):
     def __str__(self):
         return self.name
 
-
+# Member.objects.all() 사용시 deleted가 0인 값만 가져오기
 class MemberManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(deleted=0)
@@ -73,9 +72,11 @@ class Member(models.Model):
     deleted = models.BooleanField(default=0)
     balance = models.IntegerField(default=0)
 
+    objects = MemberManager()
+
     def delete(self,*args, **kwargs):
         self.deleted = 1
         self.save()
     
     def __str__(self):
-        return f'{self.group} - {self.user.username}'
+        return f'{self.group} - {self.user.nickname}'
