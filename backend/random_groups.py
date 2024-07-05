@@ -28,7 +28,7 @@ def generate_random_data(total_groups, members_per_group):
             'currency': random.choice(currencies),
             'created_at': faker.date_time_between(start_date='-1y', end_date='now', tzinfo=timezone.get_current_timezone()),
             'edited_at': faker.date_time_between(start_date='-1y', end_date='now', tzinfo=timezone.get_current_timezone()),
-            'deleted': False,
+            'deleted': 0,
             'deleted_at': None,
         }
         group = Group.objects.create(**group_data)
