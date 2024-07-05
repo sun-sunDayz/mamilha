@@ -79,4 +79,4 @@ class Member(models.Model):
         self.save()
     
     def __str__(self):
-        return f'{self.group} - {self.user.username}'
+        return f'{self.group} - {self.user.nickname}'
