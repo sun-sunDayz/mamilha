@@ -33,7 +33,7 @@ class Group(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     edited_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
-    deleted = models.BooleanField(default=0)
+    deleted = models.BooleanField(default=False)
 
     objects = GroupManager()
 
@@ -66,7 +66,7 @@ class MemberManager(models.Manager):
 
 class Member(models.Model):
     name = models.CharField(max_length=20)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='Member_user',null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='Member_user',null=True, blank=True)
     grades = models.ForeignKey(Grades, on_delete=models.CASCADE, related_name='Member_grades')
     group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='Member_group')
     active = models.BooleanField(default=1)
@@ -78,4 +78,4 @@ class Member(models.Model):
         self.save()
     
     def __str__(self):
-        return f'{self.group} - {self.user.username}'
+        return f'{self.group} - {self.name}'
