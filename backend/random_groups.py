@@ -37,9 +37,16 @@ def generate_random_data(total_groups, members_per_group):
 
         # Create Members for each Group
         for _ in range(members_number):
+            if random.random() < 0.2:  # 1/5 확률로 User가 없음
+                user = None
+                name = faker.name()
+            else:
+                user = User.objects.order_by('?').first()  # 랜덤한 사용자 선택
+                name = user.username if user else faker.name()
+            
             member_data = {
-                'name': faker.name(),
-                'user': User.objects.order_by('?').first(),  # 랜덤한 사용자 선택
+                'name': name,
+                'user': user,
                 'grades': Grades.objects.order_by('?').first(),  # 랜덤한 Grades 선택
                 'group': group,
                 'active': random.choice([True, False]),
@@ -48,4 +55,4 @@ def generate_random_data(total_groups, members_per_group):
             Member.objects.create(**member_data)
 
 # 생성할 Group 수와 각 Group 당 Member 수 설정
-generate_random_data(total_groups=100, members_per_group=8)
+generate_random_data(total_groups=100, members_per_group=5)

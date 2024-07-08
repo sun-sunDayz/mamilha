@@ -18,6 +18,7 @@ class UsersAPIView(APIView):
             "nickname": request.user.nickname,
             "email": request.user.email,
         })
+    
     #회원가입
     def post(self, request):
         data = request.data
