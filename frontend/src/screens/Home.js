@@ -1,17 +1,36 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
 import ListItem from '../components/ListItem'
 import ButtonGroup from '../components/ButtonGroup'
 import AwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
+import axios from 'axios';
 
 const Home = () => {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get('http://localhost:8000/api/groups/category/');
+      setData(response.data);
+      console.log(response.data);
+    } catch (error) {
+      alert('Test')
+      console.error('Error fetching data: ', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.nicknameContainer}>
         <TouchableOpacity
           style={styles.nicknameButton}
-          onPress={() => alert('Button 1 pressed')}>
+          onPress={() => {
+            fetchData();
+          }}>
           <AwesomeIcon name="user-circle-o" size={25} color="#5DAF6A" />
           <Text style={styles.buttonText}>닉네임</Text>
           <EntypoIcon name="chevron-thin-right" size={15} color="#000" />
@@ -60,7 +79,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    // backgroundColor: '#FFFFFF',
     borderRadius: 5,
   },
 
@@ -79,7 +97,7 @@ const styles = StyleSheet.create({
   buttonImage: {
     width: 20,
     height: 20,
-    marginRight: 10, // 이미지와 텍스트 사이의 간격
+    marginRight: 10, 
   },
   buttonText: {
     color: '#000000',
@@ -89,13 +107,13 @@ const styles = StyleSheet.create({
   meetingListContainer: {
     marginTop: 20,
     marginBottom: 10,
-    alignItems: 'flex-start', // View 내부의 아이템들을 왼쪽 정렬
-    width: '80%', // 부모 View의 가로 크기를 꽉 채웁니다.
+    alignItems: 'flex-start', 
+    width: '80%', 
   },
   meetingListText: {
     fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'left', // 텍스트를 왼쪽 정렬
+    textAlign: 'left', 
   },
 });
 
