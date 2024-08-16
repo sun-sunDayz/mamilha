@@ -64,6 +64,8 @@ class GroupAPIView(APIView):
         name = data.get('name')
         category_name = data.get('category')
         currency_name = data.get('currency')
+        members = data.get('members')
+            
 
         #빈 값일 경우 Error 처리
         validated_data = validate_group_data(name, category_name, currency_name)
@@ -81,8 +83,20 @@ class GroupAPIView(APIView):
         currency = validated_data['currency']
         )
 
-        #그룹에 관리자 Member로 추가
-        grades = Member.objects.create(
+        #member name이 공백일 경유 제외 
+        member_name = []
+        for member in members:
+            if member['name'].strip():
+                Member.objects.create(
+                    name = member['name'],
+                    user = None,
+                    grades = Grades.objects.get(admin=0,edit=0,view=1),
+                    group = group
+                )
+                member_name.append(member['name'])
+
+        #그룹 생성자 admin Member로 추가
+        Member.objects.create(
             name = user.username,
             user = user,
             grades = Grades.objects.get(admin=1),
@@ -92,7 +106,7 @@ class GroupAPIView(APIView):
         return Response({'message': "그릅은 만들었습니다.",
                         'group_pk': group.pk,
                         'group_name': group.name,
-                        'geades': grades.name},
+                        'member': member_name},
                         status=status.HTTP_201_CREATED)
 
 
@@ -109,6 +123,20 @@ class GroupCategory(APIView):
                 "category_name": i.name
                 })
         return Response(category,status=status.HTTP_200_OK)
+
+class GroupCurrency(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        currencys = get_list_or_404(Currency)
+        
+        currency = []
+        for i in currencys:
+            currency.append({ 
+                "currency_id": i.pk,
+                "currency_name": i.currency
+                })
+        return Response(currency,status=status.HTTP_200_OK)
 
 
 class GroupDetail(APIView):
