@@ -7,7 +7,7 @@ import EntypoIcon from 'react-native-vector-icons/Entypo';
 const ListItem = ({ onPress, title, leader, members }) => {
   return (
     <TouchableOpacity style={styles.list} onPress={onPress}>
-        <Ionicon name="barbell" size={30} color="#5DAF6A"/>
+        <Ionicon name="barbell" size={30} color="#A379E8"/>
       <View style={styles.listContainer}>
         <Text style={styles.listText}>{title}</Text>
         <View style={styles.listContainer2}>
