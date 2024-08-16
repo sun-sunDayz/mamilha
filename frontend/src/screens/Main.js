@@ -6,7 +6,7 @@ import AwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import axios from 'axios';
 
-const Home = () => {
+const Main = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -37,7 +37,7 @@ const Home = () => {
         </TouchableOpacity>
       </View>
       <ButtonGroup
-        onPressFirstButton={() => alert('Button 1 pressed')}
+        onPressFirstButton={() => alert('모임 만들기로 이동')}
         onPressSecondButton={() => alert('Button 2 pressed')}
       />
       <View style={styles.meetingListContainer}>
@@ -117,4 +117,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+export default Main;
