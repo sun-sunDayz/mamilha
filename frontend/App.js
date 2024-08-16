@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React from "react";
 import Main from "./src/screens/Main"
 import Login from "./src/screens/Login"
+import CreateGroup from "./src/screens/CreateGroup";
 import { NavigationContainer } from "@react-navigation/native";
 
 const App = () => {
@@ -23,6 +24,7 @@ const App = () => {
       <NavigationContainer>
         <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Screen name="Bottom" component={BottomTabScreen}/>
+          <Stack.Screen name="CreateGroup" component={CreateGroup}/>
         </Stack.Navigator>
       </NavigationContainer>
     )
