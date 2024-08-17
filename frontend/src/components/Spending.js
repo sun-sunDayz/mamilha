@@ -3,12 +3,12 @@ import React from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const spendList = [
-    {id: 1, icon: '1', name: '마밀마라탕', payer: '이준서', date: '2024.08.01', price: 58000000},
-    {id: 2, icon: '2', name: '마밀러맥주', payer: '이준서', date: '2024.08.01', price: 349586},
-    {id: 3, icon: '3', name: '마밀러카드', payer: '홍길동전', date: '2024.08.01', price: 580000000},
-    {id: 4, icon: '4', name: '마밀러맥주', payer: '이준서', date: '2024.08.01', price: 580000},
-    {id: 5, icon: '5', name: '마밀러항공', payer: '이준서', date: '2024.08.01', price: 580000},
-    {id: 6, icon: '6', name: '기타 결제', payer: '이준서', date: '2024.08.01', price: 5800000},
+    {id: 1, icon: '1', name: '마밀마라탕', payer: '이준서', date: '2024.08.01', amount: 58000000},
+    {id: 2, icon: '2', name: '마밀러맥주', payer: '이준서', date: '2024.08.01', amount: 349586},
+    {id: 3, icon: '3', name: '마밀러카드', payer: '홍길동전', date: '2024.08.01', amount: 580000000},
+    {id: 4, icon: '4', name: '마밀러맥주', payer: 'david', date: '2024.08.01', amount: 580000},
+    {id: 5, icon: '5', name: '마밀러항공', payer: '이준서', date: '2024.08.01', amount: 580000},
+    {id: 6, icon: '6', name: '기타 결제', payer: '이준서', date: '2024.08.01', amount: 5800000},
 ];
 
 const getIconStyle = (icon) => {
@@ -52,18 +52,22 @@ const truncateText = (text, limit) => {
     return text;
 };
 
-const truncatePrice = (price) => {
-    if (price >= 99999999) {
+const truncateAmount = (amount) => {
+    if (amount >= 99999999) {
         return'99,999,999...';
     }
-    return price.toLocaleString() + '원';
+    return amount.toLocaleString() + '원';
 };
 
 const Spending = () => {
     return (
         <View style={styles.container}>
             {spendList.length === 0 ? (
-                <Text style={styles.emptyText}>리스트가 없습니다</Text>
+                <View style={styles.emptySpendView}>
+                    <Ionicons style={{marginBottom:20}} name="add-circle" size={150} color="#A379E8" />
+                    <Text style={styles.emptyText}>아직 등록된 지출 내역이 없습니다.</Text>
+                    <Text style={styles.emptyText}>지출을 등록해주세요!</Text>
+                </View>
             ) : (
                 <FlatList
                     data={spendList}
@@ -82,7 +86,7 @@ const Spending = () => {
                                 </View>
                             </View>
                             <View style={{flex:4}}>
-                                <Text style={styles.price}>{truncatePrice(item.price)}</Text>
+                                <Text style={styles.amount}>{truncateAmount(item.amount)}</Text>
                             </View>
                         </View>
                     )}
@@ -99,11 +103,16 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#f1f1f9',
     },
+    emptySpendView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     emptyText: {
         textAlign: 'center',
-        fontSize: 18,
-        color: 'gray',
-        marginTop: 20,
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: 'black',
     },
     listItem: {
         flexDirection: 'row',
@@ -168,7 +177,7 @@ const styles = StyleSheet.create({
         marginTop: 4,
         marginRight:4,
     },
-    price: {
+    amount: {
         fontSize: 14,
         fontWeight: 'bold',
         color: 'black',
