@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Spending from '../components/Spending';
-import Calculate from '../components/Calculate';
+import Split from '../components/Split';
 
 const Finances = () => {
     const [selectedTab, setSelectedTab] = useState('지출'); // 초기값은 '지출'
@@ -60,7 +60,7 @@ const Finances = () => {
 
             <View style={styles.contentContainer}>
                 {selectedTab === '지출' && <Spending />}
-                {selectedTab === '정산' && <Calculate />}
+                {selectedTab === '정산' && <Split />}
             </View>
         </View>
     );
