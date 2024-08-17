@@ -1,13 +1,14 @@
 import { StyleSheet, Text, View, FlatList } from 'react-native';
 import React from 'react';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const spendList = [
     {id: 1, icon: '1', name: '마밀마라탕', payer: '이준서', date: '2024.08.01', price: 58000000},
-    {id: 2, icon: '2', name: '마밀마라탕', payer: '이준서', date: '2024.08.01', price: 580000},
-    {id: 3, icon: '3', name: '마밀마라탕', payer: '이준서', date: '2024.08.01', price: 580000},
-    {id: 4, icon: '4', name: '마밀마라탕', payer: '이준서', date: '2024.08.01', price: 580000},
-    {id: 5, icon: '5', name: '마밀마라탕', payer: '이준서', date: '2024.08.01', price: 580000},
-    {id: 6, icon: '6', name: '마밀마라탕', payer: '이준서', date: '2024.08.01', price: 5800000},
+    {id: 2, icon: '2', name: '마밀러맥주', payer: '이준서', date: '2024.08.01', price: 349586},
+    {id: 3, icon: '3', name: '마밀러카드', payer: '홍길동전', date: '2024.08.01', price: 580000000},
+    {id: 4, icon: '4', name: '마밀러맥주', payer: '이준서', date: '2024.08.01', price: 580000},
+    {id: 5, icon: '5', name: '마밀러항공', payer: '이준서', date: '2024.08.01', price: 580000},
+    {id: 6, icon: '6', name: '기타 결제', payer: '이준서', date: '2024.08.01', price: 5800000},
 ];
 
 const getIconStyle = (icon) => {
@@ -15,18 +16,47 @@ const getIconStyle = (icon) => {
         case '1':
             return styles.iconRed;
         case '2':
-            return styles.iconGreen;
-        case '3':
-            return styles.iconBlue;
-        case '4':
-            return styles.iconYellow;
-        case '5':
-            return styles.iconPurple;
-        case '6':
             return styles.iconOrange;
+        case '3':
+            return styles.iconYellow;
+        case '4':
+            return styles.iconGreen;
+        case '5':
+            return styles.iconBlue;
         default:
-            return styles.iconDefault;
+            return styles.iconPurple;
     }
+};
+
+const getIconComponent = (icon) => {
+    switch(icon) {
+        case'1':
+            return <Ionicons name="restaurant-outline" size={25} color="white" />;
+        case'2':
+            return <Ionicons name="beer-outline" size={25} color="white" />;
+        case'3':
+            return <Ionicons name="card-outline" size={25} color="white" />;
+        case'4':
+            return <Ionicons name="cart-outline" size={25} color="white" />;
+        case'5':
+            return <Ionicons name="car-outline" size={25} color="white" />;
+        default:
+            return <Ionicons name="ellipsis-horizontal-circle-outline" size={25} color="white" />;
+    }
+};
+
+const truncateText = (text, limit) => {
+    if (text.length > limit) {
+        return text.substring(0, limit) + '...';
+    }
+    return text;
+};
+
+const truncatePrice = (price) => {
+    if (price >= 99999999) {
+        return'99,999,999...';
+    }
+    return price.toLocaleString() + '원';
 };
 
 const Spending = () => {
@@ -41,18 +71,18 @@ const Spending = () => {
                     renderItem={({ item }) => (
                         <View style={styles.listItem}>
                             <View style={[styles.iconContainer, getIconStyle(item.icon)]}>
-                                <Text style={styles.iconText}>{item.icon}</Text>
+                                {getIconComponent(item.icon)}
                             </View>
                             <View style={styles.details}>
-                                <Text style={styles.name}>{item.name}</Text>
+                                <Text style={styles.name}>{truncateText(item.name, 7)}</Text>
                                 <View style={{flexDirection: 'row',}}>
                                     <Text style={styles.date}>{item.date}</Text>
                                     <Text style={styles.payer}>결제자</Text>
-                                    <Text style={styles.date}>{item.payer}</Text>
+                                    <Text style={styles.date}>{truncateText(item.payer, 3)}</Text>
                                 </View>
                             </View>
                             <View style={{flex:4}}>
-                                <Text style={styles.price}>{item.price.toLocaleString()}원</Text>
+                                <Text style={styles.price}>{truncatePrice(item.price)}</Text>
                             </View>
                         </View>
                     )}
