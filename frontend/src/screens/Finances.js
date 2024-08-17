@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Spending from '../components/Spending';
 import Calculate from '../components/Calculate';
@@ -14,7 +15,7 @@ const Finances = () => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <AntDesign name="left" size={25} color="gray" />
+                <Ionicons name="chevron-back-outline" size={25} color="gray" />
                 <View>
                     <Text style={styles.title}>모임명</Text>
                 </View>
