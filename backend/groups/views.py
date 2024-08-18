@@ -83,6 +83,14 @@ class GroupAPIView(APIView):
         currency = validated_data['currency']
         )
 
+        #그룹 생성자 admin Member로 추가
+        Member.objects.create(
+            name = user.username,
+            user = user,
+            grades = Grades.objects.get(admin=1),
+            group = group
+        )
+
         #member name이 공백일 경유 제외 
         member_name = []
         for member in members:
@@ -94,14 +102,6 @@ class GroupAPIView(APIView):
                     group = group
                 )
                 member_name.append(member['name'])
-
-        #그룹 생성자 admin Member로 추가
-        Member.objects.create(
-            name = user.username,
-            user = user,
-            grades = Grades.objects.get(admin=1),
-            group = group
-        )
 
         return Response({'message': "그릅은 만들었습니다.",
                         'group_pk': group.pk,
@@ -140,17 +140,25 @@ class GroupCurrency(APIView):
 
 
 class GroupDetail(APIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
     def get(self,request, group_pk):
         group = get_object_or_404(Group, pk = group_pk)
+        members = get_list_or_404(Member, group = group)
         
+        member = []
+        for i in members[1::]:
+            member.append({
+                "name": i.name,
+                "grades": i.grades.name,
+                "active": i.active
+            })
+
         return Response({
                 "name": group.name,
                 "category" : group.category.name,
                 "currency": group.currency.currency,
-                "created_at" :group.created_at,
-                "edited_at" : group.edited_at
+                "member" : member
                 }, status=status.HTTP_200_OK)
 
 
