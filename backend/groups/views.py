@@ -77,6 +77,19 @@ class GroupAPIView(APIView):
         if group_name:
             return Response({'error': "같은 이름의 그룹이 이미 존재합니다"}, status=status.HTTP_400_BAD_REQUEST)
         
+        #멤머가 한명도 없는 경우 error 처리
+        if not members:
+            return Response({'error': "멤버는 한명 이상 있어야 합니다"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        #member name이 공백일 경유 제외, 같은 이름 존제시 오류
+        member_validated = []
+        for member in members:
+            if member['name'].strip():
+                if member in member_validated:
+                    return Response({'error': "그룹에 별명이 같은 멤버가 존제 합니다"}, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    member_validated.append(member)
+        
         group = Group.objects.create(
         name = validated_data['name'],
         category = validated_data['category'],
@@ -90,23 +103,19 @@ class GroupAPIView(APIView):
             grades = Grades.objects.get(admin=1),
             group = group
         )
+        
+        for member in member_validated:
+            Member.objects.create(
+            name=member['name'],
+            user=None,
+            grades=Grades.objects.get(admin=0, edit=0, view=1),
+            group=group)
 
-        #member name이 공백일 경유 제외 
-        member_name = []
-        for member in members:
-            if member['name'].strip():
-                Member.objects.create(
-                    name = member['name'],
-                    user = None,
-                    grades = Grades.objects.get(admin=0,edit=0,view=1),
-                    group = group
-                )
-                member_name.append(member['name'])
 
         return Response({'message': "그릅은 만들었습니다.",
                         'group_pk': group.pk,
                         'group_name': group.name,
-                        'member': member_name},
+                        'member': members},
                         status=status.HTTP_201_CREATED)
 
 
@@ -166,10 +175,13 @@ class GroupDetail(APIView):
         user = request.user
         data = request.data
         group = get_object_or_404(Group, pk=group_pk)
+        old_members= get_list_or_404(Member, group = group)[1:]
         
         name = data.get('name', group.name)
         category = data.get('category',group.category.name)
         currency = data.get('currency',group.currency.currency)
+        new_members = data.get('members', old_members)
+
 
         #빈 값일 경우 Error처리
         validated_data = validate_group_data(name, category, currency)
@@ -181,15 +193,39 @@ class GroupDetail(APIView):
         if name != group.name and group_name:
             return Response({'error': "같은 이름의 그룹이 이미 존재합니다"}, status=status.HTTP_400_BAD_REQUEST)
         
+        #member name이 공백일 경유 제외, 같은 이름 존제시 오류
+        member_name=[]
+        for member in new_members:
+            if member['name'].strip():
+                if member['name'] in member_name:
+                    return Response({'error': "그룹에 별명이 같은 멤버가 존제 합니다"}, status=status.HTTP_400_BAD_REQUEST)
+                else:
+                    member_name.append(member['name'])
+        
         group.name = validated_data["name"]
         group.category.name = validated_data["category"]
         group.currency.currency = validated_data["currency"]
         group.save()
 
+        #기존의 멤버 업데이트
+        for i in range(len(old_members)):
+            old_members[i].name = new_members[i]['name']
+            old_members[i].active = new_members[i]['active']
+            old_members[i].save()
+        
+        #새로운 멤버는 추가
+        for i in new_members[len(old_members)::]:
+            Member.objects.create(
+                name=i['name'],
+                user=None,
+                grades=Grades.objects.get(admin=0, edit=0, view=1),
+                group=group)
+        
         return Response({
                 "name": group.name,
                 "category" : str(group.category.name),
                 "currency": str(group.currency.currency),
+                "members" : new_members,
                 "created_at" :group.created_at,
                 "edited_at" : group.edited_at
                 }, status=status.HTTP_200_OK)
