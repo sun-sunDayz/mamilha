@@ -156,10 +156,12 @@ class GroupDetail(APIView):
         members = get_list_or_404(Member, group = group)
         
         member = []
+        num = 0
         for i in members[1::]:
+            num +=1
             member.append({
+                "id": num,
                 "name": i.name,
-                "grades": i.grades.name,
                 "active": i.active
             })
 

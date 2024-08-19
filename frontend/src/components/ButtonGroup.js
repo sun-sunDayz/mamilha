@@ -1,11 +1,14 @@
 import React from 'react';
 import {View, TouchableOpacity, Text, StyleSheet} from 'react-native';
 import AwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation } from '@react-navigation/native';
 
 const ButtonGroup = ({onPressFirstButton}) => {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.buttonContainer}>
-      <TouchableOpacity style={styles.button} onPress={onPressFirstButton}>
+      <TouchableOpacity style={styles.button} onPress={()=> navigation.navigate(onPressFirstButton)}>
         <AwesomeIcon name="plus" size={25} color="#FFFFFF" />
         <Text style={styles.buttonText}>모임 만들기</Text>
       </TouchableOpacity>
