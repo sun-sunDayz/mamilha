@@ -4,17 +4,21 @@ import Feather from 'react-native-vector-icons/Feather';
 
 
 const GroupMember = ({ onChangeMembers, onAddMember, selectedMembers }) => {
-    const [inputs, setInputs] = useState([{ id: 1, name: '' ,active: 1}]);
+    const [inputs, setInputs] = useState(selectedMembers);
+
 
     useEffect(() => {
-        if (Array.isArray(selectedMembers) && selectedMembers.length === 0) {
-            setInputs([{ id: 1, name: '', active: 1 }]);
+        if (Array.isArray(selectedMembers) && selectedMembers.length > 0) {
+            setInputs(selectedMembers);
+        } else {
+            setInputs([{ id: 1, name: '', active: 1 }]); // 기본 값 설정
         }
     }, [selectedMembers]);
 
     useEffect(() => {
         onChangeMembers(inputs);
     }, [inputs, onChangeMembers]);
+    
 
     const addInput = () => {
         const newId = inputs.length > 0 ? inputs[inputs.length - 1].id + 1 : 1;
@@ -27,8 +31,7 @@ const GroupMember = ({ onChangeMembers, onAddMember, selectedMembers }) => {
             setInputs(inputs.filter(input => input.id !== id));
         }
     };
-    console.log(selectedMembers, 3)
-    console.log(inputs, 4)
+    
     return (
         <View style={{ margin: 10 }}>
             <Text style={{ fontSize: 15, fontWeight: '600' }}>멤버</Text>
@@ -56,12 +59,12 @@ const GroupMember = ({ onChangeMembers, onAddMember, selectedMembers }) => {
             <View>
                 <View>
                     {inputs.map((input, index) => (
-                        <View key={input.id} >
+                        <View key={input['id']} >
                             <TextInput
                                 style={styles.input}
                                 placeholder="멤버 별명 입력"
                                 keyboardType="default"
-                                value={input.name}
+                                value={input['name']}
                                 onChangeText={(text) => {
                                     const newInputs = inputs.map(item =>
                                         item.id === input.id ? { ...item, name: text } : item);
