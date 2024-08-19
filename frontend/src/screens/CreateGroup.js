@@ -47,7 +47,6 @@ const CreateGroup = () => {
         scrollViewRef.current?.scrollToEnd({ animated: true });
     };
 
-    console.log(members, '1')
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <SafeAreaView SafeAreaView style={styles.Container}>
@@ -135,9 +134,9 @@ const styles = StyleSheet.create({
     },
     CreateGroupButton: {
         position: 'absolute',
+        alignSelf: 'center', 
+        width: '80%',
         bottom: 50,
-        left: 10,
-        right: 10,
         padding: 13,
         backgroundColor: '#5DAF6A',
         borderRadius: 10,

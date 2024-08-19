@@ -40,7 +40,6 @@ const Currency = ({ onChangeCurrency, selectedCurrency }) => {
                 onLayout={(event) => {
                     const { width } = event.nativeEvent.layout;
                     setDropdownWidth(width);
-
                 }}
             >
                 <Text style={[styles.dropdownButtonText, { color: selectedItem ? '#000000' : '#C0C0C0' }]}>
