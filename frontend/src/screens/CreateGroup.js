@@ -16,7 +16,6 @@ const CreateGroup = () => {
     const [currency, setCurrency] = useState('');
     const [members, setMembers] = useState([]);
     const navigation = useNavigation();
-
     const scrollViewRef = useRef(null);
 
     const handleCreateGroup = async () => {
@@ -30,16 +29,25 @@ const CreateGroup = () => {
         } catch (error) {
             console.error('Error', error);
         }
+        setGroupName('');
+        setGroupCategory('');
+        setCurrency('');
+        setMembers([]);
     };
 
     const handleHome = () => {
         navigation.navigate('Main');
+        setGroupName('');
+        setGroupCategory('');
+        setCurrency('');
+        setMembers([]);
     };
 
     const handleAddMember = () => {
         scrollViewRef.current?.scrollToEnd({ animated: true });
     };
 
+    console.log(members, '1')
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <SafeAreaView SafeAreaView style={styles.Container}>
@@ -65,13 +73,13 @@ const CreateGroup = () => {
                     </View>
                     <View style={styles.SectionContainer}>
                         <Text style={styles.SectionTitle}>모임 카테고리</Text>
-                        <GroupCategory onChangeCategory={setGroupCategory} />
+                        <GroupCategory selectedCategory={groupCategory} onChangeCategory={setGroupCategory} />
                     </View>
                     <View style={styles.SectionContainer}>
                         <Text style={styles.SectionTitle}>통화 카테고리</Text>
-                        <Currency onChangeCurrency={setCurrency} />
+                        <Currency selectedCurrency={currency} onChangeCurrency={setCurrency} />
                     </View>
-                    <GroupMember onChangeMembers={setMembers} onAddMember={handleAddMember} />
+                    <GroupMember selectedMembers={members} onChangeMembers={setMembers} onAddMember={handleAddMember} />
                 </ScrollView>
 
                 <TouchableOpacity onPress={handleCreateGroup} style={styles.CreateGroupButton} >
@@ -105,6 +113,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     GroupNameInput: {
+        height:40,
         fontSize: 18,
         color: '#000000',
         marginTop: 10,
