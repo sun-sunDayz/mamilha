@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, FlatList, StyleSheet } from 'react-native';
 import axios from 'axios';
 
-const GroupCategory = ({ onChangeCategory }) => {
+const GroupCategory = ({ onChangeCategory, selectedCategory }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState(selectedCategory);
   const [dropdownWidth, setDropdownWidth] = useState(0); 
   const [Data, setData] = useState([]);
 
@@ -17,6 +17,11 @@ const GroupCategory = ({ onChangeCategory }) => {
         console.error('데이터를 불러오는데 실패했습니다', error);
       });
   }, []);
+
+  useEffect(() => {
+    setSelectedItem(selectedCategory);
+  }, [selectedCategory]); 
+
 
   useEffect(() => {
     onChangeCategory(selectedItem);
@@ -77,6 +82,7 @@ const GroupCategory = ({ onChangeCategory }) => {
   );
 };
 
+
 export default GroupCategory;
 
 const styles = StyleSheet.create({
@@ -88,6 +94,7 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     backgroundColor: '#ffffff',
     borderRadius: 15,
+    height:40,
   },
   dropdownButtonText: {
     fontSize: 18,
