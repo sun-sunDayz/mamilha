@@ -10,7 +10,7 @@ import Currency from '../components/Currency';
 import Feather from 'react-native-vector-icons/Feather';
 
 
-const UpdateGroup = ( group_pk ) => {
+const UpdateGroup = ( {group_pk} ) => {
     const [groupName, setGroupName] = useState('');
     const [groupCategory, setGroupCategory] = useState('');
     const [currency, setCurrency] = useState('');
