@@ -2,27 +2,29 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, FlatList, StyleSheet } from 'react-native';
 import axios from 'axios';
 
-const Currency = ({ onChangeCurrency }) => {
+const Currency = ({ onChangeCurrency, selectedCurrency }) => {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
-    const [selectedItem, setSelectedItem] = useState(null);
+    const [selectedItem, setSelectedItem] = useState(selectedCurrency);
     const [dropdownWidth, setDropdownWidth] = useState(0);
     const [Data, setData] = useState([]);
 
     useEffect(() => {
         axios.get('http://127.0.0.1:8000/api/groups/currency/')
-          .then(response => {
-            setData(response.data);
-          })
-          .catch(error => {
-            console.error('데이터를 불러오는데 실패했습니다', error);
-          });
-      }, []);
+            .then(response => {
+                setData(response.data);
+            })
+            .catch(error => {
+                console.error('데이터를 불러오는데 실패했습니다', error);
+            });
+    }, []);
 
+    useEffect(() => {
+        setSelectedItem(selectedCurrency);
+    }, [selectedCurrency]);
 
     useEffect(() => {
         onChangeCurrency(selectedItem);
     }, [selectedItem, onChangeCurrency]);
-
 
 
     const handleItemPress = (item) => {
@@ -90,6 +92,7 @@ const styles = StyleSheet.create({
         paddingLeft: 15,
         backgroundColor: '#ffffff',
         borderRadius: 15,
+        height:40,
     },
     dropdownButtonText: {
         fontSize: 18,
