@@ -6,16 +6,19 @@ import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import GroupCategory from '../components/GroupCategory';
 import GroupMember from '../components/GroupMember';
+import UpdateMember from '../components/UpdateMember';
 import Currency from '../components/Currency';
-import Feather from 'react-native-vector-icons/Feather';
+import Icon from 'react-native-vector-icons/Ionicons'
 
 
-const UpdateGroup = ( {group_pk} ) => {
+const UpdateGroup = ({ group_pk }) => {
     const [groupName, setGroupName] = useState('');
     const [groupCategory, setGroupCategory] = useState('');
     const [currency, setCurrency] = useState('');
     const [members, setMembers] = useState([]);
+    const [updateMembers, setUpdateMembers] = useState([]);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
+    const [resetGroupMembers, setResetGroupMembers] = useState(false);
     const [modalWidth, setModalWidth] = useState(0)
     const navigation = useNavigation();
     const scrollViewRef = useRef(null);
@@ -27,7 +30,7 @@ const UpdateGroup = ( {group_pk} ) => {
                 setCurrency(response.data.currency)
                 setGroupCategory(response.data.category)
                 setGroupName(response.data.name)
-                setMembers(response.data.member)
+                setUpdateMembers(response.data.member)
             })
             .catch(error => {
                 console.error('데이터를 불러오는데 실패했습니다', error);
@@ -40,16 +43,14 @@ const UpdateGroup = ( {group_pk} ) => {
                 name: groupName,
                 category: groupCategory,
                 currency: currency,
-                members: members,
+                members: [...members, ...updateMembers],
             });
         } catch (error) {
             console.error('Error', error);
         }
-        setGroupName(groupName);
-        setGroupCategory(groupCategory);
-        setCurrency(currency);
-        setMembers(members);
-        setIsUpdateModalOpen(false)
+        setMembers([]);
+        setUpdateMembers([]);
+        setIsUpdateModalOpen(false);
     };
 
 
@@ -58,24 +59,27 @@ const UpdateGroup = ( {group_pk} ) => {
         setGroupName(groupName);
         setGroupCategory(groupCategory);
         setCurrency(currency);
-        setMembers(members);
+        setMembers([]);
+        setUpdateMembers(updateMembers)
+        setResetGroupMembers(true);
+        setTimeout(() => setResetGroupMembers(false), 0);
     };
 
     const handleAddMember = () => {
         scrollViewRef.current?.scrollToEnd({ animated: true });
     };
-    console.log(members)
+
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <SafeAreaView SafeAreaView style={styles.Container}>
                 <StatusBar backgroundColor='white' barStyle='dark-content' />
                 <View style={styles.TopContainer}>
                     <View style={styles.TitleContainer}>
-                        <Text style={styles.TitleText}>모임생성</Text>
+                        <Text style={styles.TitleText}>모임 수정</Text>
                     </View>
                 </View>
                 <TouchableOpacity onPress={handleHome} style={styles.CloseIcon} >
-                    <Feather name="x" size={40} color="#000000" />
+                    <Icon name="chevron-back" size={40} color="#6C6C6C" />
                 </TouchableOpacity>
                 <ScrollView ref={scrollViewRef} contentContainerStyle={styles.ScrollViewContent}>
                     <View style={styles.SectionContainer}>
@@ -96,16 +100,29 @@ const UpdateGroup = ( {group_pk} ) => {
                         <Text style={styles.SectionTitle}>통화 카테고리</Text>
                         <Currency selectedCurrency={currency} onChangeCurrency={setCurrency} />
                     </View>
-                    <GroupMember selectedMembers={members} onChangeMembers={setMembers} onAddMember={handleAddMember} />
+                    <View style={styles.MemberContainer}>
+                        <Text style={styles.MemberTitle}>멤버</Text>
+                        <View style={styles.MemberUserContainer}>
+                            <Text style={styles.MemberUserName}>닉네임</Text>
+                            <Text style={styles.MemberUserMe}>(나)</Text>
+                        </View>
+                        <UpdateMember
+                            onUpdateMembers={setUpdateMembers}
+                            selectedMembers={updateMembers}
+                        />
+                        <GroupMember onChangeMembers={setMembers}
+                            onAddMember={handleAddMember}
+                            reset={resetGroupMembers} />
+                    </View>
                 </ScrollView>
 
-                <TouchableOpacity onPress={() => setIsUpdateModalOpen(true)} 
-                style={styles.UpdateGroupButton}
-                onLayout={(event) => {
-                    const { width } = event.nativeEvent.layout;
-                    setModalWidth(width);
-                }}>
-                    <Text style={styles.UpdateGroupButtonText}>생성하기</Text>
+                <TouchableOpacity onPress={() => setIsUpdateModalOpen(true)}
+                    style={styles.UpdateGroupButton}
+                    onLayout={(event) => {
+                        const { width } = event.nativeEvent.layout;
+                        setModalWidth(width);
+                    }}>
+                    <Text style={styles.UpdateGroupButtonText}>수정하기</Text>
                 </TouchableOpacity>
                 {isUpdateModalOpen && (
                     <Modal
@@ -118,17 +135,17 @@ const UpdateGroup = ( {group_pk} ) => {
                             activeOpacity={1}
                             onPressOut={() => setIsUpdateModalOpen(false)}
                         >
-                            <View style={[styles.updateModal, {width: modalWidth}]}>
+                            <View style={[styles.updateModal, { width: modalWidth }]}>
                                 <Text style={styles.udateModalTitel}>모임 정보를 수정하시겠습니까?</Text>
                                 <View style={styles.udateModalButton}>
-                                    <TouchableOpacity 
-                                    onPress={() => setIsUpdateModalOpen(false)} 
-                                    style={styles.udateModalButtonNo} >
+                                    <TouchableOpacity
+                                        onPress={() => setIsUpdateModalOpen(false)}
+                                        style={styles.udateModalButtonNo} >
                                         <Text style={styles.udateModalButtonNoText}>아니오</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity 
-                                    onPress={handleUpdateGroup}
-                                    style={styles.udateModalButtonYes}>
+                                    <TouchableOpacity
+                                        onPress={handleUpdateGroup}
+                                        style={styles.udateModalButtonYes}>
                                         <Text style={styles.udateModalButtonYesText} >네</Text>
                                     </TouchableOpacity>
                                 </View>
@@ -155,7 +172,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         left: 0,
         right: 0,
-        top: 10,
+        top: 7,
     },
     TitleText: {
         fontSize: 25,
@@ -185,7 +202,7 @@ const styles = StyleSheet.create({
     },
     UpdateGroupButton: {
         position: 'absolute',
-        alignSelf: 'center', 
+        alignSelf: 'center',
         width: '90%',
         bottom: 50,
         padding: 13,
@@ -204,7 +221,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         backgroundColor: 'rgba(0,0,0,0.2)',
     },
-    updateModal:{
+    updateModal: {
         borderWidth: 1,
         borderColor: '#cccccc',
         backgroundColor: '#ffffff',
@@ -213,27 +230,27 @@ const styles = StyleSheet.create({
         paddingBottom: 30,
         alignItems: 'center',
     },
-    udateModalTitel:{
+    udateModalTitel: {
         fontSize: 18,
         fontWeight: '700',
         marginBottom: 30
     },
-    udateModalButton:{
-        flexDirection: 'row',          
-        justifyContent: 'space-between', 
+    udateModalButton: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
     },
-    udateModalButtonNo:{
+    udateModalButtonNo: {
         width: '40%',
         alignItems: 'center',
         padding: 10,
     },
-    udateModalButtonNoText:{
+    udateModalButtonNoText: {
         color: '#5DAF6A',
         fontSize: 18,
         fontWeight: '700',
     },
-    udateModalButtonYes:{
+    udateModalButtonYes: {
         width: '40%',
         alignItems: 'center',
         backgroundColor: '#5DAF6A',
@@ -241,12 +258,37 @@ const styles = StyleSheet.create({
         paddingTop: 13,
         paddingBottom: 13,
     },
-    udateModalButtonYesText:{
+    udateModalButtonYesText: {
         fontSize: 18,
         fontWeight: '700',
         color: '#ffffff'
     },
-
+    MemberContainer: {
+        margin: 10
+    },
+    MemberTitle: {
+        fontSize: 15,
+        fontWeight: '600'
+    },
+    MemberUserContainer: {
+        borderRadius: 15,
+        backgroundColor: '#ffffff',
+        marginTop: 10,
+        padding: 10,
+        paddingLeft: 15,
+        flexDirection: 'row'
+    },
+    MemberUserName: {
+        fontSize: 18,
+        color: '#000000'
+    },
+    MemberUserMe: {
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#5DAF6A',
+        marginTop: -2,
+        marginLeft: 5
+    },
 });
 
 export default UpdateGroup;
