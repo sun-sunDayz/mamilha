@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, FlatList, StyleSheet } from 'react-native';
 import axios from 'axios';
+import Icon from 'react-native-vector-icons/Ionicons'
 
 const Currency = ({ onChangeCurrency, selectedCurrency }) => {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -45,6 +46,9 @@ const Currency = ({ onChangeCurrency, selectedCurrency }) => {
                 <Text style={[styles.dropdownButtonText, { color: selectedItem ? '#000000' : '#C0C0C0' }]}>
                     {selectedItem ? selectedItem : '통화 선택'}
                 </Text>
+                <View style={styles.dropdownIcon}>
+                    <Icon name="chevron-expand" size={20} color='#6C6C6C' />
+                </View>
             </TouchableOpacity>
 
             {isDropdownOpen && (
@@ -91,7 +95,7 @@ const styles = StyleSheet.create({
         paddingLeft: 15,
         backgroundColor: '#ffffff',
         borderRadius: 15,
-        height:40,
+        height: 40,
     },
     dropdownButtonText: {
         fontSize: 18,
@@ -122,5 +126,11 @@ const styles = StyleSheet.create({
     },
     dropdownItemText: {
         fontSize: 16,
+    },
+    dropdownIcon: {
+        position: 'absolute',
+        right: 20,
+        top: 10,
+        height: 25,
     },
 });
