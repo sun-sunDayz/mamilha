@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
     },
     SectionTitle: {
         fontSize: 15,
-        fontWeight: '600',
+        fontWeight: '700',
     },
     UpdateGroupButton: {
         position: 'absolute',
@@ -233,7 +233,8 @@ const styles = StyleSheet.create({
     udateModalTitel: {
         fontSize: 18,
         fontWeight: '700',
-        marginBottom: 30
+        marginBottom: 30,
+        color: '#434343'
     },
     udateModalButton: {
         flexDirection: 'row',
@@ -268,7 +269,7 @@ const styles = StyleSheet.create({
     },
     MemberTitle: {
         fontSize: 15,
-        fontWeight: '600'
+        fontWeight: '700'
     },
     MemberUserContainer: {
         borderRadius: 15,
