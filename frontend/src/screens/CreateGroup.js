@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     },
     SectionTitle: {
         fontSize: 15,
-        fontWeight: '600',
+        fontWeight: '700',
     },
     CreateGroupButton: {
         position: 'absolute',
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     },
     MemberTitle:{ 
         fontSize: 15,
-        fontWeight: '600' 
+        fontWeight: '700' 
     },
     MemberUserContainer:{
         borderRadius: 15,
@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     },
     MemberUserMe:{
         fontSize: 18,
-        fontWeight: '600',
+        fontWeight: '700',
         color: '#5DAF6A',
         marginTop: -2,
         marginLeft: 5
