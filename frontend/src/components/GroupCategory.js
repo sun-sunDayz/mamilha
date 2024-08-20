@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, FlatList, StyleSheet } from 'react-native';
 import axios from 'axios';
+import Icon from 'react-native-vector-icons/Ionicons'
 
-const GroupCategory = ({ onChangeCategory }) => {
+const GroupCategory = ({ onChangeCategory, selectedCategory }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [dropdownWidth, setDropdownWidth] = useState(0); 
+  const [selectedItem, setSelectedItem] = useState(selectedCategory);
+  const [dropdownWidth, setDropdownWidth] = useState(0);
   const [Data, setData] = useState([]);
 
   useEffect(() => {
@@ -17,6 +18,11 @@ const GroupCategory = ({ onChangeCategory }) => {
         console.error('데이터를 불러오는데 실패했습니다', error);
       });
   }, []);
+
+  useEffect(() => {
+    setSelectedItem(selectedCategory);
+  }, [selectedCategory]);
+
 
   useEffect(() => {
     onChangeCategory(selectedItem);
@@ -34,12 +40,15 @@ const GroupCategory = ({ onChangeCategory }) => {
         onPress={() => setDropdownOpen(!isDropdownOpen)}
         onLayout={(event) => {
           const { width } = event.nativeEvent.layout;
-          setDropdownWidth(width); 
+          setDropdownWidth(width);
         }}
       >
         <Text style={[styles.dropdownButtonText, { color: selectedItem ? '#000000' : '#C0C0C0' }]}>
           {selectedItem ? selectedItem : '카테고리 선택'}
         </Text>
+        <View style={styles.dropdownIcon}>
+          <Icon name="chevron-expand" size={20} color='#6C6C6C' />
+        </View>
       </TouchableOpacity>
 
       {isDropdownOpen && (
@@ -63,7 +72,7 @@ const GroupCategory = ({ onChangeCategory }) => {
                     style={item.category_name === selectedItem ? styles.selectedDropdownItem : styles.dropdownItem}
                     onPress={() => handleItemPress(item)}
                   >
-                    <Text style={[styles.dropdownItemText, {color: item.category_name === selectedItem ? '#ffffff': '#000000'}]}>
+                    <Text style={[styles.dropdownItemText, { color: item.category_name === selectedItem ? '#ffffff' : '#000000' }]}>
                       {item.category_name}
                     </Text>
                   </TouchableOpacity>
@@ -77,6 +86,7 @@ const GroupCategory = ({ onChangeCategory }) => {
   );
 };
 
+
 export default GroupCategory;
 
 const styles = StyleSheet.create({
@@ -88,6 +98,7 @@ const styles = StyleSheet.create({
     paddingLeft: 15,
     backgroundColor: '#ffffff',
     borderRadius: 15,
+    height: 40,
   },
   dropdownButtonText: {
     fontSize: 18,
@@ -110,7 +121,7 @@ const styles = StyleSheet.create({
     padding: 10,
     alignItems: 'center'
   },
-  selectedDropdownItem:{
+  selectedDropdownItem: {
     padding: 10,
     alignItems: 'center',
     borderRadius: 15,
@@ -118,5 +129,11 @@ const styles = StyleSheet.create({
   },
   dropdownItemText: {
     fontSize: 16,
+  },
+  dropdownIcon: {
+    position: 'absolute',
+    right: 20,
+    top: 10,
+    height: 25
   },
 });
