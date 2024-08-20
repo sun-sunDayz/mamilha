@@ -1,4 +1,4 @@
-import React, { useState, useRef} from 'react';
+import React, { useState, useRef } from 'react';
 import {
     View, Text, ScrollView, StyleSheet, TextInput, StatusBar, TouchableWithoutFeedback, Keyboard, TouchableOpacity, SafeAreaView
 } from 'react-native';
@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import GroupCategory from '../components/GroupCategory';
 import GroupMember from '../components/GroupMember';
 import Currency from '../components/Currency';
-import Feather from 'react-native-vector-icons/Feather';
+import Icon from 'react-native-vector-icons/Ionicons'
 
 
 const CreateGroup = () => {
@@ -57,7 +57,7 @@ const CreateGroup = () => {
                     </View>
                 </View>
                 <TouchableOpacity onPress={handleHome} style={styles.CloseIcon} >
-                    <Feather name="x" size={40} color="#000000" />
+                    <Icon name="close-outline" size={40} color="#000000" />
                 </TouchableOpacity>
                 <ScrollView ref={scrollViewRef} contentContainerStyle={styles.ScrollViewContent}>
                     <View style={styles.SectionContainer}>
@@ -78,7 +78,14 @@ const CreateGroup = () => {
                         <Text style={styles.SectionTitle}>통화 카테고리</Text>
                         <Currency selectedCurrency={currency} onChangeCurrency={setCurrency} />
                     </View>
-                    <GroupMember selectedMembers={members} onChangeMembers={setMembers} onAddMember={handleAddMember} />
+                    <View style={styles.MemberContainer}>
+                        <Text style={styles.MemberTitle}>멤버</Text>
+                        <View style={styles.MemberUserContainer}>
+                            <Text style={styles.MemberUserName}>닉네임</Text>
+                            <Text style={styles.MemberUserMe}>(나)</Text>
+                        </View>
+                        <GroupMember onChangeMembers={setMembers} onAddMember={handleAddMember} />
+                    </View>
                 </ScrollView>
 
                 <TouchableOpacity onPress={handleCreateGroup} style={styles.CreateGroupButton} >
@@ -112,7 +119,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     GroupNameInput: {
-        height:40,
+        height: 40,
         fontSize: 18,
         color: '#000000',
         marginTop: 10,
@@ -134,7 +141,7 @@ const styles = StyleSheet.create({
     },
     CreateGroupButton: {
         position: 'absolute',
-        alignSelf: 'center', 
+        alignSelf: 'center',
         width: '80%',
         bottom: 50,
         padding: 13,
@@ -147,7 +154,32 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '700',
     },
-
+    MemberContainer:{
+        margin: 10
+    },
+    MemberTitle:{ 
+        fontSize: 15,
+        fontWeight: '600' 
+    },
+    MemberUserContainer:{
+        borderRadius: 15,
+        backgroundColor: '#ffffff',
+        marginTop: 10,
+        padding: 10,
+        paddingLeft: 15,
+        flexDirection: 'row'
+    },
+    MemberUserName:{ 
+        fontSize: 18,
+        color: '#000000' 
+    },
+    MemberUserMe:{
+        fontSize: 18,
+        fontWeight: '600',
+        color: '#5DAF6A',
+        marginTop: -2,
+        marginLeft: 5
+    },
 });
 
 export default CreateGroup;

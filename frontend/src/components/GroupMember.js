@@ -1,28 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
-import Feather from 'react-native-vector-icons/Feather';
+import Icon from 'react-native-vector-icons/Ionicons'
 
-
-const GroupMember = ({ onChangeMembers, onAddMember, selectedMembers }) => {
-    const [inputs, setInputs] = useState(selectedMembers);
-
+const GroupMember = ({ onChangeMembers, onAddMember, reset}) => {
+    const [inputs, setInputs] = useState([{ id: 1, name: '', active: 1 }]);
 
     useEffect(() => {
-        if (Array.isArray(selectedMembers) && selectedMembers.length > 0) {
-            setInputs(selectedMembers);
-        } else {
-            setInputs([{ id: 1, name: '', active: 1 }]); // 기본 값 설정
+        if (reset) {
+            setInputs([{ id: 1, name: '', active: 1 }]);
         }
-    }, [selectedMembers]);
+    }, [reset]);
 
     useEffect(() => {
         onChangeMembers(inputs);
     }, [inputs, onChangeMembers]);
-    
 
     const addInput = () => {
         const newId = inputs.length > 0 ? inputs[inputs.length - 1].id + 1 : 1;
-        setInputs([...inputs, { id: newId, name: '' ,active: 1}]);
+        setInputs([...inputs, { id: newId, name: '', active: 1 }]);
         onAddMember();
     };
 
@@ -31,57 +26,33 @@ const GroupMember = ({ onChangeMembers, onAddMember, selectedMembers }) => {
             setInputs(inputs.filter(input => input.id !== id));
         }
     };
-    
+
     return (
-        <View style={{ margin: 10 }}>
-            <Text style={{ fontSize: 15, fontWeight: '600' }}>멤버</Text>
-            <View
-                style={{
-                    borderRadius: 15,
-                    backgroundColor: '#ffffff',
-                    marginTop: 10,
-                    padding: 10,
-                    paddingLeft: 15,
-                    flexDirection: 'row'
-                }}
-            >
-                <Text style={{ fontSize: 18, color: '#000000' }}>닉네임</Text>
-                <Text
-                    style={{
-                        fontSize: 18,
-                        fontWeight: '600',
-                        color: '#5DAF6A',
-                        marginTop: -2,
-                        marginLeft: 5
-                    }}
-                >(나)</Text>
-            </View>
+        <View>
             <View>
-                <View>
-                    {inputs.map((input, index) => (
-                        <View key={input['id']} >
-                            <TextInput
-                                style={styles.input}
-                                placeholder="멤버 별명 입력"
-                                keyboardType="default"
-                                value={input['name']}
-                                onChangeText={(text) => {
-                                    const newInputs = inputs.map(item =>
-                                        item.id === input.id ? { ...item, name: text } : item);
-                                    setInputs(newInputs);
-                                }}
-                            />
-                            <TouchableOpacity onPress={() => deleteInput(input.id)} style={styles.deleteButton}>
-                                <Feather name="trash-2" size={18} color='#ffffff' />
-                            </TouchableOpacity>
-                        </View>
-                    ))}
-                </View>
-                <View style={{ alignItems: 'center', marginTop: 10 }}>
-                    <TouchableOpacity onPress={addInput} style={styles.addButton}>
-                        <Feather name="plus" size={35} color='#ffffff' />
-                    </TouchableOpacity>
-                </View>
+                {inputs.map((input, index) => (
+                    <View key={input['id']} >
+                        <TextInput
+                            style={styles.input}
+                            placeholder="멤버 별명 입력"
+                            keyboardType="default"
+                            value={input['name']}
+                            onChangeText={(text) => {
+                                const newInputs = inputs.map(item =>
+                                    item.id === input.id ? { ...item, name: text } : item);
+                                setInputs(newInputs);
+                            }}
+                        />
+                        <TouchableOpacity onPress={() => deleteInput(input.id)} style={styles.deleteButton}>
+                            <Icon name="trash-outline" size={18} color='#C65757' />
+                        </TouchableOpacity>
+                    </View>
+                ))}
+            </View>
+            <View style={{ alignItems: 'center', marginTop: 10 }}>
+                <TouchableOpacity onPress={addInput} style={styles.addButton}>
+                    <Icon name="add-outline" size={35} color='#ffffff' />
+                </TouchableOpacity>
             </View>
         </View>
     );
@@ -89,7 +60,7 @@ const GroupMember = ({ onChangeMembers, onAddMember, selectedMembers }) => {
 
 const styles = StyleSheet.create({
     input: {
-        height:40,
+        height: 40,
         fontSize: 18,
         marginTop: 10,
         padding: 10,
