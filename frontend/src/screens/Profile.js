@@ -14,7 +14,7 @@ const ProfileScreen = ({ navigation }) => {
 
   const handlePasswordChange = () => {
     // 비밀번호 변경 페이지로 이동
-    navigation.navigate('PasswordChangeScreen'); // PasswordChangeScreen 페이지로 이동하도록 설정
+    navigation.navigate('PasswordChange'); // PasswordChangeScreen 페이지로 이동하도록 설정
   };
 
   return (
@@ -28,8 +28,8 @@ const ProfileScreen = ({ navigation }) => {
         />
 
         <Text style={styles.label}>비밀번호</Text>
-        <TouchableOpacity style={styles.button} onPress={handlePasswordChange}>
-          <Text style={styles.buttonText}>비밀번호 변경</Text>
+        <TouchableOpacity style={styles.passwordButton} onPress={handlePasswordChange}>
+          <Text style={styles.passwordButtonText}>비밀번호 변경</Text>
         </TouchableOpacity>
 
         <Text style={styles.label}>이메일</Text>
@@ -86,13 +86,19 @@ const styles = StyleSheet.create({
     paddingLeft: 8,
     backgroundColor: '#f9f9f9', // 배경색을 살짝 넣어줘서 입력창이 구분되도록 설정
   },
-  button: {
-    width: '100%',
-    padding: 15,
+  passwordButton: {
+    paddingVertical: 10, // 텍스트 위아래 여백
+    paddingHorizontal: 15, // 텍스트 좌우 여백
     alignItems: 'center',
     backgroundColor: '#5DAF6A',
     borderRadius: 8,
-    marginTop: 12,
+    alignSelf: 'flex-start', // 버튼 크기를 텍스트에 맞게 설정
+    marginBottom: 20,
+  },
+  passwordButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
   },
   saveButton: {
     position: 'absolute',
@@ -113,5 +119,3 @@ const styles = StyleSheet.create({
 });
 
 export default ProfileScreen;
-
-
