@@ -1,93 +1,102 @@
-import React, { useState } from 'react';
-import { View, TextInput, Button, Text, Alert, TouchableOpacity, StyleSheet } from 'react-native';
+import React, {useState} from 'react';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+} from 'react-native';
 
-const SignUpScreen = () => {
-  const [id, setId] = useState('');
+const Login = () => {
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [nickname, setNickname] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [error, setError] = useState('아이디 또는 비밀번호를 다시 확인하세요'); // 에러 메시지 상태
 
-  const handleSignUp = () => {
-    if (password !== confirmPassword) {
-      setErrorMessage('비밀번호가 일치하지 않습니다.');
-      return;
+  const handleLogin = () => {
+    if (username === 'admin' && password === 'password') {
+      setError(''); // 로그인 성공 시 에러 메시지 초기화
+      Alert.alert('Login Successful', 'Welcome to Mamilha!');
+    } else {
+      setError('아이디 또는 비밀번호를 다시 확인하세요'); // 로그인 실패 시 에러 메시지 설정
     }
-
-    // 회원가입 API 호출 로직 추가
-    Alert.alert('회원가입 성공!');
   };
 
   return (
-    <View style={{ padding: 20 }}>
-      <Text style={{ marginBottom: 5 }}>아이디</Text>
-      <TextInput
-        placeholder="아이디를 입력하세요"
-        value={id}
-        onChangeText={setId}
-        style={styles.input}
-      />
-
-      <Text style={{ marginBottom: 5 }}>비밀번호</Text>
-      <TextInput
-        placeholder="비밀번호를 입력하세요"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={styles.input}
-      />
-
-      <Text style={{ marginBottom: 5 }}>비밀번호 확인</Text>
-      <TextInput
-        placeholder="비밀번호를 다시 입력하세요"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry
-        style={styles.input}
-      />
-
-      <Text style={{ marginBottom: 5 }}>이메일</Text>
-      <TextInput
-        placeholder="이메일을 입력하세요"
-        value={email}
-        onChangeText={setEmail}
-        style={styles.input}
-      />
-
-      <Text style={{ marginBottom: 5 }}>이름</Text>
-      <TextInput
-        placeholder="이름을 입력하세요"
-        value={name}
-        onChangeText={setName}
-        style={styles.input}
-      />
-
-      <Text style={{ marginBottom: 5 }}>닉네임</Text>
-      <TextInput
-        placeholder="닉네임을 입력하세요"
-        value={nickname}
-        onChangeText={setNickname}
-        style={styles.input}
-      />
-
-      {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
-
-      <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-        <Text style={styles.buttonText}>회원가입</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>Mamilha</Text>
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={[styles.input, styles.topInput]}
+          placeholder="아이디"
+          value={username}
+          onChangeText={setUsername}
+        />
+        <View style={styles.separator} />
+        <TextInput
+          style={[styles.input, styles.bottomInput]}
+          placeholder="비밀번호"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={true}
+        />
+      </View>
+      <View style={styles.errorContainer}>
+        {error ? <Text style={styles.errorText}>{error}</Text> : null}
+      </View>
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+        <Text style={styles.buttonText}>로그인</Text>
       </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#f5f5f5',
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    fontStyle: 'italic',
+    color: '#5DAF6A',
+    marginBottom: 24,
+  },
+  inputContainer: {
+    width: '100%',
     marginBottom: 12,
-    paddingLeft: 8,
+  },
+  input: {
+    width: '100%',
+    padding: 10,
+    backgroundColor: '#fff',
+  },
+  topInput: {
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+  },
+  bottomInput: {
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#F1F1F9',
+  },
+  errorContainer: {
+    height: 20, // 고정된 높이 설정
+    justifyContent: 'center', // 텍스트가 중앙에 위치하도록 설정
+    alignItems: 'flex-start', // 에러 메시지를 왼쪽에 정렬
+    marginBottom: 12,
+    width: '100%', // 에러 메시지가 입력 필드의 전체 너비를 사용하도록 설정
+  },
+  errorText: {
+    color: 'red', // 에러 메시지 색상 설정
+    textAlign: 'left', // 에러 메시지 텍스트를 왼쪽 정렬
   },
   button: {
     width: '100%',
@@ -95,19 +104,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#5DAF6A',
     borderRadius: 8,
-    marginTop: 12,
   },
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
   },
-  errorText: {
-    color: 'red',
-    marginBottom: 12,
-  },
 });
 
-export default SignUpScreen;
-
+export default Login;
 

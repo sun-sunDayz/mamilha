@@ -8,6 +8,7 @@ import CreateGroup from "./src/screens/CreateGroup";
 import UpdateGroup from "./src/screens/UpdateGroup";
 import FinancesDetail from "./src/screens/FinancesDetail";
 import Finances from "./src/screens/Finances";
+import Profile from "./src/screens/Profile";
 import { NavigationContainer } from "@react-navigation/native";
 
 const App = () => {
@@ -22,6 +23,7 @@ const App = () => {
         <Tab.Screen name="Finances" component={Finances}/>
         <Tab.Screen name="UpdateGroup" component={UpdateGroup}/>
         <Tab.Screen name="FinancesDetail" component={FinancesDetail}/>
+        <Tab.Screen name="Profile" component={Profile}/>
       </Tab.Navigator>
 
 
