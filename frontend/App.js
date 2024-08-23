@@ -9,6 +9,7 @@ import UpdateGroup from "./src/screens/UpdateGroup";
 import FinancesDetail from "./src/screens/FinancesDetail";
 import Finances from "./src/screens/Finances";
 import Profile from "./src/screens/Profile";
+import PasswordChange from "./src/screens/PasswordChange";
 import { NavigationContainer } from "@react-navigation/native";
 
 const App = () => {
@@ -24,6 +25,7 @@ const App = () => {
         <Tab.Screen name="UpdateGroup" component={UpdateGroup}/>
         <Tab.Screen name="FinancesDetail" component={FinancesDetail}/>
         <Tab.Screen name="Profile" component={Profile}/>
+        <Tab.Screen name="PasswordChange" component={PasswordChange}/>
       </Tab.Navigator>
 
 
