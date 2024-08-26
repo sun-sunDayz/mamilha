@@ -61,4 +61,4 @@ def generate_random_finances(total_finances, splits_per_finance):
             Split.objects.create(**split_data)
 
 # 생성할 Finance 수와 각 Finance 당 Split 수 설정
-generate_random_finances(total_finances=50, splits_per_finance=3)
+generate_random_finances(total_finances=500, splits_per_finance=3)
