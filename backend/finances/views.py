@@ -6,7 +6,6 @@ from .models import Finance, FinanceCategory, FinanceType, PayMethod, SplitMetho
 from django.utils import timezone
 
 class FinancesAPIView(APIView):
-
     def get(self, request, group_pk):
         group = Group.objects.get(pk=group_pk)
         finances = Finance.objects.filter(group=group)
@@ -20,7 +19,8 @@ class FinancesAPIView(APIView):
                 "finance_type": finance.finance_type.name,
                 "finance_category": finance.finance_category.name,
                 "pay_method": finance.pay_method.name,
-                "split_method": finance.split_method.name
+                "split_method": finance.split_method.name,
+                "date": finance.created_at.strftime("%Y.%m.%d")
             })
         return Response(data)
     
@@ -73,7 +73,8 @@ class FinancesDetailAPIView(APIView):
             "finance_type": finance.finance_type.name,
             "finance_category": finance.finance_category.name,
             "pay_method": finance.pay_method.name,
-            "split_method": finance.split_method.name
+            "split_method": finance.split_method.name,
+            "date" : finance.date
         }
         return Response(data)
     
