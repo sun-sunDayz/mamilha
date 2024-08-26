@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, FlatList } from 'react-native';
-import React from 'react';
+import axios from 'axios';
+import React, { useState, useEffect } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const spendList = [
@@ -60,6 +61,18 @@ const truncateAmount = (amount) => {
 };
 
 const Spending = () => {
+    const [Data, setData] = useState([]);
+
+    useEffect(() => {
+        axios.get('http://127.0.0.1:8000/api/finances/1/1/')
+            .then(response => {
+            setData(response.data);
+            })
+            .catch(error => {
+            console.error('데이터를 불러오는데 실패했습니다', error);
+        });
+    }, []);
+
     return (
         <View style={styles.container}>
             {spendList.length === 0 ? (
@@ -70,17 +83,17 @@ const Spending = () => {
                 </View>
             ) : (
                 <FlatList
-                    data={spendList}
+                    data={Data}
                     keyExtractor={(item) => item.id.toString()}
                     renderItem={({ item }) => (
                         <View style={styles.listItem}>
-                            <View style={[styles.iconContainer, getIconStyle(item.icon)]}>
-                                {getIconComponent(item.icon)}
+                            <View style={[styles.iconContainer, getIconStyle(item.finance_category)]}>
+                                {getIconComponent(item.finance_category)}
                             </View>
                             <View style={styles.details}>
-                                <Text style={styles.name}>{truncateText(item.name, 7)}</Text>
+                                <Text style={styles.name}>{truncateText(item.description, 7)}</Text>
                                 <View style={{flexDirection: 'row',}}>
-                                    <Text style={styles.date}>{item.date}</Text>
+                                    <Text style={styles.date}>{item.created_at}</Text>
                                     <Text style={styles.payer}>결제자</Text>
                                     <Text style={styles.date}>{truncateText(item.payer, 3)}</Text>
                                 </View>
