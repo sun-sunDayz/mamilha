@@ -104,12 +104,12 @@ class GroupAPIView(APIView):
             group = group
         )
         
-        for member in member_validated:
-            Member.objects.create(
-            name=member['name'],
-            user=None,
-            grades=Grades.objects.get(admin=0, edit=0, view=1),
-            group=group)
+        # for member in member_validated:
+        #     Member.objects.create(
+        #     name=member['name'],
+        #     user=None,
+        #     grades=Grades.objects.get(admin=0, edit=0, view=1),
+        #     group=group)
 
 
         return Response({'message': "그릅은 만들었습니다.",
