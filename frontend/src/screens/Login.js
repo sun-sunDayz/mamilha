@@ -7,19 +7,44 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native';
+import apiClient from '../services/apiClient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('아이디 또는 비밀번호를 다시 확인하세요'); // 에러 메시지 상태
 
-  const handleLogin = () => {
-    if (username === 'admin' && password === 'password') {
-      setError(''); // 로그인 성공 시 에러 메시지 초기화
-      Alert.alert('Login Successful', 'Welcome to Mamilha!');
-    } else {
-      setError('아이디 또는 비밀번호를 다시 확인하세요'); // 로그인 실패 시 에러 메시지 설정
+  const handleLogin = async e => {
+    e.preventDefault();
+    try {
+      console.log(username, password);
+      const response = await apiClient.post('/api/login/', {
+        username: username,
+        password: password,
+      });
+      const {access, refresh} = response.data;
+      await AsyncStorage.setItem('accessToken', access);
+      await AsyncStorage.setItem('refreshToken', refresh);
+
+      setError('로그인이 완료되었습니다.')
+
+      // const redirectUrl = new URLSearchParams(window.location.search).get('redirectUrl')
+      // if (redirectUrl) {
+      //     window.location.href = decodeURIComponent(redirectUrl)
+      // } else {
+      //     window.location.href = '/'
+      // }
+    } catch (error) {
+      // const message = error.response.data.detail
+      console.log('error', error);
+      setError('로그인에 실패했습니다.')
     }
+  };
+
+  const handleUsernameChange = (text) => {
+    const formattedText = text.charAt(0).toLowerCase() + text.slice(1);
+    setUsername(formattedText);
   };
 
   return (
@@ -30,7 +55,7 @@ const Login = () => {
           style={[styles.input, styles.topInput]}
           placeholder="아이디"
           value={username}
-          onChangeText={setUsername}
+          onChangeText={handleUsernameChange}
         />
         <View style={styles.separator} />
         <TextInput
@@ -113,4 +138,3 @@ const styles = StyleSheet.create({
 });
 
 export default Login;
-
