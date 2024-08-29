@@ -11,35 +11,55 @@ import axios from 'axios';
 const Main = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  
+
   useEffect(() => {
     const setTokensFromCookies = async () => {
-      const accessCookies = await Cookies.get('domain'); 
+      const accessCookies = await Cookies.get('domain');
       const access = accessCookies['access'];
       const refresh = accessCookies['refresh'];
-  
+
       if (access && refresh) {
-        await AsyncStorage.setItem('accessToken', access.value); 
+        await AsyncStorage.setItem('accessToken', access.value);
         await AsyncStorage.setItem('refreshToken', refresh.value);
         Cookies.clearByName('domain', 'access');
         Cookies.clearByName('domain', 'refresh');
       } else {
-        await AsyncStorage.setItem('accessToken', ''); 
+        await AsyncStorage.setItem('accessToken', '');
         await AsyncStorage.setItem('refreshToken', '');
       }
     };
     setTokensFromCookies();
   }, []);
 
-  const fetchData = async () => {
+  const getGroupCategory = async () => {
     try {
       const response = await apiClient.get('/api/groups/category/');
       console.log(response.data);
     } catch (error) {
-      alert('Test')
+      alert('Test');
       console.error('Error fetching data: ', error);
     } finally {
-      setLoading(false); 
+      setLoading(false);
+    }
+  };
+
+  const addGroup = async () => {
+    try {
+      const response = await apiClient.post('/api/groups/', {
+        name: 'test2',
+        category: 'test',
+        currency: 'dollar',
+        members: [
+          {
+            name: 'admin',
+          },
+        ],
+      });
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error fetching data: ', error.response.data.error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,7 +69,7 @@ const Main = () => {
         <TouchableOpacity
           style={styles.nicknameButton}
           onPress={() => {
-            fetchData();
+            getGroupCategory();
           }}>
           <AwesomeIcon name="user-circle-o" size={25} color="#5DAF6A" />
           <Text style={styles.buttonText}>닉네임</Text>
@@ -65,7 +85,7 @@ const Main = () => {
       </View>
       <View>
         <ListItem
-          onPress={() => alert('Button 2 pressed')}
+          onPress={() => addGroup()}
           title="마밀러 클라이밍"
           leader="히키"
           members="15"
