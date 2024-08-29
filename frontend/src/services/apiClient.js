@@ -34,7 +34,7 @@ apiClient.interceptors.response.use(
 
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true
-            const refresh = localStorage.getItem('refreshToken')
+            const refresh = await AsyncStorage.getItem('refreshToken')
             if (refresh) {
                 try {
                     const response = await axios.post(`${baseURL}/api/token/refresh/`, {
@@ -42,14 +42,14 @@ apiClient.interceptors.response.use(
                     })
                     const accessToken = response.data.access
                     const refreshToken = response.data.refresh
-                    localStorage.setItem('accessToken', accessToken)
-                    localStorage.setItem('refreshToken', refreshToken)
+                    await AsyncStorage.setItem('accessToken', accessToken)
+                    await AsyncStorage.setItem('refreshToken', refreshToken)
 
                     originalRequest.headers['Authorization'] = `Bearer ${accessToken}`
                     return apiClient(originalRequest)
                 } catch (refreshError) {
-                    localStorage.removeItem('accessToken')
-                    localStorage.removeItem('refreshToken')
+                    await AsyncStorage.removeItem('accessToken')
+                    await AsyncStorage.removeItem('refreshToken')
                     if (window.location.pathname !== '/login') {
                         const currentUrl = encodeURIComponent(window.location.pathname + window.location.search)
                         window.location.href = `/login?redirectUrl=${currentUrl}`
