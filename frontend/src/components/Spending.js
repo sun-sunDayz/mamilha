@@ -3,26 +3,18 @@ import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const spendList = [
-    {id: 1, icon: '1', name: '마밀마라탕', payer: '이준서', date: '2024.08.01', amount: 58000000},
-    {id: 2, icon: '2', name: '마밀러맥주', payer: '이준서', date: '2024.08.01', amount: 349586},
-    {id: 3, icon: '3', name: '마밀러카드', payer: '홍길동전', date: '2024.08.01', amount: 580000000},
-    {id: 4, icon: '4', name: '마밀러맥주', payer: 'david', date: '2024.08.01', amount: 580000},
-    {id: 5, icon: '5', name: '마밀러항공', payer: '이준서', date: '2024.08.01', amount: 580000},
-    {id: 6, icon: '6', name: '기타 결제', payer: '이준서', date: '2024.08.01', amount: 5800000},
-];
 
 const getIconStyle = (icon) => {
     switch(icon) {
-        case '1':
+        case '외식':
             return styles.iconRed;
-        case '2':
+        case '주류':
             return styles.iconOrange;
-        case '3':
+        case '주유':
             return styles.iconYellow;
-        case '4':
+        case '쇼핑':
             return styles.iconGreen;
-        case '5':
+        case '교통':
             return styles.iconBlue;
         default:
             return styles.iconPurple;
@@ -31,15 +23,15 @@ const getIconStyle = (icon) => {
 
 const getIconComponent = (icon) => {
     switch(icon) {
-        case'1':
+        case'외식':
             return <Ionicons name="restaurant-outline" size={25} color="white" />;
-        case'2':
+        case'주류':
             return <Ionicons name="beer-outline" size={25} color="white" />;
-        case'3':
+        case'주유':
             return <Ionicons name="card-outline" size={25} color="white" />;
-        case'4':
+        case'쇼핑':
             return <Ionicons name="cart-outline" size={25} color="white" />;
-        case'5':
+        case'교통':
             return <Ionicons name="car-outline" size={25} color="white" />;
         default:
             return <Ionicons name="ellipsis-horizontal-circle-outline" size={25} color="white" />;
@@ -54,8 +46,8 @@ const truncateText = (text, limit) => {
 };
 
 const truncateAmount = (amount) => {
-    if (amount >= 99999999) {
-        return'99,999,999...';
+    if (amount >= 999999999) {
+        return'999,999,999...';
     }
     return amount.toLocaleString() + '원';
 };
@@ -64,8 +56,9 @@ const Spending = () => {
     const [Data, setData] = useState([]);
 
     useEffect(() => {
-        axios.get('http://127.0.0.1:8000/api/finances/1/1/')
+        axios.get('http://10.0.2.2:8000/api/finances/3/')
             .then(response => {
+            console.log(response.data); 
             setData(response.data);
             })
             .catch(error => {
@@ -73,9 +66,10 @@ const Spending = () => {
         });
     }, []);
 
+
     return (
         <View style={styles.container}>
-            {spendList.length === 0 ? (
+            {Data.length === 0 ? (
                 <View style={styles.emptySpendView}>
                     <Ionicons style={{marginBottom:20}} name="add-circle" size={150} color="#A379E8" />
                     <Text style={styles.emptyText}>아직 등록된 지출 내역이 없습니다.</Text>
@@ -91,11 +85,11 @@ const Spending = () => {
                                 {getIconComponent(item.finance_category)}
                             </View>
                             <View style={styles.details}>
-                                <Text style={styles.name}>{truncateText(item.description, 7)}</Text>
+                                <Text style={styles.name}>{truncateText(item.description, 14)}</Text>
                                 <View style={{flexDirection: 'row',}}>
                                     <Text style={styles.date}>{item.created_at}</Text>
                                     <Text style={styles.payer}>결제자</Text>
-                                    <Text style={styles.date}>{truncateText(item.payer, 3)}</Text>
+                                    <Text style={styles.date}>{truncateText(item.payer, 30)}</Text>
                                 </View>
                             </View>
                             <View style={{flex:4}}>
