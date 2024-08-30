@@ -2,13 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
     View, Text, ScrollView, StyleSheet, TextInput, StatusBar, TouchableWithoutFeedback, Keyboard, TouchableOpacity, SafeAreaView, Modal
 } from 'react-native';
-import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import GroupCategory from '../components/GroupCategory';
 import GroupMember from '../components/GroupMember';
 import UpdateMember from '../components/UpdateMember';
 import Currency from '../components/Currency';
 import Icon from 'react-native-vector-icons/Ionicons'
+import apiClient from '../services/apiClient';
 
 
 const UpdateGroup = ({ group_pk }) => {
@@ -25,7 +25,7 @@ const UpdateGroup = ({ group_pk }) => {
 
 
     useEffect(() => {
-        axios.get(`http://127.0.0.1:8000/api/groups/${18}`)
+        apiClient.get(`/api/groups/${33}/`)
             .then(response => {
                 setCurrency(response.data.currency)
                 setGroupCategory(response.data.category)
@@ -39,36 +39,38 @@ const UpdateGroup = ({ group_pk }) => {
 
     const handleUpdateGroup = async () => {
         try {
-            const response = await axios.post(`http://127.0.0.1:8000/api/groups/${18}`, {
+            await apiClient.put(`/api/groups/${33}/`, {
                 name: groupName,
                 category: groupCategory,
                 currency: currency,
-                members: [...members, ...updateMembers],
+                new_members: members,
+                update_members: updateMembers,
             });
+            setMembers([]);
+            setUpdateMembers([]);
+            navigation.navigate('Main'); //모임 화면으로 이동하게
         } catch (error) {
-            console.error('Error', error);
+            alert(error.response.data.error);
         }
-        setMembers([]);
-        setUpdateMembers([]);
         setIsUpdateModalOpen(false);
     };
 
 
     const handleHome = () => {
-        navigation.navigate('Main');
         setGroupName(groupName);
         setGroupCategory(groupCategory);
         setCurrency(currency);
         setMembers([]);
+        console.log(members)
         setUpdateMembers(updateMembers)
-        setResetGroupMembers(true);
-        setTimeout(() => setResetGroupMembers(false), 0);
+        navigation.navigate('Main');
     };
 
     const handleAddMember = () => {
         scrollViewRef.current?.scrollToEnd({ animated: true });
     };
-
+    
+    console.log(members)
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <SafeAreaView SafeAreaView style={styles.Container}>
@@ -112,7 +114,7 @@ const UpdateGroup = ({ group_pk }) => {
                         />
                         <GroupMember onChangeMembers={setMembers}
                             onAddMember={handleAddMember}
-                            reset={resetGroupMembers} />
+                            />
                     </View>
                 </ScrollView>
 
