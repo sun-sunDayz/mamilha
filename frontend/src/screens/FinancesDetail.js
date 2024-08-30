@@ -7,7 +7,7 @@ import axios from 'axios';
 import Icon from 'react-native-vector-icons/Ionicons'
 
 
-const FinancesDetail = ({ }) => {
+const FinancesDetail = ({ Finances_id }) => {
     const navigation = useNavigation();
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [modalWidth, setModalWidth] = useState(0);
