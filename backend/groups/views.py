@@ -77,11 +77,8 @@ class GroupAPIView(APIView):
         if group_name:
             return Response({'error': "같은 이름의 그룹이 이미 존재합니다"}, status=status.HTTP_400_BAD_REQUEST)
         
-        #멤머가 한명도 없는 경우 error 처리
-        if not members:
-            return Response({'error': "멤버는 한명 이상 있어야 합니다"}, status=status.HTTP_400_BAD_REQUEST)
         
-        #member name이 공백일 경유 제외, 같은 이름 존제시 오류
+        #member name이 공백일 경유 제외, 같은 이름 존제시 오류, 멤머가 한명도 없는 경우 error 처리
         member_validated = []
         for member in members:
             if member['name'].strip():
@@ -89,6 +86,9 @@ class GroupAPIView(APIView):
                     return Response({'error': "그룹에 별명이 같은 멤버가 존제 합니다"}, status=status.HTTP_400_BAD_REQUEST)
                 else:
                     member_validated.append(member)
+            else:
+                return Response({'error': "멤버는 한명 이상 있어야 합니다"}, status=status.HTTP_400_BAD_REQUEST)
+        
         
         group = Group.objects.create(
         name = validated_data['name'],
@@ -104,12 +104,12 @@ class GroupAPIView(APIView):
             group = group
         )
         
-        # for member in member_validated:
-        #     Member.objects.create(
-        #     name=member['name'],
-        #     user=None,
-        #     grades=Grades.objects.get(admin=0, edit=0, view=1),
-        #     group=group)
+        for member in member_validated:
+            Member.objects.create(
+            name=member['name'],
+            user=None,
+            grades=Grades.objects.get(admin=0, edit=0, view=1),
+            group=group)
 
 
         return Response({'message': "그릅은 만들었습니다.",
