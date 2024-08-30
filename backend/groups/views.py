@@ -149,7 +149,7 @@ class GroupCurrency(APIView):
 
 
 class GroupDetail(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self,request, group_pk):
         group = get_object_or_404(Group, pk = group_pk)
@@ -182,8 +182,8 @@ class GroupDetail(APIView):
         name = data.get('name', group.name)
         category = data.get('category',group.category.name)
         currency = data.get('currency',group.currency.currency)
-        new_members = data.get('members', old_members)
-
+        update_members = data.get('update_members', old_members)
+        new_members = data.get('new_members')
 
         #빈 값일 경우 Error처리
         validated_data = validate_group_data(name, category, currency)
@@ -195,15 +195,24 @@ class GroupDetail(APIView):
         if name != group.name and group_name:
             return Response({'error': "같은 이름의 그룹이 이미 존재합니다"}, status=status.HTTP_400_BAD_REQUEST)
         
-        #member name이 공백일 경유 제외, 같은 이름 존제시 오류
-        member_name=[]
+        #update_members의 이름이 공백일 경우 Error처리
+        val_up_members=[]
+        for member in update_members:
+            if member['name'].strip():
+                val_up_members.append(member['name'])
+            else:
+                return Response({'error': "기존 멤버의 이름이 공백입니다"}, status=status.HTTP_400_BAD_REQUEST)
+
+        #new_members이 이름이 공백일 경유 제외
+        val_new_members=[]
         for member in new_members:
             if member['name'].strip():
-                if member['name'] in member_name:
-                    return Response({'error': "그룹에 별명이 같은 멤버가 존제 합니다"}, status=status.HTTP_400_BAD_REQUEST)
-                else:
-                    member_name.append(member['name'])
-        
+                val_new_members.append(member['name'])
+
+        #그룹에 별명이 같은 멤버있을 경우 Error처리
+        if len(val_new_members + val_up_members) != len(set(val_new_members + val_up_members)):
+            return Response({'error': "그룹에 별명이 같은 멤버가 존제 합니다"}, status=status.HTTP_400_BAD_REQUEST)
+
         group.name = validated_data["name"]
         group.category.name = validated_data["category"]
         group.currency.currency = validated_data["currency"]
@@ -211,17 +220,18 @@ class GroupDetail(APIView):
 
         #기존의 멤버 업데이트
         for i in range(len(old_members)):
-            old_members[i].name = new_members[i]['name']
-            old_members[i].active = new_members[i]['active']
+            old_members[i].name = update_members[i]['name']
+            old_members[i].active = update_members[i]['active']
             old_members[i].save()
         
-        #새로운 멤버는 추가
-        for i in new_members[len(old_members)::]:
-            Member.objects.create(
-                name=i['name'],
-                user=None,
-                grades=Grades.objects.get(admin=0, edit=0, view=1),
-                group=group)
+        #새로운 멤버는 추가, 없으면 추가 안함
+        if val_new_members:
+            for i in val_new_members:
+                Member.objects.create(
+                    name=i,
+                    user=None,
+                    grades=Grades.objects.get(admin=0, edit=0, view=1),
+                    group=group)
         
         return Response({
                 "name": group.name,

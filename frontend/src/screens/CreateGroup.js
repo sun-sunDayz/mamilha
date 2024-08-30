@@ -21,7 +21,7 @@ const CreateGroup = () => {
 
     const handleCreateGroup = async () => {
         try {
-            const response = await apiClient.post('/api/groups/', {
+            await apiClient.post('/api/groups/', {
                 name: groupName,
                 category: groupCategory,
                 currency: currency,
