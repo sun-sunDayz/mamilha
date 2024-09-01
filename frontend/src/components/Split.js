@@ -1,63 +1,40 @@
-import { StyleSheet, Text, View, FlatList, Image } from'react-native';
-import React from'react';
+import { StyleSheet, Text, View, FlatList, Image } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import apiClient from '../services/apiClient';
 
-const splitList = [
-    { id: 1, member1: '박보검', member2: '박보영', amount: 100000 },
-    { id: 2, member1: '정은지', member2: '박보영', amount: 300000 },
-    { id: 3, member1: '박보검', member2: '정은지', amount: 800000000 },
-    { id: 4, member1: '박보영', member2: '박보검', amount: 470000 },
-    { id: 5, member1: '해리포터', member2: 'james', amount: 470000 },
-];
-
+// 새로운 split으로 총 정산금액 계산하는 함수
 const calculateFinalBalances = (splitList) => {
-    const balances = {};
-    splitList.forEach(({ member1, member2, amount }) => {
-        if (!balances[member1]) balances[member1] = 0;
-        if (!balances[member2]) balances[member2] = 0;
-        
-        balances[member1] -= amount;
-        balances[member2] += amount;
+    const aggregatedMap = {};
+
+    // Process each transaction in the splitList
+    splitList.forEach(transaction => {
+        const { amount, member, payer } = transaction;
+        const key = `${payer}-${member}`;
+
+        // Initialize the entry if it does not exist
+        if (!aggregatedMap[key]) {
+            aggregatedMap[key] = 0;
+        }
+
+        // Aggregate the amount
+        aggregatedMap[key] += amount;
     });
-    const payers = [];
-    const receivers = [];
 
-    for (const member in balances) {
-        const balance = balances[member];
-        if (balance < 0) {
-            payers.push({ member, amount: Math.abs(balance) });
-        } else if (balance > 0) {
-            receivers.push({ member, amount: balance });
-        }
-    }
+    // Create an array to store the final result
+    const result = [];
 
-    const finalSettlements = [];
-    while (payers.length && receivers.length) {
-        const payer = payers.pop();
-        const receiver = receivers.pop();
-        
-        const settlementAmount = Math.min(payer.amount, receiver.amount);
-        finalSettlements.push({
-            from: payer.member,
-            to: receiver.member,
-            amount: settlementAmount,
-        });
+    // Iterate through the aggregated map to format the result
+    Object.keys(aggregatedMap).forEach(key => {
+        const [payer, member] = key.split('-');
+        const amount = aggregatedMap[key];
+        result.push({ payer, member, amount });
+    });
 
-        payer.amount -= settlementAmount;
-        receiver.amount -= settlementAmount;
+    return result;
+}
 
-        if (payer.amount > 0) {
-            payers.push(payer);
-        }
-        if (receiver.amount > 0) {
-            receivers.push(receiver);
-        }
-    }
 
-    return finalSettlements;
-};
-
-const finalSettlements = calculateFinalBalances(splitList);
 
 const truncateText = (text, limit) => {
     if (text.length > limit) {
@@ -68,12 +45,31 @@ const truncateText = (text, limit) => {
 
 const truncateAmount = (amount) => {
     if (amount >= 99999999) {
-        return'99,999,999...원';
+        return '99,999,999...원';
     }
     return amount.toLocaleString() + '원';
 };
 
 const Split = () => {
+    const [data, setData] = useState([]);
+    const [finalSettlements, setFinalSettlements] = useState([]);
+
+    useEffect(() => {
+        const getSplits = async () => {
+            try {
+                const response = await apiClient.get('/api/groups/103/splits/');
+                const splits = response.data;
+                setData(splits);
+                console.log(splits)
+                const finalBalances = calculateFinalBalances(splits);
+                setFinalSettlements(finalBalances);
+            } catch (error) {
+                console.error('Error fetching data: ', error);
+            }
+        };
+        getSplits();
+    }, []);
+
     return (
         <View style={styles.container}>
             {finalSettlements.length === 0 ? (
@@ -82,16 +78,17 @@ const Split = () => {
                     <Text style={styles.emptyText}>정산이 모두 완료되었어요!</Text>
                 </View>
             ) : (
-                <FlatList data={finalSettlements}
+                <FlatList
+                    data={finalSettlements}
                     renderItem={({ item }) => (
                         <View style={styles.listItem}>
                             <View style={styles.memberContainer}>
                                 <Ionicons name="person-circle-outline" size={36} color="#E87979" />
                                 <Text style={styles.name}>{truncateText(item.from, 3)}</Text>
                             </View>
-                                <Image source={require('../../assets/line.png')} style={{width:6, height:6, flex: 3, alignItems:'center'}}/>
-                                <Text style={styles.price}>{truncateAmount(item.amount)}</Text>
-                                <Image source={require('../../assets/arrow_right.png')} style={{width:6, height:6, resizeMode: 'cover', flex: 3, alignItems:'center'}}/>
+                            <Image source={require('../../assets/line.png')} style={{ width: 6, height: 6, flex: 3, alignItems: 'center' }} />
+                            <Text style={styles.price}>{truncateAmount(item.amount)}</Text>
+                            <Image source={require('../../assets/arrow_right.png')} style={{ width: 6, height: 6, resizeMode: 'cover', flex: 3, alignItems: 'center' }} />
                             <View style={styles.memberContainer}>
                                 <Ionicons name="person-circle-outline" size={36} color="#E8AE79" />
                                 <Text style={styles.name}>{truncateText(item.to, 3)}</Text>
@@ -103,6 +100,7 @@ const Split = () => {
         </View>
     );
 };
+
 export default Split;
 
 const styles = StyleSheet.create({

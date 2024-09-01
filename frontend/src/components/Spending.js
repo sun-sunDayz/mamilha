@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, FlatList } from 'react-native';
 import axios from 'axios';
 import React, { useState, useEffect } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import apiClient from '../services/apiClient';
 
 
 const getIconStyle = (icon) => {
@@ -52,20 +53,26 @@ const truncateAmount = (amount) => {
     return amount.toLocaleString() + '원';
 };
 
+
+
+
 const Spending = () => {
     const [Data, setData] = useState([]);
 
     useEffect(() => {
-        axios.get('http://10.0.2.2:8000/api/finances/3/')
-            .then(response => {
-            console.log(response.data); 
-            setData(response.data);
-            })
-            .catch(error => {
-            console.error('데이터를 불러오는데 실패했습니다', error);
-        });
+        const getFinances = async () => {
+            try {
+                const response = await apiClient.get('/api/finances/103/');
+                console.log(response.data);
+                setData(response.data);
+                } catch (error) {
+                console.error('Error fetching data: ', error);
+                } finally {
+                setLoading(false);
+                }
+            };
+        getFinances();
     }, []);
-
 
     return (
         <View style={styles.container}>
