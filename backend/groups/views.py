@@ -4,8 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from .models import *
-
-
+from finances.models import Finance, Split
 
 def validate_group_data(name, category_name, currency_name):
     #이름이 빈 값일 경우 Error처리
@@ -238,3 +237,30 @@ class GroupDetail(APIView):
 
         group.delete()
         return Response({"message: 그룹을 삭제 했습니다."},status=status.HTTP_200_OK)
+    
+class GroupSplit(APIView):
+    # permission_classes = [IsAuthenticated]
+    
+    def get(self, request, group_pk):
+        try:
+            group = Group.objects.get(pk=group_pk)
+        except Group.DoesNotExist:
+            return Response({"message": "해당 그룹이 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
+
+        # 해당 그룹의 모든 Finance 객체를 가져옴
+        finances = Finance.objects.filter(group=group)
+        
+        data = []
+        for finance in finances:
+            # 각 Finance 객체에 대한 모든 Split 객체를 가져옴
+            splits = Split.objects.filter(finance=finance)
+            for split in splits:
+                data.append({
+                    "finance_id": split.finance.id,
+                    "finance_description": split.finance.description,  # 추가 정보 포함
+                    "payer": split.finance.payer.name,
+                    "member": split.member.name,
+                    "amount": split.amount,
+                })
+
+        return Response(data, status=status.HTTP_200_OK)
