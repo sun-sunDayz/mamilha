@@ -2,7 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from groups.models import Group, Member
-from .models import Finance, FinanceCategory, FinanceType, PayMethod, SplitMethod
+from .models import Finance, FinanceCategory, FinanceType, PayMethod, SplitMethod, Split
 from django.utils import timezone
 
 class FinancesAPIView(APIView):
@@ -38,13 +38,15 @@ class FinancesAPIView(APIView):
         split_method = data.get('split_method', None)
         
         try:
-            payer = Member.objects.get(name=payer)
+            payer = Member.objects.get(name=payer, group=group)
             finance_type = FinanceType.objects.get(name=finance_type)
             finance_category = FinanceCategory.objects.get(name=finance_category)
             pay_method = PayMethod.objects.get(name=pay_method)
             split_method = SplitMethod.objects.get(name=split_method)
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Member.DoesNotExist:
+            return Response({"message": "해당 그룹에 속하지 않은 결제자입니다."}, status=status.HTTP_400_BAD_REQUEST)
+        except (FinanceType.DoesNotExist, FinanceCategory.DoesNotExist, PayMethod.DoesNotExist, SplitMethod.DoesNotExist):
+            return Response({"message": "잘못된 결제 유형, 카테고리, 결제 방법 또는 정산 방법입니다."}, status=status.HTTP_400_BAD_REQUEST)
         
         finance = Finance.objects.create(
             group=group,
@@ -56,11 +58,20 @@ class FinancesAPIView(APIView):
             pay_method=pay_method,
             split_method=split_method
         )
-
+        # if split_method == '고정분할' :
+        members = Member.objects.filter(group=group).exclude(id=payer.id)
+        member_count = members.count()
+        if member_count > 0:
+            split_amount = round(amount / member_count, 2)
+            for member in members:
+                Split.objects.create(
+                    finance=finance,
+                    member=member,
+                    amount=split_amount
+                )
         return Response(status=status.HTTP_201_CREATED)
     
 class FinancesDetailAPIView(APIView):
-
     def get(self, request, group_pk, finance_pk):
         finance = Finance.objects.get(pk=finance_pk)
         if finance.group.pk != group_pk:
