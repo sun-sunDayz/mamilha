@@ -2,12 +2,13 @@ import React, { useState, useRef } from 'react';
 import {
     View, Text, ScrollView, StyleSheet, TextInput, StatusBar, TouchableWithoutFeedback, Keyboard, TouchableOpacity, SafeAreaView
 } from 'react-native';
-import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import GroupCategory from '../components/GroupCategory';
 import GroupMember from '../components/GroupMember';
 import Currency from '../components/Currency';
 import Icon from 'react-native-vector-icons/Ionicons'
+import apiClient from '../services/apiClient';
+
 
 
 const CreateGroup = () => {
@@ -20,19 +21,20 @@ const CreateGroup = () => {
 
     const handleCreateGroup = async () => {
         try {
-            const response = await axios.post('http://127.0.0.1:8000/api/groups/', {
+            await apiClient.post('/api/groups/', {
                 name: groupName,
                 category: groupCategory,
                 currency: currency,
                 members: members,
             });
+            setGroupName('');
+            setGroupCategory('');
+            setCurrency('');
+            setMembers([]);
+            navigation.navigate('Main');
         } catch (error) {
-            console.error('Error', error);
+            alert(error.response.data.error);
         }
-        setGroupName('');
-        setGroupCategory('');
-        setCurrency('');
-        setMembers([]);
     };
 
     const handleHome = () => {

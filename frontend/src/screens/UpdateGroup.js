@@ -2,35 +2,35 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
     View, Text, ScrollView, StyleSheet, TextInput, StatusBar, TouchableWithoutFeedback, Keyboard, TouchableOpacity, SafeAreaView, Modal
 } from 'react-native';
-import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import GroupCategory from '../components/GroupCategory';
 import GroupMember from '../components/GroupMember';
 import UpdateMember from '../components/UpdateMember';
 import Currency from '../components/Currency';
 import Icon from 'react-native-vector-icons/Ionicons'
+import apiClient from '../services/apiClient';
 
 
 const UpdateGroup = ({ group_pk }) => {
     const [groupName, setGroupName] = useState('');
     const [groupCategory, setGroupCategory] = useState('');
     const [currency, setCurrency] = useState('');
-    const [members, setMembers] = useState([]);
+    const [members, setMembers] = useState();
     const [updateMembers, setUpdateMembers] = useState([]);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
-    const [resetGroupMembers, setResetGroupMembers] = useState(false);
     const [modalWidth, setModalWidth] = useState(0)
     const navigation = useNavigation();
     const scrollViewRef = useRef(null);
 
 
     useEffect(() => {
-        axios.get(`http://127.0.0.1:8000/api/groups/${18}`)
+        apiClient.get(`/api/groups/${33}/`)
             .then(response => {
                 setCurrency(response.data.currency)
                 setGroupCategory(response.data.category)
                 setGroupName(response.data.name)
                 setUpdateMembers(response.data.member)
+                setMembers([]);
             })
             .catch(error => {
                 console.error('데이터를 불러오는데 실패했습니다', error);
@@ -39,30 +39,30 @@ const UpdateGroup = ({ group_pk }) => {
 
     const handleUpdateGroup = async () => {
         try {
-            const response = await axios.post(`http://127.0.0.1:8000/api/groups/${18}`, {
+            await apiClient.put(`/api/groups/${33}/`, {
                 name: groupName,
                 category: groupCategory,
                 currency: currency,
-                members: [...members, ...updateMembers],
+                new_members: members,
+                update_members: updateMembers,
             });
+            setMembers([]);
+            setUpdateMembers([]);
+            navigation.navigate('Main'); //모임 화면으로 이동하게
         } catch (error) {
-            console.error('Error', error);
+            alert(error.response.data.error);
         }
-        setMembers([]);
-        setUpdateMembers([]);
         setIsUpdateModalOpen(false);
     };
 
 
     const handleHome = () => {
-        navigation.navigate('Main');
+        setMembers([]);
         setGroupName(groupName);
         setGroupCategory(groupCategory);
         setCurrency(currency);
-        setMembers([]);
         setUpdateMembers(updateMembers)
-        setResetGroupMembers(true);
-        setTimeout(() => setResetGroupMembers(false), 0);
+        navigation.navigate('Main');
     };
 
     const handleAddMember = () => {
@@ -112,7 +112,7 @@ const UpdateGroup = ({ group_pk }) => {
                         />
                         <GroupMember onChangeMembers={setMembers}
                             onAddMember={handleAddMember}
-                            reset={resetGroupMembers} />
+                            />
                     </View>
                 </ScrollView>
 
