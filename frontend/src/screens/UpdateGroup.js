@@ -15,10 +15,9 @@ const UpdateGroup = ({ group_pk }) => {
     const [groupName, setGroupName] = useState('');
     const [groupCategory, setGroupCategory] = useState('');
     const [currency, setCurrency] = useState('');
-    const [members, setMembers] = useState([]);
+    const [members, setMembers] = useState();
     const [updateMembers, setUpdateMembers] = useState([]);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
-    const [resetGroupMembers, setResetGroupMembers] = useState(false);
     const [modalWidth, setModalWidth] = useState(0)
     const navigation = useNavigation();
     const scrollViewRef = useRef(null);
@@ -31,6 +30,7 @@ const UpdateGroup = ({ group_pk }) => {
                 setGroupCategory(response.data.category)
                 setGroupName(response.data.name)
                 setUpdateMembers(response.data.member)
+                setMembers([]);
             })
             .catch(error => {
                 console.error('데이터를 불러오는데 실패했습니다', error);
@@ -57,11 +57,10 @@ const UpdateGroup = ({ group_pk }) => {
 
 
     const handleHome = () => {
+        setMembers([]);
         setGroupName(groupName);
         setGroupCategory(groupCategory);
         setCurrency(currency);
-        setMembers([]);
-        console.log(members)
         setUpdateMembers(updateMembers)
         navigation.navigate('Main');
     };
@@ -69,8 +68,7 @@ const UpdateGroup = ({ group_pk }) => {
     const handleAddMember = () => {
         scrollViewRef.current?.scrollToEnd({ animated: true });
     };
-    
-    console.log(members)
+
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <SafeAreaView SafeAreaView style={styles.Container}>
