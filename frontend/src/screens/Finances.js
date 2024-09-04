@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, SafeAreaView } from 'react-native';
 import React, { useState } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -13,57 +13,54 @@ const Finances = () => {
     };
 
     return (
-        <SafeAreaView SafeAreaView style={styles.Container}>
-            <View style={styles.container}>
-                <View style={styles.header}>
-                    <Ionicons name="chevron-back-outline" size={25} color="gray" />
-                    <View>
-                        <Text style={styles.title}>모임명</Text>
-                    </View>
-                    <AntDesign name="setting" size={25} color="gray" />
+        <SafeAreaView SafeAreaView style={styles.container}>
+            <View style={styles.header}>
+                <Ionicons name="chevron-back-outline" size={25} color="gray" />
+                <View>
+                    <Text style={styles.title}>모임명</Text>
                 </View>
+                <AntDesign name="setting" size={25} color="gray" />
+            </View>
 
-                <View style={styles.tabContainer}>
-                    <TouchableOpacity
+            <View style={styles.tabContainer}>
+                <TouchableOpacity
+                    style={[
+                        styles.tabButton,
+                        selectedTab === '지출' ? styles.activeTab : styles.inactiveTab,
+                    ]}
+                    onPress={() => handleTabPress('지출')}
+                >
+                    <Text
                         style={[
-                            styles.tabButton,
-                            selectedTab === '지출' ? styles.activeTab : styles.inactiveTab,
+                            styles.tabText,
+                            selectedTab === '지출' ? styles.activeTabText : styles.inactiveTabText,
                         ]}
-                        onPress={() => handleTabPress('지출')}
                     >
-                        <Text
-                            style={[
-                                styles.tabText,
-                                selectedTab === '지출' ? styles.activeTabText : styles.inactiveTabText,
-                            ]}
-                        >
-                            지출
-                        </Text>
-                    </TouchableOpacity>
+                        지출
+                    </Text>
+                </TouchableOpacity>
 
-                    <TouchableOpacity
+                <TouchableOpacity
+                    style={[
+                        styles.tabButton,
+                        selectedTab === '정산' ? styles.activeTab : styles.inactiveTab,
+                    ]}
+                    onPress={() => handleTabPress('정산')}
+                >
+                    <Text
                         style={[
-                            styles.tabButton,
-                            selectedTab === '정산' ? styles.activeTab : styles.inactiveTab,
+                            styles.tabText,
+                            selectedTab === '정산' ? styles.activeTabText : styles.inactiveTabText,
                         ]}
-                        onPress={() => handleTabPress('정산')}
                     >
-                        <Text
-                            style={[
-                                styles.tabText,
-                                selectedTab === '정산' ? styles.activeTabText : styles.inactiveTabText,
-                            ]}
-                        >
-                            정산
-                        </Text>
-                    </TouchableOpacity>
-                </View>
-
+                        정산
+                    </Text>
+                </TouchableOpacity>
+            </View>
                 <View style={styles.contentContainer}>
                     {selectedTab === '지출' && <Spending />}
                     {selectedTab === '정산' && <Split />}
                 </View>
-            </View>
         </SafeAreaView>
     );
 };
