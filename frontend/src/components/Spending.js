@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View, FlatList, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 import axios from 'axios';
 import React, {useState, useEffect} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -97,6 +97,7 @@ const Spending = () => {
           <Text style={styles.emptyText}>지출을 등록해주세요!</Text>
         </View>
       ) : (
+        <ScrollView>
         <FlatList
           data={Data}
           keyExtractor={item => item.id.toString()}
@@ -126,7 +127,7 @@ const Spending = () => {
               </View>
             </View>
           )}
-        />
+        /></ScrollView>
       )}
     </View>
   );
