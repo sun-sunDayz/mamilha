@@ -1,4 +1,4 @@
-import {StyleSheet, Text, View, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, SafeAreaView } from 'react-native';
 import React, {useState} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -12,15 +12,15 @@ const Finances = () => {
     setSelectedTab(tab);
   };
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Ionicons name="chevron-back-outline" size={25} color="gray" />
-        <View>
-          <Text style={styles.title}>모임명</Text>
-        </View>
-        <AntDesign name="setting" size={25} color="gray" />
-      </View>
+    return (
+        <SafeAreaView SafeAreaView style={styles.container}>
+            <View style={styles.header}>
+                <Ionicons name="chevron-back-outline" size={25} color="gray" />
+                <View>
+                    <Text style={styles.title}>모임명</Text>
+                </View>
+                <AntDesign name="setting" size={25} color="gray" />
+            </View>
 
       <View style={styles.tabContainer}>
         <TouchableOpacity
@@ -40,30 +40,30 @@ const Finances = () => {
           </Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[
-            styles.tabButton,
-            selectedTab === '정산' ? styles.activeTab : styles.inactiveTab,
-          ]}
-          onPress={() => handleTabPress('정산')}>
-          <Text
-            style={[
-              styles.tabText,
-              selectedTab === '정산'
-                ? styles.activeTabText
-                : styles.inactiveTabText,
-            ]}>
-            정산
-          </Text>
-        </TouchableOpacity>
-      </View>
+                <TouchableOpacity
+                    style={[
+                        styles.tabButton,
+                        selectedTab === '정산' ? styles.activeTab : styles.inactiveTab,
+                    ]}
+                    onPress={() => handleTabPress('정산')}
+                >
+                    <Text
+                        style={[
+                            styles.tabText,
+                            selectedTab === '정산' ? styles.activeTabText : styles.inactiveTabText,
+                        ]}
+                    >
+                        정산
+                    </Text>
+                </TouchableOpacity>
+            </View>
 
-      <View style={styles.contentContainer}>
-        {selectedTab === '지출' && <Spending />}
-        {selectedTab === '정산' && <Split />}
-      </View>
-    </View>
-  );
+            <View style={styles.contentContainer}>
+                {selectedTab === '지출' && <Spending />}
+                {selectedTab === '정산' && <Split />}
+            </View>
+        </SafeAreaView>
+    );
 };
 
 export default Finances;

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList, Image } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Image, ScrollView } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import apiClient from '../services/apiClient';
@@ -78,24 +78,25 @@ const Split = () => {
                     <Text style={styles.emptyText}>정산이 모두 완료되었어요!</Text>
                 </View>
             ) : (
+                <ScrollView>
                 <FlatList
                     data={finalSettlements}
                     renderItem={({ item }) => (
                         <View style={styles.listItem}>
                             <View style={styles.memberContainer}>
                                 <Ionicons name="person-circle-outline" size={36} color="#E87979" />
-                                <Text style={styles.name}>{truncateText(item.from, 3)}</Text>
+                                <Text style={styles.name}>{truncateText(item.member, 3)}</Text>
                             </View>
                             <Image source={require('../../assets/line.png')} style={{ width: 6, height: 6, flex: 3, alignItems: 'center' }} />
                             <Text style={styles.price}>{truncateAmount(item.amount)}</Text>
                             <Image source={require('../../assets/arrow_right.png')} style={{ width: 6, height: 6, resizeMode: 'cover', flex: 3, alignItems: 'center' }} />
                             <View style={styles.memberContainer}>
                                 <Ionicons name="person-circle-outline" size={36} color="#E8AE79" />
-                                <Text style={styles.name}>{truncateText(item.to, 3)}</Text>
+                                <Text style={styles.name}>{truncateText(item.payer, 3)}</Text>
                             </View>
                         </View>
                     )}
-                />
+                /></ScrollView>
             )}
         </View>
     );
