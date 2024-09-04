@@ -7,6 +7,7 @@ import EntypoIcon from 'react-native-vector-icons/Entypo';
 import apiClient from '../services/apiClient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import Cookies from '@react-native-cookies/cookies';
 
 const Main = () => {
   const [data, setData] = useState(null);
