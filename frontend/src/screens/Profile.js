@@ -9,6 +9,8 @@ const ProfileScreen = ({ navigation }) => {
 
   const handleSave = () => {
     // 프로필 저장 로직 추가
+    
+
     Alert.alert('프로필이 저장되었습니다.');
   };
 
@@ -58,7 +60,7 @@ const ProfileScreen = ({ navigation }) => {
       </ScrollView>
 
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.buttonText}>저장</Text>
+        <Text style={styles.buttonText}>수정하기</Text>
       </TouchableOpacity>
     </View>
   );
