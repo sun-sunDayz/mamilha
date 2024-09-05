@@ -1,5 +1,15 @@
-import React, { useState } from 'react';
-import { View, TextInput, Text, Alert, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import React, {useState} from 'react';
+import {
+  View,
+  TextInput,
+  Text,
+  Alert,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from 'react-native';
+import apiClient from '../services/apiClient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SignUpScreen = () => {
   const [id, setId] = useState('');
@@ -16,7 +26,7 @@ const SignUpScreen = () => {
   const [nameError, setNameError] = useState('');
   const [nicknameError, setNicknameError] = useState('');
 
-  const handleSignUp = () => {
+  const handleSignUp = async () => {
     let isValid = true;
 
     if (id.trim() === '') {
@@ -65,8 +75,40 @@ const SignUpScreen = () => {
     }
 
     if (isValid) {
+      //회원가입 시 Access Token 제거
+      await AsyncStorage.setItem('accessToken', '');
+      await AsyncStorage.setItem('refreshToken', '');
+
       // 회원가입 API 호출 로직 추가
-      Alert.alert('회원가입 성공!');
+      apiClient
+        .post('/api/users/', {
+          username: id,
+          password: password,
+          email: email,
+          name: name,
+          nickname: nickname,
+        })
+        .then((response) => {
+          console.log('response', response.status);
+          if (response.status === 201) {
+            Alert.alert('회원가입 성공!');
+            // 성공 시 추가 작업 (e.g., 로그인 화면으로 이동)
+          } else {
+            Alert.alert('회원가입 실패', '알 수 없는 오류가 발생했습니다.');
+          }
+        })
+        .catch((error) => {
+          if (error.response) {
+            // 서버에서의 응답이 있는 경우
+            const errorMessage =
+              error.response.data.detail || '회원가입에 실패했습니다.';
+            Alert.alert('회원가입 실패', errorMessage);
+            console.log(errorMessage);
+          } else {
+            // 네트워크 오류 등
+            Alert.alert('회원가입 실패', '서버에 연결할 수 없습니다.');
+          }
+        });
     }
   };
 
@@ -77,7 +119,7 @@ const SignUpScreen = () => {
         <TextInput
           placeholder="아이디를 입력하세요"
           value={id}
-          onChangeText={setId}
+          onChangeText={text => setId(text.toLowerCase())}
           style={styles.input}
         />
         {idError ? <Text style={styles.errorText}>{idError}</Text> : null}
@@ -86,27 +128,31 @@ const SignUpScreen = () => {
         <TextInput
           placeholder="비밀번호를 입력하세요"
           value={password}
-          onChangeText={setPassword}
+          onChangeText={text => setPassword(text.toLowerCase())}
           secureTextEntry
           style={styles.input}
         />
-        {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+        {passwordError ? (
+          <Text style={styles.errorText}>{passwordError}</Text>
+        ) : null}
 
         <Text style={styles.label}>비밀번호 확인</Text>
         <TextInput
           placeholder="비밀번호를 다시 입력하세요"
           value={confirmPassword}
-          onChangeText={setConfirmPassword}
+          onChangeText={text => setConfirmPassword(text.toLowerCase())}
           secureTextEntry
           style={styles.input}
         />
-        {confirmPasswordError ? <Text style={styles.errorText}>{confirmPasswordError}</Text> : null}
+        {confirmPasswordError ? (
+          <Text style={styles.errorText}>{confirmPasswordError}</Text>
+        ) : null}
 
         <Text style={styles.label}>이메일</Text>
         <TextInput
           placeholder="이메일을 입력하세요"
           value={email}
-          onChangeText={setEmail}
+          onChangeText={text => setEmail(text.toLowerCase())}
           style={styles.input}
         />
         {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
@@ -115,7 +161,7 @@ const SignUpScreen = () => {
         <TextInput
           placeholder="이름을 입력하세요"
           value={name}
-          onChangeText={setName}
+          onChangeText={text => setName(text.toLowerCase())}
           style={styles.input}
         />
         {nameError ? <Text style={styles.errorText}>{nameError}</Text> : null}
@@ -124,10 +170,12 @@ const SignUpScreen = () => {
         <TextInput
           placeholder="닉네임을 입력하세요"
           value={nickname}
-          onChangeText={setNickname}
+          onChangeText={text => setNickname(text.toLowerCase())}
           style={styles.input}
         />
-        {nicknameError ? <Text style={styles.errorText}>{nicknameError}</Text> : null}
+        {nicknameError ? (
+          <Text style={styles.errorText}>{nicknameError}</Text>
+        ) : null}
       </ScrollView>
 
       <TouchableOpacity style={styles.button} onPress={handleSignUp}>
