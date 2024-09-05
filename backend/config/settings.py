@@ -30,9 +30,9 @@ SECRET_KEY = secret["DJANGO_SECRET_KEY"]
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    '10.0.2.2',
+    "127.0.0.1",
     'localhost',
-    '127.0.0.1',
-    '10.0.0.2',
 ]
 
 
@@ -161,6 +161,6 @@ SIMPLE_JWT = {
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
-    "http://10.0.0.2:3000",
+    "http://10.0.2.2:3000",
 ]
 CORS_ALLOW_CREDENTIALS = True

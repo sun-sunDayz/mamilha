@@ -2,14 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons'
 
-const GroupMember = ({ onChangeMembers, onAddMember, reset}) => {
+const GroupMember = ({ onChangeMembers, onAddMember}) => {
     const [inputs, setInputs] = useState([{ id: 1, name: '', active: 1 }]);
-
-    useEffect(() => {
-        if (reset) {
-            setInputs([{ id: 1, name: '', active: 1 }]);
-        }
-    }, [reset]);
 
     useEffect(() => {
         onChangeMembers(inputs);
@@ -24,6 +18,8 @@ const GroupMember = ({ onChangeMembers, onAddMember, reset}) => {
     const deleteInput = (id) => {
         if (inputs.length > 1) {
             setInputs(inputs.filter(input => input.id !== id));
+        } else if (inputs.length == 1) {
+            setInputs([{ id: 1, name: '', active: 1 }])
         }
     };
 
