@@ -11,7 +11,7 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import apiClient from '../services/apiClient';
 
 
-const UpdateGroup = ({group_pk}) => {
+const UpdateGroup = ({route}) => {
     const [groupName, setGroupName] = useState('');
     const [groupCategory, setGroupCategory] = useState('');
     const [currency, setCurrency] = useState('');
@@ -21,7 +21,8 @@ const UpdateGroup = ({group_pk}) => {
     const [modalWidth, setModalWidth] = useState(0)
     const navigation = useNavigation();
     const scrollViewRef = useRef(null);
-    console.log(group_pk)
+    
+    const group_pk = route.params.group_pk
 
     useEffect(() => {
         apiClient.get(`/api/groups/${group_pk}/`)
