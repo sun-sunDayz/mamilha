@@ -142,19 +142,16 @@ class FinancesSplitAPIView(APIView):
         splits = finance.split_set.all()
         data = []
         for split in splits:
+            split_data = {
+            "finance_id": split.finance.id,
+            "member": split.member.name,
+            "amount": split.amount,
+            }
+
             if split.member.name == user:
-                data.append({
-                "finance_id": split.finance.id,
-                "member": split.member.name,
-                "amount": split.amount,
-                "currencyUser" : user,
-            })
-            else:
-                data.append({
-                    "finance_id": split.finance.id,
-                    "member": split.member.name,
-                    "amount": split.amount
-                })
+                split_data["currencyUser"] = user
+        
+            data.append(split_data)
         return Response(data)
     
     def post(self, request, finance_pk):
