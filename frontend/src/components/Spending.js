@@ -102,30 +102,32 @@ const Spending = () => {
           data={Data}
           keyExtractor={item => item.id.toString()}
           renderItem={({item}) => (
-            <View style={styles.listItem}>
-              <View
-                style={[
-                  styles.iconContainer,
-                  getIconStyle(item.finance_category),
-                ]}>
-                {getIconComponent(item.finance_category)}
-              </View>
-              <View style={styles.details}>
-                <Text style={styles.name}>
-                  {truncateText(item.description, 14)}
-                </Text>
-                <View style={{flexDirection: 'row'}}>
-                  <Text style={styles.date}>{item.created_at}</Text>
-                  <Text style={styles.payer}>결제자</Text>
-                  <Text style={styles.date}>
-                    {truncateText(item.payer, 30)}
+            <TouchableOpacity onPress={()=>{navigation.navigate('FinanceDetail',{'group_pk':103, 'finance_pk':521})}}>
+              <View style={styles.listItem}>
+                <View
+                  style={[
+                    styles.iconContainer,
+                    getIconStyle(item.finance_category),
+                  ]}>
+                  {getIconComponent(item.finance_category)}
+                </View>
+                <View style={styles.details}>
+                  <Text style={styles.name}>
+                    {truncateText(item.description, 14)}
                   </Text>
+                  <View style={{flexDirection: 'row'}}>
+                    <Text style={styles.date}>{item.created_at}</Text>
+                    <Text style={styles.payer}>결제자</Text>
+                    <Text style={styles.date}>
+                      {truncateText(item.payer, 30)}
+                    </Text>
+                  </View>
+                </View>
+                <View style={{flex: 4}}>
+                  <Text style={styles.amount}>{truncateAmount(item.amount)}</Text>
                 </View>
               </View>
-              <View style={{flex: 4}}>
-                <Text style={styles.amount}>{truncateAmount(item.amount)}</Text>
-              </View>
-            </View>
+            </TouchableOpacity>
           )}
         /></ScrollView>
       )}
