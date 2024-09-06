@@ -51,7 +51,7 @@ const CreateGroup = () => {
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <SafeAreaView SafeAreaView style={styles.Container}>
+            <SafeAreaView style={styles.Container}>
                 <StatusBar backgroundColor='white' barStyle='dark-content' />
                 <View style={styles.TopContainer}>
                     <View style={styles.TitleContainer}>
