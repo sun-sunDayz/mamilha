@@ -24,7 +24,6 @@ const App = () => {
         <Tab.Screen name="Login" component={Login} />
         <Tab.Screen name="SignUp" component={SignUp} />
         <Tab.Screen name="Finances" component={Finances} />
-        <Tab.Screen name="UpdateGroup" component={UpdateGroup} />
         <Tab.Screen name="Profile" component={Profile} />
         <Tab.Screen name="PasswordChange" component={PasswordChange} />
       </Tab.Navigator>

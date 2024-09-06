@@ -4,9 +4,13 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Spending from '../components/Spending';
 import Split from '../components/Split';
+import { useNavigation } from '@react-navigation/native';
+import UpdateGroup from './UpdateGroup';
+
 
 const Finances = () => {
   const [selectedTab, setSelectedTab] = useState('지출'); // 초기값은 '지출'
+  const navigation = useNavigation();
 
   const handleTabPress = tab => {
     setSelectedTab(tab);
@@ -19,7 +23,9 @@ const Finances = () => {
                 <View>
                     <Text style={styles.title}>모임명</Text>
                 </View>
-                <AntDesign name="setting" size={25} color="gray" />
+                <TouchableOpacity onPress={()=>navigation.navigate('UpdateGroup', {'group_pk':103})}> 
+                  <AntDesign name="setting" size={25} color="gray" />
+                </TouchableOpacity>
             </View>
 
       <View style={styles.tabContainer}>
