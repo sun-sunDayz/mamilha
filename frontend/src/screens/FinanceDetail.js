@@ -9,7 +9,7 @@ import apiClient from '../services/apiClient';
 
 
 
-const FinanceDetail = ({ group_id, finances_id }) => {
+const FinanceDetail = ({ route }) => {
     const navigation = useNavigation();
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [modalWidth, setModalWidth] = useState(0);
@@ -24,8 +24,11 @@ const FinanceDetail = ({ group_id, finances_id }) => {
     const [date, setDate] = useState();
     const scrollViewRef = useRef(null);
 
+    const group_pk = route.params.group_pk
+    const finance_pk = route.params.finance_pk
+
     useEffect(() => {
-        apiClient.get(`/api/finances/${group_id}/${finances_id}/`)  // api/finances/(group_id)/(finances_id)/
+        apiClient.get(`/api/finances/${group_pk}/${finance_pk}/`)  // api/finances/(group_id)/(finances_id)/
             .then(response => {
                 setAmount(response.data.amount) 
                 setDescription(response.data.description)
@@ -42,7 +45,7 @@ const FinanceDetail = ({ group_id, finances_id }) => {
     }, []);
 
     useEffect(() => {
-        apiClient.get(`/api/finances/${finances_id}/splits/`) // api/finances/(finances_id)/splits 
+        apiClient.get(`/api/finances/${finance_pk}/splits/`) // api/finances/(finances_id)/splits 
             .then(response => {
                 setSplitMembers(response.data)
             })
@@ -58,7 +61,7 @@ const FinanceDetail = ({ group_id, finances_id }) => {
 
     const handleDelete = async () => {
         try {
-            await apiClient.delete(`/api/finance/${group_id}/${finances_id}`);
+            await apiClient.delete(`/api/finance/${group_pk}/${finance_pk}`);
             navigation.goBack();
         } catch (error) {
             alert(error.response.data.error);
@@ -130,8 +133,9 @@ const FinanceDetail = ({ group_id, finances_id }) => {
                                 <View style={styles.MembeerViewContant}>
                                     <Icon name="person-circle" size={30} color="#5DAF6A" />
                                     <Text style={styles.MemberText}>{member.member}</Text>
-                                    {/* {member.id === currentUser.id && (
-                                        <Text style={styles.MemberTextMe}>(Me)</Text>)} */}
+                                    {member.currencyUser && (
+                                        <Text style={styles.MemberTextMe}>(Me)</Text>  //로그인 user와 같은 이름이 있는 경우 표시
+                                    )} 
                                 </View>
                                 <View style={styles.MembeerViewContant}>
                                     <Text style={styles.MemberText}>{comma(member.amount)}원</Text>
