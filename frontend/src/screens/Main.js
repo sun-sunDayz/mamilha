@@ -12,21 +12,26 @@ import Cookies from '@react-native-cookies/cookies';
 const Main = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [nickname, setNickname] = useState('방문자');
 
   useEffect(() => {
     const setTokensFromCookies = async () => {
       const accessCookies = await Cookies.get('domain');
       const access = accessCookies['access'];
       const refresh = accessCookies['refresh'];
+      const id = accessCookies['id'];
 
       if (access && refresh) {
         await AsyncStorage.setItem('accessToken', access.value);
         await AsyncStorage.setItem('refreshToken', refresh.value);
+        await AsyncStorage.setItem('user', id.value);
         Cookies.clearByName('domain', 'access');
         Cookies.clearByName('domain', 'refresh');
+        Cookies.clearByName('domain', 'id');
       } else {
         await AsyncStorage.setItem('accessToken', '');
         await AsyncStorage.setItem('refreshToken', '');
+        await AsyncStorage.setItem('id', '');
       }
     };
     setTokensFromCookies();
@@ -73,7 +78,7 @@ const Main = () => {
             getGroupCategory();
           }}>
           <AwesomeIcon name="user-circle-o" size={25} color="#5DAF6A" />
-          <Text style={styles.buttonText}>닉네임</Text>
+          <Text style={styles.buttonText}>{nickname}</Text>
           <EntypoIcon name="chevron-thin-right" size={15} color="#000" />
         </TouchableOpacity>
       </View>
