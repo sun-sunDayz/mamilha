@@ -1,11 +1,18 @@
-import React, { useState } from 'react';
-import { View, TextInput, Text, Alert, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {
+  View,
+  TextInput,
+  Text,
+  Alert,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from 'react-native';
+import apiClient from '../services/apiClient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import useDebounce from '../api/useDebounce';
 
-const SignUpScreen = () => {
-  const [id, setId] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [email, setEmail] = useState('');
+const SignUpScreen = ({navigation}) => {
   const [name, setName] = useState('');
   const [nickname, setNickname] = useState('');
 
@@ -16,57 +23,266 @@ const SignUpScreen = () => {
   const [nameError, setNameError] = useState('');
   const [nicknameError, setNicknameError] = useState('');
 
-  const handleSignUp = () => {
-    let isValid = true;
+  const [idUp, setIdUp] = useState('');
+  const [passwordUp, setPasswordUp] = useState('');
+  const [passwordConfirmUp, setPasswordConfirmUp] = useState('');
+  const [emailUp, setEmailUp] = useState('');
 
-    if (id.trim() === '') {
-      setIdError('아이디를 입력하세요.');
-      isValid = false;
-    } else {
+  const debounceUsernameUp = useDebounce(idUp, 250);
+  const debouncePasswordUp = useDebounce(passwordUp, 250);
+  const debouncePasswordConfirmUp = useDebounce(passwordConfirmUp, 250);
+  const debounceEmailUp = useDebounce(emailUp, 250);
+
+  const [formValidateChecker, setFormValidateChecker] = useState({
+    username: false,
+    email: false,
+    password: false,
+    passwordCheck: false,
+  });
+
+  const [capslock, setCapslock] = useState(false);
+
+  useEffect(() => {
+    if (debounceUsernameUp === idUp) {
+      checkUserName().then(r => {});
+    }
+  }, [idUp, debounceUsernameUp]);
+
+  useEffect(() => {
+    if (debouncePasswordUp === passwordUp) {
+      checkPassword().then(r => {});
+    }
+  }, [passwordUp, debouncePasswordUp]);
+
+  useEffect(() => {
+    if (debouncePasswordConfirmUp === passwordConfirmUp) {
+      checkPasswordCheck();
+    }
+  }, [passwordConfirmUp, debouncePasswordConfirmUp]);
+
+  useEffect(() => {
+    if (debounceEmailUp === emailUp) {
+      checkEmail().then(r => {});
+    }
+  }, [emailUp, debounceEmailUp]);
+
+  async function checkUserName() {
+    if (idUp === '') {
       setIdError('');
+      setFormValidateChecker(prevState => ({
+        ...prevState,
+        username: false,
+      }));
+      return;
     }
+    const data = {
+      data: idUp,
+    };
 
-    if (password.trim() === '') {
-      setPasswordError('비밀번호를 입력하세요.');
-      isValid = false;
-    } else {
+    try {
+      const response = await apiClient.post(
+        '/api/users/validate/username/',
+        data,
+      );
+      setIdError(response.data.message);
+      setFormValidateChecker(prevState => ({
+        ...prevState,
+        username: true,
+      }));
+    } catch (error) {
+      setIdError(error.response.data.error);
+      setFormValidateChecker(prevState => ({
+        ...prevState,
+        username: false,
+      }));
+    }
+  }
+
+  async function checkPassword() {
+    if (passwordUp === '') {
       setPasswordError('');
+      setFormValidateChecker(prevState => ({
+        ...prevState,
+        password: false,
+      }));
+      return;
     }
 
-    if (confirmPassword.trim() === '') {
-      setConfirmPasswordError('비밀번호 확인을 입력하세요.');
-      isValid = false;
-    } else if (password !== confirmPassword) {
-      setConfirmPasswordError('비밀번호가 일치하지 않습니다.');
-      isValid = false;
-    } else {
+    const data = {
+      data: passwordUp,
+    };
+
+    try {
+      if (capslock) {
+        setPasswordError('CapsLock이 켜져있습니다.');
+        setFormValidateChecker(prevState => ({
+          ...prevState,
+          password: false,
+        }));
+        return;
+      }
+      const response = await apiClient.post(
+        '/api/users/validate/password/',
+        data,
+      );
+      setPasswordError(response.data.message);
+      setFormValidateChecker(prevState => ({
+        ...prevState,
+        password: true,
+      }));
+    } catch (error) {
+      setPasswordError(error.response.data.error);
+      setFormValidateChecker(prevState => ({
+        ...prevState,
+        password: false,
+      }));
+    }
+
+    // 상태 업데이트가 완료된 후에 checkPasswordCheck를 호출합니다.
+    checkPasswordCheck();
+  }
+
+  function checkPasswordCheck() {
+    if (passwordConfirmUp === '') {
       setConfirmPasswordError('');
+      setFormValidateChecker(prevState => ({
+        ...prevState,
+        passwordCheck: false,
+      }));
+      return;
     }
 
-    if (email.trim() === '') {
-      setEmailError('이메일을 입력하세요.');
-      isValid = false;
+    if (formValidateChecker.password === false) {
+      if (capslock) {
+        setConfirmPasswordError('CapsLock이 켜져있습니다.');
+      } else {
+        setConfirmPasswordError('비밀번호를 먼저 확인해주세요.');
+        setFormValidateChecker(prevState => ({
+          ...prevState,
+          passwordCheck: false,
+        }));
+      }
+      return;
+    }
+
+    if (passwordConfirmUp === passwordUp) {
+      setConfirmPasswordError('비밀번호가 일치합니다.');
+      setFormValidateChecker(prevState => ({
+        ...prevState,
+        passwordCheck: true,
+      }));
     } else {
+      setConfirmPasswordError('비밀번호가 일치하지 않습니다.');
+      setFormValidateChecker(prevState => ({
+        ...prevState,
+        passwordCheck: false,
+      }));
+    }
+  }
+
+  async function checkEmail() {
+    if (emailUp === '') {
       setEmailError('');
+      setFormValidateChecker(prevState => ({
+        ...prevState,
+        email: false,
+      }));
+      return;
     }
 
-    if (name.trim() === '') {
-      setNameError('이름을 입력하세요.');
-      isValid = false;
-    } else {
-      setNameError('');
+    const data = {
+      data: emailUp,
+    };
+
+    try {
+      const response = await apiClient.post('/api/users/validate/email/', data);
+      setEmailError(response.data.message);
+      setFormValidateChecker(prevState => ({
+        ...prevState,
+        email: true,
+      }));
+    } catch (error) {
+      setEmailError(error.response.data.error);
+      setFormValidateChecker(prevState => ({
+        ...prevState,
+        email: false,
+      }));
+    }
+  }
+
+  const handleLogin = async e => {
+    try {
+      const response = await apiClient.post('/api/login/', {
+        username: idUp,
+        password: passwordUp,
+      });
+      const {access, refresh} = response.data;
+      await AsyncStorage.setItem('accessToken', access);
+      await AsyncStorage.setItem('refreshToken', refresh);
+      await AsyncStorage.setItem('id', idUp);
+
+      navigation.navigate('Main');
+    } catch (error) {
+      const message = error.response.data.detail
+      Alert.alert('로그인에 실패했습니다.', message);
+    }
+  };
+
+  const handleSignUp = async () => {
+    try {
+      await checkUserName();
+      await checkPassword();
+      await checkPasswordCheck();
+      await checkEmail();
+    } catch (error) {
+      console.log('error');
     }
 
-    if (nickname.trim() === '') {
-      setNicknameError('닉네임을 입력하세요.');
-      isValid = false;
-    } else {
-      setNicknameError('');
+    if (
+      formValidateChecker.username === false ||
+      formValidateChecker.password === false ||
+      formValidateChecker.passwordCheck === false ||
+      formValidateChecker.email === false
+    ) {
+      console.log('fail', formValidateChecker);
+      return;
     }
 
-    if (isValid) {
-      // 회원가입 API 호출 로직 추가
-      Alert.alert('회원가입 성공!');
+    //회원가입 시 Access Token 제거
+    await AsyncStorage.setItem('accessToken', '');
+    await AsyncStorage.setItem('refreshToken', '');
+
+    // 회원가입 API 호출 로직 추가
+    try {
+      const response = await apiClient
+        .post('/api/users/', {
+          username: idUp,
+          password: passwordUp,
+          email: emailUp,
+          name: name,
+          nickname: nickname,
+        })
+      console.log('response');
+      if (response.status === 201) {
+        // 성공 시 추가 작업 (e.g., 로그인 화면으로 이동)
+
+        Alert.alert('회원가입 성공');
+        await handleLogin();
+      } else {
+        Alert.alert('회원가입 실패', '알 수 없는 오류가 발생했습니다.');
+      }
+    } catch (error) {
+      console.log('error', error)
+      if (error.response) {
+        console.log('error');
+        // 서버에서의 응답이 있는 경우
+        const errorMessage =
+          error.response.data.detail || '회원가입에 실패했습니다.';
+        Alert.alert('회원가입 실패', errorMessage);
+      } else {
+        // 네트워크 오류 등
+        Alert.alert('회원가입 실패', '서버에 연결할 수 없습니다.');
+      }
     }
   };
 
@@ -76,8 +292,8 @@ const SignUpScreen = () => {
         <Text style={styles.label}>아이디</Text>
         <TextInput
           placeholder="아이디를 입력하세요"
-          value={id}
-          onChangeText={setId}
+          onChangeText={text => setIdUp(text)}
+          autoCapitalize="none"
           style={styles.input}
         />
         {idError ? <Text style={styles.errorText}>{idError}</Text> : null}
@@ -85,28 +301,30 @@ const SignUpScreen = () => {
         <Text style={styles.label}>비밀번호</Text>
         <TextInput
           placeholder="비밀번호를 입력하세요"
-          value={password}
-          onChangeText={setPassword}
+          onChangeText={text => setPasswordUp(text)}
           secureTextEntry
           style={styles.input}
         />
-        {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+        {passwordError ? (
+          <Text style={styles.errorText}>{passwordError}</Text>
+        ) : null}
 
         <Text style={styles.label}>비밀번호 확인</Text>
         <TextInput
           placeholder="비밀번호를 다시 입력하세요"
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
+          onChangeText={text => setPasswordConfirmUp(text)}
           secureTextEntry
           style={styles.input}
         />
-        {confirmPasswordError ? <Text style={styles.errorText}>{confirmPasswordError}</Text> : null}
+        {confirmPasswordError ? (
+          <Text style={styles.errorText}>{confirmPasswordError}</Text>
+        ) : null}
 
         <Text style={styles.label}>이메일</Text>
         <TextInput
           placeholder="이메일을 입력하세요"
-          value={email}
-          onChangeText={setEmail}
+          onChangeText={text => setEmailUp(text)}
+          autoCapitalize="none"
           style={styles.input}
         />
         {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
@@ -115,7 +333,7 @@ const SignUpScreen = () => {
         <TextInput
           placeholder="이름을 입력하세요"
           value={name}
-          onChangeText={setName}
+          onChangeText={text => setName(text.toLowerCase())}
           style={styles.input}
         />
         {nameError ? <Text style={styles.errorText}>{nameError}</Text> : null}
@@ -124,10 +342,12 @@ const SignUpScreen = () => {
         <TextInput
           placeholder="닉네임을 입력하세요"
           value={nickname}
-          onChangeText={setNickname}
+          onChangeText={text => setNickname(text.toLowerCase())}
           style={styles.input}
         />
-        {nicknameError ? <Text style={styles.errorText}>{nicknameError}</Text> : null}
+        {nicknameError ? (
+          <Text style={styles.errorText}>{nicknameError}</Text>
+        ) : null}
       </ScrollView>
 
       <TouchableOpacity style={styles.button} onPress={handleSignUp}>

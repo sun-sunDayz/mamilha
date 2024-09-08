@@ -18,7 +18,6 @@ const Login = () => {
   const handleLogin = async e => {
     e.preventDefault();
     try {
-      console.log(username, password);
       const response = await apiClient.post('/api/login/', {
         username: username,
         password: password,
@@ -29,12 +28,6 @@ const Login = () => {
 
       setError('로그인이 완료되었습니다.')
 
-      // const redirectUrl = new URLSearchParams(window.location.search).get('redirectUrl')
-      // if (redirectUrl) {
-      //     window.location.href = decodeURIComponent(redirectUrl)
-      // } else {
-      //     window.location.href = '/'
-      // }
     } catch (error) {
       // const message = error.response.data.detail
       console.log('error', error);
