@@ -4,10 +4,12 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password
-
+from rest_framework.decorators import api_view
+from .util import AccountValidator
 from . import permissions
 
 User = get_user_model()
+validator = AccountValidator()
 # Create your views here.
 
 class UsersAPIView(APIView):
@@ -98,4 +100,21 @@ class SetPasswordAPIView(APIView):
             return Response({"error": "비밀번호가 일치하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response({"message": "인증에 성공했습니다."}, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def validate_password(request):
+    validator.validate('password', request.data)
+    return validator.get_response_data()
+
+
+@api_view(['POST'])
+def validate_username(request):
+    validator.validate('username', request.data)
+    return validator.get_response_data()
+
+
+@api_view(['POST'])
+def validate_email(request):
+    validator.validate('email', request.data)
+    return validator.get_response_data()
 
