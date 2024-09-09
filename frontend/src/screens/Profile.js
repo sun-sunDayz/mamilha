@@ -1,17 +1,42 @@
-import React, { useState } from 'react';
-import { View, TextInput, Text, TouchableOpacity, StyleSheet, Alert, ScrollView } from 'react-native';
+import React, {useState, useEffect, useContext} from 'react';
+import {
+  View,
+  TextInput,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  ScrollView,
+} from 'react-native';
+import {UserContext} from '../userContext';
+import {updateProfile} from '../api/Accounts';
 
-const ProfileScreen = ({ navigation }) => {
-  const [id, setId] = useState('your_id');  // 아이디는 일반적으로 수정하지 않으므로 기본값을 설정
-  const [email, setEmail] = useState('your_email@example.com');
-  const [name, setName] = useState('홍길동');
-  const [nickname, setNickname] = useState('your_nickname');
+const ProfileScreen = ({navigation}) => {
+  const currentUser = useContext(UserContext);
+  const [id, setId] = useState(''); // 아이디는 일반적으로 수정하지 않으므로 기본값을 설정
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
+  const [nickname, setNickname] = useState('');
 
-  const handleSave = () => {
-    // 프로필 저장 로직 추가
-    
+  useEffect(() => {
+    if (currentUser) {
+      setId(currentUser.username);
+      setEmail(currentUser.email);
+      setName(currentUser.name);
+      setNickname(currentUser.nickname);
+    }
+  }, [currentUser]);
 
-    Alert.alert('프로필이 저장되었습니다.');
+  const handleSave = async () => {
+    // 회원가입 API 호출 로직 추가
+    console.log(name, nickname, email);
+    const result = await updateProfile(name, nickname, email);
+    if (!result) {
+      Alert.alert('회원정보 수정 실패');
+      return;
+    }
+    Alert.alert('회원정보 수정 완료');
+    navigation.navigate('Main');
   };
 
   const handlePasswordChange = () => {
@@ -25,12 +50,14 @@ const ProfileScreen = ({ navigation }) => {
         <Text style={styles.label}>아이디</Text>
         <TextInput
           value={id}
-          editable={false}  // 아이디는 수정 불가능하게 설정
-          style={[styles.input, { backgroundColor: '#f0f0f0' }]}  // 수정 불가능한 필드는 배경색을 다르게 설정
+          editable={false} // 아이디는 수정 불가능하게 설정
+          style={[styles.input, {backgroundColor: '#f0f0f0'}]} // 수정 불가능한 필드는 배경색을 다르게 설정
         />
 
         <Text style={styles.label}>비밀번호</Text>
-        <TouchableOpacity style={styles.passwordButton} onPress={handlePasswordChange}>
+        <TouchableOpacity
+          style={styles.passwordButton}
+          onPress={handlePasswordChange}>
           <Text style={styles.passwordButtonText}>비밀번호 변경</Text>
         </TouchableOpacity>
 
