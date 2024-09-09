@@ -6,7 +6,6 @@ import Login from './src/screens/Login';
 import SignUp from './src/screens/SignUp';
 import CreateGroup from './src/screens/CreateGroup';
 import UpdateGroup from './src/screens/UpdateGroup';
-import FinanceDetail from './src/screens/FinanceDetail';
 import Finances from './src/screens/Finances';
 import Profile from './src/screens/Profile';
 import PasswordChange from './src/screens/PasswordChange';
@@ -37,7 +36,6 @@ const App = () => {
           <Stack.Screen name="Bottom" component={BottomTabScreen} />
           <Stack.Screen name="CreateGroup" component={CreateGroup} />
           <Stack.Screen name="UpdateGroup" component={UpdateGroup} />
-          <Stack.Screen name="FinancesDetail" component={FinancesDetail} />
           <Stack.Screen name="CreateFinance" component={CreateFinance} />
           <Stack.Screen name="UpdateFinance" component={UpdateFinance} />
         </Stack.Navigator>
