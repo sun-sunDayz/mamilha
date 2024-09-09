@@ -32,6 +32,7 @@ export const UserProvider = ({children}) => {
         if (accessToken) {
             try {
                 const decodedUser = jwtDecode(accessToken)
+                console.log('update new user', decodedUser)
                 setCurrentUser(decodedUser)
             } catch (error) {
                 console.error('Invalid token:', error)
