@@ -13,6 +13,7 @@ import PasswordChange from './src/screens/PasswordChange';
 import {NavigationContainer} from '@react-navigation/native';
 import CreateFinance from './src/screens/CreateFinance';
 import UpdateFinance from './src/screens/UpdateFinance';
+import { UserProvider } from './src/userContext';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
@@ -33,14 +34,16 @@ const App = () => {
   };
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{headerShown: false}}>
-        <Stack.Screen name="Bottom" component={BottomTabScreen} />
-        <Stack.Screen name="CreateGroup" component={CreateGroup} />
-        <Stack.Screen name="UpdateGroup" component={UpdateGroup} />
-        <Stack.Screen name="FinancesDetail" component={FinancesDetail} />
-        <Stack.Screen name="CreateFinance" component={CreateFinance} />
-        <Stack.Screen name="UpdateFinance" component={UpdateFinance} />
-      </Stack.Navigator>
+      <UserProvider>
+        <Stack.Navigator screenOptions={{headerShown: false}}>
+          <Stack.Screen name="Bottom" component={BottomTabScreen} />
+          <Stack.Screen name="CreateGroup" component={CreateGroup} />
+          <Stack.Screen name="UpdateGroup" component={UpdateGroup} />
+          <Stack.Screen name="FinancesDetail" component={FinancesDetail} />
+          <Stack.Screen name="CreateFinance" component={CreateFinance} />
+          <Stack.Screen name="UpdateFinance" component={UpdateFinance} />
+        </Stack.Navigator>
+      </UserProvider>
     </NavigationContainer>
   );
 };

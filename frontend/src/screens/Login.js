@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import apiClient from '../services/apiClient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { login } from '../api/Accounts';
 
 const Login = () => {
   const [username, setUsername] = useState('');
@@ -16,21 +17,10 @@ const Login = () => {
   const [error, setError] = useState('아이디 또는 비밀번호를 다시 확인하세요'); // 에러 메시지 상태
 
   const handleLogin = async e => {
-    e.preventDefault();
-    try {
-      const response = await apiClient.post('/api/login/', {
-        username: username,
-        password: password,
-      });
-      const {access, refresh} = response.data;
-      await AsyncStorage.setItem('accessToken', access);
-      await AsyncStorage.setItem('refreshToken', refresh);
-
+    const result = await login(username, password)
+    if(result) {
       setError('로그인이 완료되었습니다.')
-
-    } catch (error) {
-      // const message = error.response.data.detail
-      console.log('error', error);
+    } else {
       setError('로그인에 실패했습니다.')
     }
   };
