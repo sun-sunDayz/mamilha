@@ -46,10 +46,15 @@ class GroupAPIView(APIView):
         
         groups =[]
         for i in groups_list:
+            members = Member.objects.filter(group_id = i.group_id)
+            # members[0]은 언제나 관리자
             groups.append({
+                "id" :  i.group_id,
                 "name": i.group.name,
                 "category" : i.group.category.name,
                 "currency": i.group.currency.currency,
+                "leader" : members[0].name,
+                "members": len(members)
                 })
 
         return Response(groups,

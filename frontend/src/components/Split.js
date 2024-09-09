@@ -50,14 +50,14 @@ const truncateAmount = (amount) => {
     return amount.toLocaleString() + '원';
 };
 
-const Split = () => {
+const Split = ({group_pk}) => {
     const [data, setData] = useState([]);
     const [finalSettlements, setFinalSettlements] = useState([]);
 
     useEffect(() => {
         const getSplits = async () => {
             try {
-                const response = await apiClient.get('/api/groups/103/splits/');
+                const response = await apiClient.get(`/api/groups/${group_pk}/splits/`);
                 const splits = response.data;
                 setData(splits);
                 console.log(splits)
