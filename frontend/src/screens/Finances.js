@@ -8,9 +8,9 @@ import { useNavigation } from '@react-navigation/native';
 import UpdateGroup from './UpdateGroup';
 
 
-const Finances = () => {
+const Finances = ({ navigation, route }) => {
   const [selectedTab, setSelectedTab] = useState('지출'); // 초기값은 '지출'
-  const navigation = useNavigation();
+  const group_pk = route.params.group_pk
 
   const handleTabPress = tab => {
     setSelectedTab(tab);
@@ -23,7 +23,7 @@ const Finances = () => {
                 <View>
                     <Text style={styles.title}>모임명</Text>
                 </View>
-                <TouchableOpacity onPress={()=>navigation.navigate('UpdateGroup', {'group_pk':103})}> 
+                <TouchableOpacity onPress={()=>navigation.navigate('UpdateGroup', {'group_pk':group_pk})}> 
                   <AntDesign name="setting" size={25} color="gray" />
                 </TouchableOpacity>
             </View>
@@ -65,8 +65,8 @@ const Finances = () => {
             </View>
 
             <View style={styles.contentContainer}>
-                {selectedTab === '지출' && <Spending />}
-                {selectedTab === '정산' && <Split />}
+                {selectedTab === '지출' && <Spending group_pk={group_pk}/>}
+                {selectedTab === '정산' && <Split group_pk={group_pk}/>}
             </View>
         </SafeAreaView>
     );

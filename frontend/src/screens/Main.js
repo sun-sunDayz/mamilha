@@ -24,6 +24,10 @@ const Main = ({navigation}) => {
     navigation.navigate('Profile')
   };
 
+  const onHandleFinances = async () => {
+    navigation.navigate('Finances',{"group_pk":103})
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.nicknameContainer}>
@@ -52,7 +56,7 @@ const Main = ({navigation}) => {
           members="15"
         />
         <ListItem
-          onPress={() => alert('Button 2 pressed')}
+          onPress={() => onHandleFinances()}
           title="마밀러 힙합 동아리"
           leader="준서"
           members="10"

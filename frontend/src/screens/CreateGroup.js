@@ -2,7 +2,6 @@ import React, { useState, useRef } from 'react';
 import {
     View, Text, ScrollView, StyleSheet, TextInput, StatusBar, TouchableWithoutFeedback, Keyboard, TouchableOpacity, SafeAreaView
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import GroupCategory from '../components/GroupCategory';
 import GroupMember from '../components/GroupMember';
 import Currency from '../components/Currency';
@@ -11,12 +10,11 @@ import apiClient from '../services/apiClient';
 
 
 
-const CreateGroup = () => {
+const CreateGroup = ({ navigation }) => {
     const [groupName, setGroupName] = useState('');
     const [groupCategory, setGroupCategory] = useState('');
     const [currency, setCurrency] = useState('');
     const [members, setMembers] = useState([]);
-    const navigation = useNavigation();
     const scrollViewRef = useRef(null);
 
     const handleCreateGroup = async () => {
