@@ -7,30 +7,19 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native';
-import apiClient from '../services/apiClient';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { login } from '../api/Accounts';
 
-const Login = () => {
+const Login = ({navigation}) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('아이디 또는 비밀번호를 다시 확인하세요'); // 에러 메시지 상태
+  const [error, setError] = useState(''); 
 
   const handleLogin = async e => {
-    e.preventDefault();
-    try {
-      const response = await apiClient.post('/api/login/', {
-        username: username,
-        password: password,
-      });
-      const {access, refresh} = response.data;
-      await AsyncStorage.setItem('accessToken', access);
-      await AsyncStorage.setItem('refreshToken', refresh);
-
-      setError('로그인이 완료되었습니다.')
-
-    } catch (error) {
-      // const message = error.response.data.detail
-      console.log('error', error);
+    const result = await login(username, password)
+    if(result) {
+      setError('')
+      navigation.navigate('Main');
+    } else {
       setError('로그인에 실패했습니다.')
     }
   };

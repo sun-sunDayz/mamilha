@@ -4,7 +4,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from .serializers import UserSerializer
 from .util import AccountValidator
 from . import permissions
 
@@ -118,3 +119,9 @@ def validate_email(request):
     validator.validate('email', request.data)
     return validator.get_response_data()
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_info(request):
+    user = request.user
+    serializer = UserSerializer(user)
+    return Response(serializer.data)
