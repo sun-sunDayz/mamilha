@@ -11,7 +11,7 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import apiClient from '../services/apiClient';
 
 
-const UpdateGroup = ({ group_pk }) => {
+const UpdateGroup = ({route}) => {
     const [groupName, setGroupName] = useState('');
     const [groupCategory, setGroupCategory] = useState('');
     const [currency, setCurrency] = useState('');
@@ -21,10 +21,11 @@ const UpdateGroup = ({ group_pk }) => {
     const [modalWidth, setModalWidth] = useState(0)
     const navigation = useNavigation();
     const scrollViewRef = useRef(null);
-
+    
+    const group_pk = route.params.group_pk
 
     useEffect(() => {
-        apiClient.get(`/api/groups/${33}/`)
+        apiClient.get(`/api/groups/${group_pk}/`)
             .then(response => {
                 setCurrency(response.data.currency)
                 setGroupCategory(response.data.category)
@@ -39,7 +40,7 @@ const UpdateGroup = ({ group_pk }) => {
 
     const handleUpdateGroup = async () => {
         try {
-            await apiClient.put(`/api/groups/${33}/`, {
+            await apiClient.put(`/api/groups/${group_pk}/`, {
                 name: groupName,
                 category: groupCategory,
                 currency: currency,
@@ -48,7 +49,7 @@ const UpdateGroup = ({ group_pk }) => {
             });
             setMembers([]);
             setUpdateMembers([]);
-            navigation.navigate('Main'); //모임 화면으로 이동하게
+            navigation.goBack(); //모임 화면으로 이동하게
         } catch (error) {
             alert(error.response.data.error);
         }
@@ -56,13 +57,13 @@ const UpdateGroup = ({ group_pk }) => {
     };
 
 
-    const handleHome = () => {
+    const handleGoBack = () => {
         setMembers([]);
         setGroupName(groupName);
         setGroupCategory(groupCategory);
         setCurrency(currency);
         setUpdateMembers(updateMembers)
-        navigation.navigate('Main');
+        navigation.goBack();
     };
 
     const handleAddMember = () => {
@@ -71,14 +72,14 @@ const UpdateGroup = ({ group_pk }) => {
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <SafeAreaView SafeAreaView style={styles.Container}>
+            <SafeAreaView style={styles.Container}>
                 <StatusBar backgroundColor='white' barStyle='dark-content' />
                 <View style={styles.TopContainer}>
                     <View style={styles.TitleContainer}>
                         <Text style={styles.TitleText}>모임 수정</Text>
                     </View>
                 </View>
-                <TouchableOpacity onPress={handleHome} style={styles.CloseIcon} >
+                <TouchableOpacity onPress={handleGoBack} style={styles.CloseIcon} >
                     <Icon name="chevron-back" size={40} color="#6C6C6C" />
                 </TouchableOpacity>
                 <ScrollView ref={scrollViewRef} contentContainerStyle={styles.ScrollViewContent}>
