@@ -17,6 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
+from .serializers import CustomTokenObtainPairSerializer
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
 
 urlpatterns = [
@@ -25,6 +30,6 @@ urlpatterns = [
     path("api/groups/", include("groups.urls")),
     path("api/finances/", include("finances.urls")),
 ] + [
-    path("api/login/", TokenObtainPairView.as_view()),
+    path("api/login/", CustomTokenObtainPairView.as_view()),
     path("api/token/refresh/", TokenRefreshView.as_view()),
 ]
