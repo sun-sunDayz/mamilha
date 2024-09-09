@@ -1,71 +1,31 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
 import ListItem from '../components/ListItem';
 import ButtonGroup from '../components/ButtonGroup';
 import AwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
-import apiClient from '../services/apiClient';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
-import Cookies from '@react-native-cookies/cookies';
+import {UserContext} from '../userContext';
+import {login, logout} from '../api/Accounts'
 
 const Main = () => {
+  const currentUser = useContext(UserContext);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [nickname, setNickname] = useState('방문자');
 
   useEffect(() => {
-    const setTokensFromCookies = async () => {
-      const accessCookies = await Cookies.get('domain');
-      const access = accessCookies['access'];
-      const refresh = accessCookies['refresh'];
-      const id = accessCookies['id'];
-
-      if (access && refresh) {
-        await AsyncStorage.setItem('accessToken', access.value);
-        await AsyncStorage.setItem('refreshToken', refresh.value);
-        await AsyncStorage.setItem('user', id.value);
-        Cookies.clearByName('domain', 'access');
-        Cookies.clearByName('domain', 'refresh');
-        Cookies.clearByName('domain', 'id');
-      } else {
-        await AsyncStorage.setItem('accessToken', '');
-        await AsyncStorage.setItem('refreshToken', '');
-        await AsyncStorage.setItem('id', '');
-      }
-    };
-    setTokensFromCookies();
-  }, []);
-
-  const getGroupCategory = async () => {
-    try {
-      const response = await apiClient.get('/api/groups/category/');
-      console.log(response.data);
-    } catch (error) {
-      alert('Test');
-      console.error('Error fetching data: ', error);
-    } finally {
-      setLoading(false);
+    if (currentUser) {
+      setNickname(currentUser.nickname);
+    } else {
+      setNickname('방문자');
     }
-  };
+  }, [currentUser]);
 
-  const addGroup = async () => {
-    try {
-      const response = await apiClient.post('/api/groups/', {
-        name: 'test2',
-        category: 'test',
-        currency: 'dollar',
-        members: [
-          {
-            name: 'admin',
-          },
-        ],
-      });
-      console.log(response.data);
-    } catch (error) {
-      console.error('Error fetching data: ', error.response.data.error);
-    } finally {
-      setLoading(false);
+  const onHandleProfile = async () => {
+    if (!currentUser) {
+      await login('admin', 'admin')
+    } else{
+      await logout()
     }
   };
 
@@ -75,7 +35,7 @@ const Main = () => {
         <TouchableOpacity
           style={styles.nicknameButton}
           onPress={() => {
-            getGroupCategory();
+            onHandleProfile();
           }}>
           <AwesomeIcon name="user-circle-o" size={25} color="#5DAF6A" />
           <Text style={styles.buttonText}>{nickname}</Text>
