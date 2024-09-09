@@ -62,21 +62,15 @@ const Main = ({ navigation }) => {
         <Text style={styles.meetingListText}>모임 목록</Text>
       </View>
       <View>
-        {groups.map((group) => (
+      {groups.map((group) => (
           <ListItem
           key={group.id}
           onPress={() => onHandleFinances()}
-          title="마밀러 클라이밍"
-          leader="히키"
-          members="15"
+          title={group.name}
+          leader={group.leader}
+          members={group.members}
         />
         ))}
-        <ListItem
-          onPress={() => onHandleFinances()}
-          title="마밀러 힙합 동아리"
-          leader="준서"
-          members="10"
-        />
       </View>
     </View>
   );
