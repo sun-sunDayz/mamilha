@@ -50,6 +50,7 @@ class GroupAPIView(APIView):
                 "name": i.group.name,
                 "category" : i.group.category.name,
                 "currency": i.group.currency.currency,
+                "grades": i.grades.id
                 })
 
         return Response(groups,
