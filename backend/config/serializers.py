@@ -28,11 +28,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token = super().get_token(user)
         token['username'] = user.username
         token['nickname'] = user.nickname
-        return token
-
-    @classmethod
-    def refresh_token(cls, user):
-        token = super().get_token(user)
-        token['username'] = user.username
-        token['nickname'] = user.nickname
+        token['email'] = user.email
+        token['name'] = user.first_name
         return token

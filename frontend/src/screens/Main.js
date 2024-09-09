@@ -5,9 +5,8 @@ import ButtonGroup from '../components/ButtonGroup';
 import AwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
 import {UserContext} from '../userContext';
-import {login, logout} from '../api/Accounts'
 
-const Main = () => {
+const Main = ({navigation}) => {
   const currentUser = useContext(UserContext);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -17,16 +16,12 @@ const Main = () => {
     if (currentUser) {
       setNickname(currentUser.nickname);
     } else {
-      setNickname('방문자');
+      setNickname('<손님>');
     }
   }, [currentUser]);
 
   const onHandleProfile = async () => {
-    if (!currentUser) {
-      await login('admin', 'admin')
-    } else{
-      await logout()
-    }
+    navigation.navigate('Profile')
   };
 
   return (
