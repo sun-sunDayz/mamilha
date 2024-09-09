@@ -22,8 +22,9 @@ const Main = ({ navigation }) => {
     }
   }, [currentUser]);
 
+
   useEffect(() => {
-    apiClient.get(`/api/groups/`) // api/finances/(finances_id)/splits 
+    apiClient.get(`/api/groups/`)
       .then(response => {
         setGroups(response.data)
       })
@@ -36,11 +37,7 @@ const Main = ({ navigation }) => {
     navigation.navigate('Profile')
   };
 
-  const onHandleFinances = async () => {
-    navigation.navigate('Finances', { "group_pk": 103 })
-  };
 
-  console.log(groups)
   return (
     <View style={styles.container}>
       <View style={styles.nicknameContainer}>
@@ -65,7 +62,7 @@ const Main = ({ navigation }) => {
       {groups.map((group) => (
           <ListItem
           key={group.id}
-          onPress={() => onHandleFinances()}
+          onPress={() => navigation.navigate('Finances', { "group_pk": group.id })}
           title={group.name}
           leader={group.leader}
           members={group.members}
