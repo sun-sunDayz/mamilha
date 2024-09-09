@@ -11,6 +11,7 @@ import {
 import apiClient from '../services/apiClient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useDebounce from '../api/useDebounce';
+import { login } from '../api/Accounts';
 
 const SignUpScreen = ({navigation}) => {
   const [name, setName] = useState('');
@@ -84,7 +85,7 @@ const SignUpScreen = ({navigation}) => {
         '/api/users/validate/username/',
         data,
       );
-      setIdError(response.data.message);
+      setIdError('');
       setFormValidateChecker(prevState => ({
         ...prevState,
         username: true,
@@ -125,7 +126,7 @@ const SignUpScreen = ({navigation}) => {
         '/api/users/validate/password/',
         data,
       );
-      setPasswordError(response.data.message);
+      setPasswordError('');
       setFormValidateChecker(prevState => ({
         ...prevState,
         password: true,
@@ -166,7 +167,7 @@ const SignUpScreen = ({navigation}) => {
     }
 
     if (passwordConfirmUp === passwordUp) {
-      setConfirmPasswordError('비밀번호가 일치합니다.');
+      setConfirmPasswordError();
       setFormValidateChecker(prevState => ({
         ...prevState,
         passwordCheck: true,
@@ -196,7 +197,7 @@ const SignUpScreen = ({navigation}) => {
 
     try {
       const response = await apiClient.post('/api/users/validate/email/', data);
-      setEmailError(response.data.message);
+      setEmailError('');
       setFormValidateChecker(prevState => ({
         ...prevState,
         email: true,
@@ -210,24 +211,6 @@ const SignUpScreen = ({navigation}) => {
     }
   }
 
-  const handleLogin = async e => {
-    try {
-      const response = await apiClient.post('/api/login/', {
-        username: idUp,
-        password: passwordUp,
-      });
-      const {access, refresh} = response.data;
-      await AsyncStorage.setItem('accessToken', access);
-      await AsyncStorage.setItem('refreshToken', refresh);
-      await AsyncStorage.setItem('id', idUp);
-
-      navigation.navigate('Main');
-    } catch (error) {
-      const message = error.response.data.detail
-      Alert.alert('로그인에 실패했습니다.', message);
-    }
-  };
-
   const handleSignUp = async () => {
     try {
       await checkUserName();
@@ -235,7 +218,7 @@ const SignUpScreen = ({navigation}) => {
       await checkPasswordCheck();
       await checkEmail();
     } catch (error) {
-      console.log('error');
+      console.log('error', error);
     }
 
     if (
@@ -262,12 +245,12 @@ const SignUpScreen = ({navigation}) => {
           name: name,
           nickname: nickname,
         })
-      console.log('response');
       if (response.status === 201) {
         // 성공 시 추가 작업 (e.g., 로그인 화면으로 이동)
 
         Alert.alert('회원가입 성공');
-        await handleLogin();
+        await login(idUp, passwordUp)
+        navigation.navigate('Main');
       } else {
         Alert.alert('회원가입 실패', '알 수 없는 오류가 발생했습니다.');
       }
