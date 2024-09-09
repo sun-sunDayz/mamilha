@@ -1,16 +1,18 @@
-import React, {useEffect, useState, useContext} from 'react';
-import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
+import React, { useEffect, useState, useContext } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import ListItem from '../components/ListItem';
 import ButtonGroup from '../components/ButtonGroup';
 import AwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
-import {UserContext} from '../userContext';
+import { UserContext } from '../userContext';
+import apiClient from '../services/apiClient'
 
-const Main = ({navigation}) => {
+const Main = ({ navigation }) => {
   const currentUser = useContext(UserContext);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [nickname, setNickname] = useState('방문자');
+  const [groups, setGroups] = useState([])
 
   useEffect(() => {
     if (currentUser) {
@@ -20,14 +22,25 @@ const Main = ({navigation}) => {
     }
   }, [currentUser]);
 
+  useEffect(() => {
+    apiClient.get(`/api/groups/`) // api/finances/(finances_id)/splits 
+      .then(response => {
+        setGroups(response.data)
+      })
+      .catch(error => {
+        console.error('데이터를 불러오는데 실패했습니다', error)
+      });
+  }, []);
+
   const onHandleProfile = async () => {
     navigation.navigate('Profile')
   };
 
   const onHandleFinances = async () => {
-    navigation.navigate('Finances',{"group_pk":103})
+    navigation.navigate('Finances', { "group_pk": 103 })
   };
 
+  console.log(groups)
   return (
     <View style={styles.container}>
       <View style={styles.nicknameContainer}>
@@ -49,12 +62,15 @@ const Main = ({navigation}) => {
         <Text style={styles.meetingListText}>모임 목록</Text>
       </View>
       <View>
-        <ListItem
-          onPress={() => addGroup()}
+        {groups.map((group) => (
+          <ListItem
+          key={group.id}
+          onPress={() => onHandleFinances()}
           title="마밀러 클라이밍"
           leader="히키"
           members="15"
         />
+        ))}
         <ListItem
           onPress={() => onHandleFinances()}
           title="마밀러 힙합 동아리"
