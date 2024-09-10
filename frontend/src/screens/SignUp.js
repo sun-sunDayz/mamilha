@@ -255,9 +255,7 @@ const SignUpScreen = ({navigation}) => {
         Alert.alert('회원가입 실패', '알 수 없는 오류가 발생했습니다.');
       }
     } catch (error) {
-      console.log('error', error)
       if (error.response) {
-        console.log('error');
         // 서버에서의 응답이 있는 경우
         const errorMessage =
           error.response.data.detail || '회원가입에 실패했습니다.';
