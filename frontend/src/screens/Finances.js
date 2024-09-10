@@ -1,7 +1,6 @@
 import {StyleSheet, Text, View, TouchableOpacity, SafeAreaView } from 'react-native';
 import React, {useState} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import Spending from '../components/Spending';
 import Split from '../components/Split';
 import { useNavigation } from '@react-navigation/native';
@@ -19,12 +18,12 @@ const Finances = ({ navigation, route }) => {
     return (
         <SafeAreaView SafeAreaView style={styles.container}>
             <View style={styles.header}>
-                <Ionicons name="chevron-back-outline" size={25} color="gray" />
+                <Ionicons name="chevron-back-outline" size={30} color="#616161" />
                 <View>
                     <Text style={styles.title}>모임명</Text>
                 </View>
                 <TouchableOpacity onPress={()=>navigation.navigate('UpdateGroup', {'group_pk':group_pk})}> 
-                  <AntDesign name="setting" size={25} color="gray" />
+                  <Ionicons name="settings-outline" size={30} color="#616161" />
                 </TouchableOpacity>
             </View>
 
