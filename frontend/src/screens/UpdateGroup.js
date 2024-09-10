@@ -7,7 +7,7 @@ import GroupCategory from '../components/GroupCategory';
 import GroupMember from '../components/GroupMember';
 import UpdateMember from '../components/UpdateMember';
 import Currency from '../components/Currency';
-import Icon from 'react-native-vector-icons/Ionicons'
+import Ionicons from 'react-native-vector-icons/Ionicons'
 import apiClient from '../services/apiClient';
 
 
@@ -73,15 +73,13 @@ const UpdateGroup = ({route}) => {
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <SafeAreaView style={styles.Container}>
-                <StatusBar backgroundColor='white' barStyle='dark-content' />
-                <View style={styles.TopContainer}>
-                    <View style={styles.TitleContainer}>
-                        <Text style={styles.TitleText}>모임 수정</Text>
-                    </View>
+                <View style={styles.header}>
+                    <Ionicons name="close" size={30} color="#616161" />
+                        <View>
+                            <Text style={styles.title}>모임 정보</Text>
+                        </View>
+                    <Ionicons name="settings-outline" size={30} color="transparent" />
                 </View>
-                <TouchableOpacity onPress={handleGoBack} style={styles.CloseIcon} >
-                    <Icon name="chevron-back" size={40} color="#6C6C6C" />
-                </TouchableOpacity>
                 <ScrollView ref={scrollViewRef} contentContainerStyle={styles.ScrollViewContent}>
                     <View style={styles.SectionContainer}>
                         <Text style={styles.SectionTitle}>모임 이름</Text>
@@ -161,8 +159,21 @@ const UpdateGroup = ({route}) => {
 const styles = StyleSheet.create({
     Container: {
         flex: 1,
-        backgroundColor: "#F1F1F9",
+        paddingTop: 10,
+        backgroundColor: '#f1f1f9',
     },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+      },
+      title: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: 'black',
+      },
     TopContainer: {
         position: 'relative',
     },
