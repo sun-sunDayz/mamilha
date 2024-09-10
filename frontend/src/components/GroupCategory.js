@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, FlatList, StyleSheet } from 'react-native';
 import axios from 'axios';
-import Icon from 'react-native-vector-icons/Ionicons'
+import Ionicons from 'react-native-vector-icons/Ionicons'
 
 const GroupCategory = ({ onChangeCategory, selectedCategory }) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -47,7 +47,7 @@ const GroupCategory = ({ onChangeCategory, selectedCategory }) => {
           {selectedItem ? selectedItem : '카테고리 선택'}
         </Text>
         <View style={styles.dropdownIcon}>
-          <Icon name="chevron-expand" size={20} color='#6C6C6C' />
+          <Ionicons name="chevron-expand" size={20} color='#6C6C6C' />
         </View>
       </TouchableOpacity>
 
