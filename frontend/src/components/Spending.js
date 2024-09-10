@@ -58,14 +58,14 @@ const truncateAmount = amount => {
   return amount.toLocaleString() + '원';
 };
 
-const Spending = () => {
+const Spending = ({group_pk}) => {
   const [Data, setData] = useState([]);
   const navigation = useNavigation();
 
   useEffect(() => {
     const getFinances = async () => {
       try {
-        const response = await apiClient.get('/api/finances/103/');
+        const response = await apiClient.get(`/api/finances/${group_pk}/`);
         console.log(response.data);
         setData(response.data);
       } catch (error) {
@@ -74,6 +74,7 @@ const Spending = () => {
     };
     getFinances();
   }, []);
+
 
   return (
     <View style={styles.container}>

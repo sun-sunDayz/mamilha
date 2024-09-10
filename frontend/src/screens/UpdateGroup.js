@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
     View, Text, ScrollView, StyleSheet, TextInput, StatusBar, TouchableWithoutFeedback, Keyboard, TouchableOpacity, SafeAreaView, Modal
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import GroupCategory from '../components/GroupCategory';
 import GroupMember from '../components/GroupMember';
 import UpdateMember from '../components/UpdateMember';
@@ -11,7 +10,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import apiClient from '../services/apiClient';
 
 
-const UpdateGroup = ({route}) => {
+const UpdateGroup = ({route, navigation}) => {
     const [groupName, setGroupName] = useState('');
     const [groupCategory, setGroupCategory] = useState('');
     const [currency, setCurrency] = useState('');
@@ -19,7 +18,6 @@ const UpdateGroup = ({route}) => {
     const [updateMembers, setUpdateMembers] = useState([]);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
     const [modalWidth, setModalWidth] = useState(0)
-    const navigation = useNavigation();
     const scrollViewRef = useRef(null);
     
     const group_pk = route.params.group_pk

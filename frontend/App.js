@@ -12,6 +12,7 @@ import PasswordChange from './src/screens/PasswordChange';
 import {NavigationContainer} from '@react-navigation/native';
 import CreateFinance from './src/screens/CreateFinance';
 import UpdateFinance from './src/screens/UpdateFinance';
+import FinanceDetail from './src/screens/FinanceDetail'
 import { UserProvider } from './src/userContext';
 
 const App = () => {
@@ -38,6 +39,7 @@ const App = () => {
           <Stack.Screen name="UpdateGroup" component={UpdateGroup} />
           <Stack.Screen name="CreateFinance" component={CreateFinance} />
           <Stack.Screen name="UpdateFinance" component={UpdateFinance} />
+          <Stack.Screen name="FinanceDetail" component={FinanceDetail} />
         </Stack.Navigator>
       </UserProvider>
     </NavigationContainer>
