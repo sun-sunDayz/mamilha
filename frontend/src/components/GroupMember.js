@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons'
+import Ionicons from 'react-native-vector-icons/Ionicons'
 
 const GroupMember = ({ onChangeMembers, onAddMember}) => {
     const [inputs, setInputs] = useState([{ id: 1, name: '', active: 1 }]);
@@ -40,15 +40,16 @@ const GroupMember = ({ onChangeMembers, onAddMember}) => {
                             }}
                         />
                         <TouchableOpacity onPress={() => deleteInput(input.id)} style={styles.deleteButton}>
-                            <Icon name="trash-outline" size={18} color='#C65757' />
+                            <Ionicons name="trash-outline" size={18} color='#C65757' />
                         </TouchableOpacity>
                     </View>
                 ))}
             </View>
             <View style={{ alignItems: 'center', marginTop: 10 }}>
                 <TouchableOpacity onPress={addInput} style={styles.addButton}>
-                    <Icon name="add-outline" size={35} color='#ffffff' />
+                    <Ionicons name="add-circle" size={35} color='#5DAF6A' />
                 </TouchableOpacity>
+
             </View>
         </View>
     );
@@ -65,8 +66,6 @@ const styles = StyleSheet.create({
         borderRadius: 15,
     },
     addButton: {
-        backgroundColor: '#5DAF6A',
-        borderRadius: 100,
         height: 40,
         width: 40,
         justifyContent: 'center',
