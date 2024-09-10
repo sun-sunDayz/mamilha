@@ -1,9 +1,8 @@
-import {StyleSheet, Text, View, FlatList, TouchableOpacity, ScrollView } from 'react-native';
-import axios from 'axios';
-import React, {useState, useEffect} from 'react';
+import { StyleSheet, Text, View, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import React, { useState, useEffect } from 'react';
 import apiClient from '../services/apiClient';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 const getIconStyle = icon => {
   switch (icon) {
@@ -71,8 +70,6 @@ const Spending = () => {
         setData(response.data);
       } catch (error) {
         console.error('Error fetching data: ', error);
-      } finally {
-        setLoading(false);
       }
     };
     getFinances();
@@ -97,12 +94,13 @@ const Spending = () => {
           <Text style={styles.emptyText}>지출을 등록해주세요!</Text>
         </View>
       ) : (
-        <ScrollView>
-        <FlatList
-          data={Data}
-          keyExtractor={item => item.id.toString()}
-          renderItem={({item}) => (
-            <TouchableOpacity onPress={()=>{navigation.navigate('FinanceDetail',{'group_pk':103, 'finance_pk':521})}}>
+        <ScrollView contentContainerStyle={styles.scrollView}>
+          {Data.map(item => (
+            <TouchableOpacity
+              key={item.id.toString()}
+              onPress={() => {
+                navigation.navigate('FinanceDetail', { group_pk: 103, finance_pk: 521 });
+              }}>
               <View style={styles.listItem}>
                 <View
                   style={[
@@ -115,7 +113,7 @@ const Spending = () => {
                   <Text style={styles.name}>
                     {truncateText(item.description, 14)}
                   </Text>
-                  <View style={{flexDirection: 'row'}}>
+                  <View style={{ flexDirection: 'row' }}>
                     <Text style={styles.date}>{item.created_at}</Text>
                     <Text style={styles.payer}>결제자</Text>
                     <Text style={styles.date}>
@@ -123,14 +121,23 @@ const Spending = () => {
                     </Text>
                   </View>
                 </View>
-                <View style={{flex: 4}}>
+                <View style={{ flex: 4 }}>
                   <Text style={styles.amount}>{truncateAmount(item.amount)}</Text>
                 </View>
               </View>
             </TouchableOpacity>
-          )}
-        /></ScrollView>
+          ))}
+        </ScrollView>
       )}
+      <TouchableOpacity
+        style={styles.addButton}
+        onPress={() => navigation.navigate('CreateFinance')}>
+        <Ionicons
+          name="add-circle"
+          size={50}
+          color="#5DAF6A"
+        />
+      </TouchableOpacity>
     </View>
   );
 };
@@ -141,6 +148,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f1f1f9',
+    position: 'relative',
   },
   emptySpendView: {
     flex: 1,
@@ -221,5 +229,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'black',
     textAlign: 'right',
+  },
+  scrollView: {
+    flexGrow: 1,
+  },
+  addButton: {
+    position: 'absolute',
+    backgroundColor: 'transparent',
+    //하단 가운데에 위치하도록
+    bottom: 0,
+    right: 0,
+    left: 0,
+    padding: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
