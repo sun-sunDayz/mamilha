@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, FlatList, StyleSheet } from 'react-native';
-import axios from 'axios';
+import apiClient from '../services/apiClient'
 import Icon from 'react-native-vector-icons/Ionicons'
+
 
 const Currency = ({ onChangeCurrency, selectedCurrency }) => {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
@@ -10,7 +11,7 @@ const Currency = ({ onChangeCurrency, selectedCurrency }) => {
     const [Data, setData] = useState([]);
 
     useEffect(() => {
-        axios.get('http://127.0.0.1:8000/api/groups/currency/')
+        apiClient.get('/api/groups/currency/')
             .then(response => {
                 setData(response.data);
             })
