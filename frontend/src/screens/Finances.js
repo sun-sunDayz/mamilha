@@ -3,13 +3,13 @@ import React, {useState} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Spending from '../components/Spending';
 import Split from '../components/Split';
-import { useNavigation } from '@react-navigation/native';
-import UpdateGroup from './UpdateGroup';
+
 
 
 const Finances = ({ navigation, route }) => {
   const [selectedTab, setSelectedTab] = useState('지출'); // 초기값은 '지출'
   const group_pk = route.params.group_pk
+  const group_title = route.params.title
 
   const handleTabPress = tab => {
     setSelectedTab(tab);
@@ -18,9 +18,11 @@ const Finances = ({ navigation, route }) => {
     return (
         <SafeAreaView SafeAreaView style={styles.container}>
             <View style={styles.header}>
-                <Ionicons name="chevron-back-outline" size={30} color="#616161" />
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                  <Ionicons name="chevron-back-outline" size={30} color="#616161" />
+                </TouchableOpacity>
                 <View>
-                    <Text style={styles.title}>모임명</Text>
+                    <Text style={styles.title}>{group_title}</Text>
                 </View>
                 <TouchableOpacity onPress={()=>navigation.navigate('UpdateGroup', {'group_pk':group_pk})}> 
                   <Ionicons name="settings-outline" size={30} color="#616161" />
