@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, FlatList, StyleSheet } from 'react-native';
-import axios from 'axios';
+import apiClient from '../services/apiClient';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 
 const GroupCategory = ({ onChangeCategory, selectedCategory }) => {
@@ -10,7 +10,7 @@ const GroupCategory = ({ onChangeCategory, selectedCategory }) => {
   const [Data, setData] = useState([]);
 
   useEffect(() => {
-    axios.get('http://127.0.0.1:8000/api/groups/category/')
+    apiClient.get('/api/groups/category/')
       .then(response => {
         setData(response.data);
       })

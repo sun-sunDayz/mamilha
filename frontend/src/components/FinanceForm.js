@@ -12,9 +12,9 @@ import {Dropdown} from 'react-native-element-dropdown';
 import DatePicker from 'react-native-date-picker';
 import apiClient from '../services/apiClient';
 import moment from 'moment';
-import axios from 'axios';
 
-const FinanceForm = ({initialData, onSubmit, buttonLabel}) => {
+
+const FinanceForm = ({initialData, onSubmit, buttonLabel, group_pk}) => {
   const [formData, setFormData] = useState({
     date: '',
     type: '지출',
@@ -52,8 +52,8 @@ const FinanceForm = ({initialData, onSubmit, buttonLabel}) => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get(
-          'http://localhost:8000/api/groups/category/',
+        const response = await apiClient.get(
+          '/api/groups/category/',
         );
         // API 응답 데이터를 state에 저장
         const categories = response.data.map(item => ({
@@ -78,8 +78,8 @@ const FinanceForm = ({initialData, onSubmit, buttonLabel}) => {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const response = await axios.get(
-          'http://localhost:8000/api/groups/3/members/',
+        const response = await apiClient.get(
+          `/api/groups/${group_pk}/members/`,
           //   'http://localhost:8000/api/groups/${groupPk}/members/',
         );
         // API 응답 데이터를 state에 저장
@@ -106,7 +106,7 @@ const FinanceForm = ({initialData, onSubmit, buttonLabel}) => {
     try {
       const response = await apiClient.post(
         // 'http://localhost:8000/api/finances/1/',
-        'http://localhost:8000/api/finances/${groupPk}/members',
+        `/api/finances/${group_pk}/members`,
         {
           ...formData,
           type: selectedType,
