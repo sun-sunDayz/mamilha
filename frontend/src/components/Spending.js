@@ -66,7 +66,6 @@ const Spending = ({group_pk}) => {
     const getFinances = async () => {
       try {
         const response = await apiClient.get(`/api/finances/${group_pk}/`);
-        console.log(response.data);
         setData(response.data);
       } catch (error) {
         console.error('Error fetching data: ', error);
@@ -75,13 +74,17 @@ const Spending = ({group_pk}) => {
     getFinances();
   }, []);
 
+  const handelCreateFinance = () =>{
+    navigation.navigate('CreateFinance', {'group_pk' : group_pk})
+  };
+
 
   return (
     <View style={styles.container}>
       {Data.length === 0 ? (
         <View style={styles.emptySpendView}>
           <TouchableOpacity
-            onPress={() => navigation.navigate('CreateFinance')}>
+            onPress={() => handelCreateFinance()}>
             <Ionicons
               style={{marginBottom: 20}}
               name="add-circle"
@@ -100,7 +103,7 @@ const Spending = ({group_pk}) => {
             <TouchableOpacity
               key={item.id.toString()}
               onPress={() => {
-                navigation.navigate('FinanceDetail', { group_pk: 103, finance_pk: 521 });
+                navigation.navigate('FinanceDetail', { 'group_pk': group_pk , 'finance_pk': item.id });
               }}>
               <View style={styles.listItem}>
                 <View
@@ -132,7 +135,7 @@ const Spending = ({group_pk}) => {
       )}
       <TouchableOpacity
         style={styles.addButton}
-        onPress={() => navigation.navigate('CreateFinance')}>
+        onPress={() => handelCreateFinance()}>
         <Ionicons
           name="add-circle"
           size={50}
