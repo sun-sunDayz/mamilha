@@ -51,7 +51,9 @@ const CreateGroup = ({ navigation }) => {
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <SafeAreaView SafeAreaView style={styles.Container}>
                 <View style={styles.header}>
-                    <Ionicons name="close" size={30} color="#616161" />
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <Ionicons name="close" size={30} color="#616161" />
+                    </TouchableOpacity>
                     <View>
                         <Text style={styles.title}>모임 생성</Text>
                     </View>
