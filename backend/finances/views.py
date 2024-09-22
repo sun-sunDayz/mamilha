@@ -1,11 +1,14 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from groups.models import Group, Member
 from .models import Finance, FinanceCategory, FinanceType, PayMethod, SplitMethod, Split
 from django.utils import timezone
 
 class FinancesAPIView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get(self, request, group_pk):
         group = Group.objects.get(pk=group_pk)
         finances = Finance.objects.filter(group=group)
@@ -72,6 +75,8 @@ class FinancesAPIView(APIView):
         return Response(status=status.HTTP_201_CREATED)
     
 class FinancesDetailAPIView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get(self, request, group_pk, finance_pk):
         finance = Finance.objects.get(pk=finance_pk)
         if finance.group.pk != group_pk:
@@ -135,6 +140,7 @@ class FinancesDetailAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class FinancesSplitAPIView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request, finance_pk):
         user = request.user.username
@@ -174,6 +180,8 @@ class FinancesSplitAPIView(APIView):
             return Response(status=status.HTTP_201_CREATED)
         
 class FinanceCategorysAPIView(APIView):
+    permission_classes = [AllowAny]
+
     def get(self, request):
         finance_categorys = FinanceCategory.objects.all()
         categorys = []
