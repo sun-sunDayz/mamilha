@@ -26,10 +26,6 @@ const FinanceForm = ({initialData, onSubmit, buttonLabel, group_pk}) => {
     member: null,
     ...initialData, // 초기값 설정 (update 에서 사용)
   });
-  console.log(initialData,1)
-  console.log(formData.finance_category)
-  console.log(formData.payer)
-  console.log(formData.member)
 
   // 일시 (Date)
 
@@ -49,36 +45,41 @@ const FinanceForm = ({initialData, onSubmit, buttonLabel, group_pk}) => {
 
   // 카테고리 (Category)
   const [categoryData, setCategoryData] = useState([]);
-  const [category, setCategory] = useState(formData.finance_category);
+  const [category, setCategory] = useState(null);
   const [isCategoryFocus, setIsCategoryFocus] = useState(false);
-  console.log(categoryData)
-  console.log(category)
+
   // useEffect를 사용하여 컴포넌트가 마운트될 때 API 호출
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await apiClient.get(
-          '/api/groups/category/',
+          '/api/finances/categorys/',
         );
         // API 응답 데이터를 state에 저장
         const categories = response.data.map(item => ({
-          label: item.category_name, // 'labelField'에 해당하는 필드
-          value: item.category_id, // 'valueField'에 해당하는 필드
+          label: item.name, // 'labelField'에 해당하는 필드
+          value: item.id, // 'valueField'에 해당하는 필드
         }));
         setCategoryData(categories);
+
+        const selectedCategory = categories.find(
+          item => item.label === formData.finance_category // 카테고리 비교
+        );
+        if (selectedCategory) {
+          setCategory(selectedCategory.value); // 일치하는 값이 있으면 설정
+        }
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
     };
 
     fetchCategories();
-  }, []); // 빈 배열을 전달하여 컴포넌트가 처음 마운트될 때만 실행
+  }, [formData.finance_category]); // 빈 배열을 전달하여 컴포넌트가 처음 마운트될 때만 실행
 
   // 결제자(payer) & 참여 멤버(selected members)
   const [members, setMembers] = useState([]); // 멤버 리스트
-  const [payer, setPayer] = useState(null); // 결제자 선택
+  const [payer, setPayer] = useState(formData.payer); // 결제자 선택
   const [selectedMembers, setSelectedMembers] = useState([]); // 선택된 참여 멤버 상태
-
   // useEffect를 사용하여 컴포넌트가 마운트될 때 API 호출
   useEffect(() => {
     const fetchMembers = async () => {
@@ -93,13 +94,20 @@ const FinanceForm = ({initialData, onSubmit, buttonLabel, group_pk}) => {
           value: item.id, // 'valueField'에 해당하는 필드
         }));
         setMembers(membersData);
+
+        const selectedPayer = membersData.find(
+          item => item.label === formData.payer  // 결제자 비교 
+        );
+        if (selectedPayer) {
+          setPayer(selectedPayer.value); // 일치하는 값이 있으면 설정
+        }
       } catch (error) {
         console.error('Error fetching members:', error);
       }
     };
 
     fetchMembers();
-  }, []); // 빈 배열을 전달하여 컴포넌트가 처음 마운트될 때만 실행
+  }, [formData.payer]); // 빈 배열을 전달하여 컴포넌트가 처음 마운트될 때만 실행
 
   const [isPayerFocus, setIsPayerFocus] = useState(false);
 
