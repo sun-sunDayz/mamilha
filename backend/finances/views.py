@@ -173,4 +173,13 @@ class FinancesSplitAPIView(APIView):
             )
             return Response(status=status.HTTP_201_CREATED)
         
-        
+class FinanceCategorysAPIView(APIView):
+    def get(self, request):
+        finance_categorys = FinanceCategory.objects.all()
+        categorys = []
+        for category in finance_categorys:
+            categorys.append({
+                "id" : category.id,
+                "name" : category.name,
+            })
+        return Response(categorys, status=status.HTTP_200_OK)
