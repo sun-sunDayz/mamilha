@@ -17,19 +17,23 @@ import moment from 'moment';
 const FinanceForm = ({initialData, onSubmit, buttonLabel, group_pk}) => {
   const [formData, setFormData] = useState({
     date: '',
-    type: '지출',
-    category: null,
+    finance_type: '지출',
+    finance_category: null,
     payer: null,
-    method: '카드',
-    price: '',
+    pay_method: '카드',
+    amount: '',
     description: '',
     member: null,
     ...initialData, // 초기값 설정 (update 에서 사용)
   });
+  console.log(initialData,1)
+  console.log(formData.finance_category)
+  console.log(formData.payer)
+  console.log(formData.member)
 
   // 일시 (Date)
 
-  const [date, setDate] = useState(null);
+  const [date, setDate] = useState(formData.date ? new Date(initialData.date) : null);
   const [open, setOpen] = useState(false);
 
   const handleConfirm = selectedDate => {
@@ -40,14 +44,15 @@ const FinanceForm = ({initialData, onSubmit, buttonLabel, group_pk}) => {
 
   // 구분 (Type)
 
-  const [selectedType, setSelectedType] = useState('지출'); // 초기값은 '지출'
-  const [selectedMethod, setSelectedMethod] = useState('카드'); // 초기값은 '카드'
+  const [selectedType, setSelectedType] = useState(formData.finance_type||'지출'); // 초기값은 '지출'
+  const [selectedMethod, setSelectedMethod] = useState(formData.pay_method||'카드'); // 초기값은 '카드'
 
   // 카테고리 (Category)
   const [categoryData, setCategoryData] = useState([]);
-  const [category, setCategory] = useState(null);
+  const [category, setCategory] = useState(formData.finance_category);
   const [isCategoryFocus, setIsCategoryFocus] = useState(false);
-
+  console.log(categoryData)
+  console.log(category)
   // useEffect를 사용하여 컴포넌트가 마운트될 때 API 호출
   useEffect(() => {
     const fetchCategories = async () => {
@@ -320,9 +325,9 @@ const FinanceForm = ({initialData, onSubmit, buttonLabel, group_pk}) => {
             <View style={styles.rowContents}>
               <TextInput
                 placeholder="금액 입력"
-                style={styles.priceInput}
-                value={formData.price}
-                onChangeText={text => handleChange('price', text)}
+                style={styles.amountInput}
+                value={`${formData.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`}
+                onChangeText={text => handleChange('amount', text)}
               />
               <Text style={styles.contentText}>원</Text>
             </View>
@@ -427,7 +432,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#FFFFFF',
   },
-  priceInput: {
+  amountInput: {
     flex: 1,
     color: '#434343',
     fontSize: 16,
