@@ -12,9 +12,11 @@ import {Dropdown} from 'react-native-element-dropdown';
 import DatePicker from 'react-native-date-picker';
 import apiClient from '../services/apiClient';
 import moment from 'moment';
+import {useNavigation} from '@react-navigation/native';
 
 
 const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
+  const navigation = useNavigation(); // 네비게이션 객체 가져오기
   const [formData, setFormData] = useState({
     date: '',
     finance_type: '지출',
@@ -136,7 +138,8 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
 
 
       if (response.status === 201) {
-        alert('저장 성공');
+        alert('지출 등록에 성공했습니다');
+        navigation.navigate('Finances', { "group_pk": group_pk })
         // Form reset or navigation can be handled here
       } else {
         alert('저장 실패: ' + result.message);
