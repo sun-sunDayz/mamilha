@@ -1,33 +1,40 @@
-import {StyleSheet, Text, View, TouchableOpacity, SafeAreaView } from 'react-native';
-import React, {useState} from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  SafeAreaView,
+} from 'react-native';
+import React, {useState, useEffect} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Spending from '../components/Spending';
 import Split from '../components/Split';
 
-
-
-const Finances = ({ navigation, route }) => {
+const Finances = ({navigation, route}) => {
   const [selectedTab, setSelectedTab] = useState('지출'); // 초기값은 '지출'
-  const group_pk = route.params.group_pk
-  const group_title = route.params.title
+  const group_pk = route.params.group_pk;
+  const group_title = route.params.title;
 
   const handleTabPress = tab => {
     setSelectedTab(tab);
   };
 
-    return (
-        <SafeAreaView SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                  <Ionicons name="chevron-back-outline" size={30} color="#616161" />
-                </TouchableOpacity>
-                <View>
-                    <Text style={styles.title}>{group_title}</Text>
-                </View>
-                <TouchableOpacity onPress={()=>navigation.navigate('UpdateGroup', {'group_pk':group_pk})}> 
-                  <Ionicons name="settings-outline" size={30} color="#616161" />
-                </TouchableOpacity>
-            </View>
+  return (
+    <SafeAreaView SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="chevron-back-outline" size={30} color="#616161" />
+        </TouchableOpacity>
+        <View>
+          <Text style={styles.title}>{group_title}</Text>
+        </View>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate('UpdateGroup', {group_pk: group_pk})
+          }>
+          <Ionicons name="settings-outline" size={30} color="#616161" />
+        </TouchableOpacity>
+      </View>
 
       <View style={styles.tabContainer}>
         <TouchableOpacity
@@ -47,30 +54,30 @@ const Finances = ({ navigation, route }) => {
           </Text>
         </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={[
-                        styles.tabButton,
-                        selectedTab === '정산' ? styles.activeTab : styles.inactiveTab,
-                    ]}
-                    onPress={() => handleTabPress('정산')}
-                >
-                    <Text
-                        style={[
-                            styles.tabText,
-                            selectedTab === '정산' ? styles.activeTabText : styles.inactiveTabText,
-                        ]}
-                    >
-                        정산
-                    </Text>
-                </TouchableOpacity>
-            </View>
+        <TouchableOpacity
+          style={[
+            styles.tabButton,
+            selectedTab === '정산' ? styles.activeTab : styles.inactiveTab,
+          ]}
+          onPress={() => handleTabPress('정산')}>
+          <Text
+            style={[
+              styles.tabText,
+              selectedTab === '정산'
+                ? styles.activeTabText
+                : styles.inactiveTabText,
+            ]}>
+            정산
+          </Text>
+        </TouchableOpacity>
+      </View>
 
-            <View style={styles.contentContainer}>
-                {selectedTab === '지출' && <Spending group_pk={group_pk}/>}
-                {selectedTab === '정산' && <Split group_pk={group_pk}/>}
-            </View>
-        </SafeAreaView>
-    );
+      <View style={styles.contentContainer}>
+        {selectedTab === '지출' && <Spending group_pk={group_pk} />}
+        {selectedTab === '정산' && <Split group_pk={group_pk} />}
+      </View>
+    </SafeAreaView>
+  );
 };
 
 export default Finances;
