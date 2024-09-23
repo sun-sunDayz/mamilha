@@ -31,6 +31,7 @@ class FinancesAPIView(APIView):
         data = request.data
         group = Group.objects.get(pk=group_pk)
         amount = data.get('amount', None)
+        amount = int(amount.replace(",", ""))
         description = data.get('description', None)
 
         # 하단의 정보들은 테이블에서 레코드 탐색을 해야함
@@ -41,9 +42,10 @@ class FinancesAPIView(APIView):
         split_method = data.get('split_method', None)
         
         try:
-            payer = Member.objects.get(name=payer, group=group)
+            print(f'amount={amount}, payer={payer}, group={group}, finance type={finance_type}, cate={finance_category}, method={pay_method}, split_method={split_method}')
+            payer = Member.objects.get(id=payer, group=group)
             finance_type = FinanceType.objects.get(name=finance_type)
-            finance_category = FinanceCategory.objects.get(name=finance_category)
+            finance_category = FinanceCategory.objects.get(id=finance_category)
             pay_method = PayMethod.objects.get(name=pay_method)
             split_method = SplitMethod.objects.get(name=split_method)
         except Member.DoesNotExist:
