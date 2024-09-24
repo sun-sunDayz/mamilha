@@ -12,9 +12,11 @@ import {Dropdown} from 'react-native-element-dropdown';
 import DatePicker from 'react-native-date-picker';
 import apiClient from '../services/apiClient';
 import moment from 'moment';
+import {useNavigation} from '@react-navigation/native';
 
 
-const FinanceForm = ({initialData, onSubmit, buttonLabel, group_pk}) => {
+const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
+  const navigation = useNavigation(); // 네비게이션 객체 가져오기
   const [formData, setFormData] = useState({
     date: '',
     finance_type: '지출',
@@ -24,6 +26,7 @@ const FinanceForm = ({initialData, onSubmit, buttonLabel, group_pk}) => {
     amount: '',
     description: '',
     member: null,
+    split_method: '고정분할',
     ...initialData, // 초기값 설정 (update 에서 사용)
   });
 
@@ -76,6 +79,7 @@ const FinanceForm = ({initialData, onSubmit, buttonLabel, group_pk}) => {
     fetchCategories();
   }, [formData.finance_category]); // 빈 배열을 전달하여 컴포넌트가 처음 마운트될 때만 실행
 
+
   // 결제자(payer) & 참여 멤버(selected members)
   const [members, setMembers] = useState([]); // 멤버 리스트
   const [payer, setPayer] = useState(formData.payer); // 결제자 선택
@@ -119,7 +123,7 @@ const FinanceForm = ({initialData, onSubmit, buttonLabel, group_pk}) => {
     try {
       const response = await apiClient.post(
         // 'http://localhost:8000/api/finances/1/',
-        `/api/finances/${group_pk}/members`,
+        `/api/finances/${group_pk}/`,
         {
           ...formData,
           type: selectedType,
@@ -132,10 +136,10 @@ const FinanceForm = ({initialData, onSubmit, buttonLabel, group_pk}) => {
         },
       );
 
-      const result = await response.json();
 
-      if (response.ok) {
-        alert('저장 성공');
+      if (response.status === 201) {
+        alert('지출 등록에 성공했습니다');
+        navigation.navigate('Finances', { "group_pk": group_pk })
         // Form reset or navigation can be handled here
       } else {
         alert('저장 실패: ' + result.message);
@@ -259,6 +263,10 @@ const FinanceForm = ({initialData, onSubmit, buttonLabel, group_pk}) => {
                 setCategory(item.value);
                 setIsCategoryFocus(false);
                 handleChange('category', item.value);
+                setFormData(prevState => ({
+                  ...prevState, 
+                  finance_category: item.value 
+                }));
               }}
             />
           </View>
@@ -296,7 +304,16 @@ const FinanceForm = ({initialData, onSubmit, buttonLabel, group_pk}) => {
                     ? styles.activeTab
                     : styles.inactiveTab,
                 ]}
-                onPress={() => setSelectedMethod('카드')}>
+                onPress={() => {
+                  setSelectedMethod('카드')
+                  setFormData(prevState => ({
+                    ...prevState, 
+                    pay_method: '카드' 
+                  }));
+                }
+
+
+                }>
                 <Text
                   style={[
                     styles.tabText,
@@ -314,7 +331,13 @@ const FinanceForm = ({initialData, onSubmit, buttonLabel, group_pk}) => {
                     ? styles.activeTab
                     : styles.inactiveTab,
                 ]}
-                onPress={() => setSelectedMethod('현금')}>
+                onPress={() => {
+                  setSelectedMethod('현금')
+                  setFormData(prevState => ({
+                    ...prevState, 
+                    pay_method: '현금' 
+                  }));
+                }}>
                 <Text
                   style={[
                     styles.tabText,
