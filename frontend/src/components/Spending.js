@@ -1,8 +1,15 @@
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, ScrollView } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import apiClient from '../services/apiClient';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
 
 const getIconStyle = icon => {
   switch (icon) {
@@ -62,29 +69,34 @@ const Spending = ({group_pk}) => {
   const [Data, setData] = useState([]);
   const navigation = useNavigation();
 
+  const getFinances = async () => {
+    try {
+      const response = await apiClient.get(`/api/finances/${group_pk}/`);
+      setData(response.data);
+    } catch (error) {
+      console.error('Error fetching data: ', error);
+    }
+  };
+
   useEffect(() => {
-    const getFinances = async () => {
-      try {
-        const response = await apiClient.get(`/api/finances/${group_pk}/`);
-        setData(response.data);
-      } catch (error) {
-        console.error('Error fetching data: ', error);
-      }
-    };
     getFinances();
   }, []);
 
-  const handelCreateFinance = () =>{
-    navigation.navigate('CreateFinance', {'group_pk' : group_pk})
+  const handelCreateFinance = () => {
+    navigation.navigate('CreateFinance', {group_pk: group_pk});
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      getFinances();
+    }, []),
+  );
 
   return (
     <View style={styles.container}>
       {Data.length === 0 ? (
         <View style={styles.emptySpendView}>
-          <TouchableOpacity
-            onPress={() => handelCreateFinance()}>
+          <TouchableOpacity onPress={() => handelCreateFinance()}>
             <Ionicons
               style={{marginBottom: 20}}
               name="add-circle"
@@ -103,7 +115,10 @@ const Spending = ({group_pk}) => {
             <TouchableOpacity
               key={item.id.toString()}
               onPress={() => {
-                navigation.navigate('FinanceDetail', { 'group_pk': group_pk , 'finance_pk': item.id });
+                navigation.navigate('FinanceDetail', {
+                  group_pk: group_pk,
+                  finance_pk: item.id,
+                });
               }}>
               <View style={styles.listItem}>
                 <View
@@ -117,7 +132,7 @@ const Spending = ({group_pk}) => {
                   <Text style={styles.name}>
                     {truncateText(item.description, 14)}
                   </Text>
-                  <View style={{ flexDirection: 'row' }}>
+                  <View style={{flexDirection: 'row'}}>
                     <Text style={styles.date}>{item.created_at}</Text>
                     <Text style={styles.payer}>결제자</Text>
                     <Text style={styles.date}>
@@ -125,8 +140,10 @@ const Spending = ({group_pk}) => {
                     </Text>
                   </View>
                 </View>
-                <View style={{ flex: 4 }}>
-                  <Text style={styles.amount}>{truncateAmount(item.amount)}</Text>
+                <View style={{flex: 4}}>
+                  <Text style={styles.amount}>
+                    {truncateAmount(item.amount)}
+                  </Text>
                 </View>
               </View>
             </TouchableOpacity>
@@ -136,11 +153,7 @@ const Spending = ({group_pk}) => {
       <TouchableOpacity
         style={styles.addButton}
         onPress={() => handelCreateFinance()}>
-        <Ionicons
-          name="add-circle"
-          size={50}
-          color="#5DAF6A"
-        />
+        <Ionicons name="add-circle" size={50} color="#5DAF6A" />
       </TouchableOpacity>
     </View>
   );
