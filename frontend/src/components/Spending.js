@@ -3,6 +3,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import React, { useState, useEffect } from 'react';
 import apiClient from '../services/apiClient';
 import { useNavigation } from '@react-navigation/native';
+import CustomText from '../../CustomText';
 
 const getIconStyle = icon => {
   switch (icon) {
@@ -89,12 +90,13 @@ const Spending = ({group_pk}) => {
               color="#A379E8"
             />
           </TouchableOpacity>
-          <Text style={styles.emptyText}>
+          <CustomText style={styles.emptyText}>
             아직 등록된 지출 내역이 없습니다.
-          </Text>
-          <Text style={styles.emptyText}>지출을 등록해주세요!</Text>
+          </CustomText>
+          <CustomText style={styles.emptyText}>지출을 등록해주세요!</CustomText>
         </View>
       ) : (
+        <>
         <ScrollView contentContainerStyle={styles.scrollView}>
           {Data.map(item => (
             <TouchableOpacity
@@ -111,34 +113,35 @@ const Spending = ({group_pk}) => {
                   {getIconComponent(item.finance_category)}
                 </View>
                 <View style={styles.details}>
-                  <Text style={styles.name}>
+                  <CustomText style={styles.name}>
                     {truncateText(item.description, 14)}
-                  </Text>
+                  </CustomText>
                   <View style={{ flexDirection: 'row' }}>
-                    <Text style={styles.date}>{item.created_at}</Text>
-                    <Text style={styles.payer}>결제자</Text>
-                    <Text style={styles.date}>
+                    <CustomText style={styles.date}>{item.created_at}</CustomText>
+                    <CustomText>결제자</CustomText>
+                    <CustomText style={styles.date}>
                       {truncateText(item.payer, 30)}
-                    </Text>
+                    </CustomText>
                   </View>
                 </View>
                 <View style={{ flex: 4 }}>
-                  <Text style={styles.amount}>{truncateAmount(item.amount)}</Text>
+                  <CustomText style={styles.amount}>{truncateAmount(item.amount)}</CustomText>
                 </View>
               </View>
             </TouchableOpacity>
           ))}
         </ScrollView>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => navigation.navigate('CreateFinance')}>
+          <Ionicons
+            name="add-circle"
+            size={50}
+            color="#5DAF6A"
+          />
+        </TouchableOpacity>
+      </>
       )}
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => navigation.navigate('CreateFinance')}>
-        <Ionicons
-          name="add-circle"
-          size={50}
-          color="#5DAF6A"
-        />
-      </TouchableOpacity>
     </View>
   );
 };
