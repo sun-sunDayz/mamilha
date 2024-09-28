@@ -62,7 +62,7 @@ const Main = ({ navigation }) => {
       {groups.map((group) => (
           <ListItem
           key={group.id}
-          onPress={() => navigation.navigate('Finances', { "group_pk": group.id })}
+          onPress={() => navigation.navigate('Finances', { "group_pk": group.id, 'title':group.name })}
           title={group.name}
           leader={group.leader}
           members={group.members}
