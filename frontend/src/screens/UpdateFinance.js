@@ -5,8 +5,10 @@ import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import FinanceForm from '../components/FinanceForm';
 
-const EditFinance = () => {
+const UpdateFinance = ({route}) => {
   const navigation = useNavigation(); // 네비게이션 객체 가져오기
+  const data = route.params.data
+  const group_pk = route.params.group_pk
 
   const handleGoBack = () => {
     navigation.goBack(); // 뒤로가기 액션
@@ -29,16 +31,17 @@ const EditFinance = () => {
       </View>
       <View>
         <FinanceForm
-          initialData={financeData}
+          initialData={data}
           onSubmit={handleUpdate}
           buttonLabel="Save"
+          group_pk = {group_pk}
         />
       </View>
     </SafeAreaView>
   );
 };
 
-export default EditFinance;
+export default UpdateFinance;
 
 const styles = StyleSheet.create({
   container: {
