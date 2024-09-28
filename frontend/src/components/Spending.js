@@ -1,8 +1,15 @@
-import { StyleSheet, Text, View, FlatList, TouchableOpacity, ScrollView } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import apiClient from '../services/apiClient';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import CustomText from '../../CustomText';
 
 const getIconStyle = icon => {
@@ -63,26 +70,34 @@ const Spending = ({group_pk}) => {
   const [Data, setData] = useState([]);
   const navigation = useNavigation();
 
+  const getFinances = async () => {
+    try {
+      const response = await apiClient.get(`/api/finances/${group_pk}/`);
+      setData(response.data);
+    } catch (error) {
+      console.error('Error fetching data: ', error);
+    }
+  };
+
   useEffect(() => {
-    const getFinances = async () => {
-      try {
-        const response = await apiClient.get(`/api/finances/${group_pk}/`);
-        console.log(response.data);
-        setData(response.data);
-      } catch (error) {
-        console.error('Error fetching data: ', error);
-      }
-    };
     getFinances();
   }, []);
 
+  const handelCreateFinance = () => {
+    navigation.navigate('CreateFinance', {group_pk: group_pk});
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      getFinances();
+    }, []),
+  );
 
   return (
     <View style={styles.container}>
       {Data.length === 0 ? (
         <View style={styles.emptySpendView}>
-          <TouchableOpacity
-            onPress={() => navigation.navigate('CreateFinance')}>
+          <TouchableOpacity onPress={() => handelCreateFinance()}>
             <Ionicons
               style={{marginBottom: 20}}
               name="add-circle"
@@ -102,7 +117,10 @@ const Spending = ({group_pk}) => {
             <TouchableOpacity
               key={item.id.toString()}
               onPress={() => {
-                navigation.navigate('FinanceDetail', { group_pk: 103, finance_pk: 521 });
+                navigation.navigate('FinanceDetail', {
+                  group_pk: group_pk,
+                  finance_pk: item.id,
+                });
               }}>
               <View style={styles.listItem}>
                 <View

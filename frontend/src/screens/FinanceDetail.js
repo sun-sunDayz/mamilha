@@ -8,8 +8,6 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import apiClient from '../services/apiClient';
 import CustomText from '../../CustomText';
 
-
-
 const FinanceDetail = ({ route }) => {
     const navigation = useNavigation();
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -23,22 +21,25 @@ const FinanceDetail = ({ route }) => {
     const [splitMethod, setSplitMethod] = useState();
     const [splitMembers, setSplitMembers] = useState();
     const [date, setDate] = useState();
+    const [data, setData] = useState()
     const scrollViewRef = useRef(null);
 
     const group_pk = route.params.group_pk
     const finance_pk = route.params.finance_pk
 
     useEffect(() => {
-        apiClient.get(`/api/finances/${group_pk}/${finance_pk}/`)  // api/finances/(group_id)/(finances_id)/
+        apiClient.get(`/api/finances/${group_pk}/${finance_pk}/`)  
             .then(response => {
-                setAmount(response.data.amount) 
-                setDescription(response.data.description)
-                setPayar(response.data.payer)
-                setFinancesType(response.data.finance_type)
-                setFinancesCategory(response.data.finance_category)
-                setPayMethod(response.data.pay_method)
-                setSplitMethod(response.data.split_method)
-                setDate(response.data.date)
+                const data = response.data
+                setAmount(data.amount) 
+                setDescription(data.description)
+                setPayar(data.payer)
+                setFinancesType(data.finance_type)
+                setFinancesCategory(data.finance_category)
+                setPayMethod(data.pay_method)
+                setSplitMethod(data.split_method)
+                setDate(data.date)
+                setData(data)
             })
             .catch(error => {
                 console.error('데이터를 불러오는데 실패했습니다', error)
@@ -46,7 +47,7 @@ const FinanceDetail = ({ route }) => {
     }, []);
 
     useEffect(() => {
-        apiClient.get(`/api/finances/${finance_pk}/splits/`) // api/finances/(finances_id)/splits 
+        apiClient.get(`/api/finances/${finance_pk}/splits/`)
             .then(response => {
                 setSplitMembers(response.data)
             })
@@ -70,7 +71,7 @@ const FinanceDetail = ({ route }) => {
     }; //finance 삭제
 
     const handleUpdate = () => {
-        navigation.navigate('UpdateFinance');
+        navigation.navigate('UpdateFinance', {'data':data, 'group_pk':group_pk});
     }; // finance update screen으로 이동 
 
     const comma = (amount) => {

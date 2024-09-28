@@ -123,7 +123,7 @@ class GroupAPIView(APIView):
                         status=status.HTTP_201_CREATED)
 
 
-class GroupCategory(APIView):
+class GroupCategoryAPIView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
@@ -137,7 +137,7 @@ class GroupCategory(APIView):
                 })
         return Response(category,status=status.HTTP_200_OK)
 
-class GroupCurrency(APIView):
+class GroupCurrencyAPIView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
@@ -152,7 +152,7 @@ class GroupCurrency(APIView):
         return Response(currency,status=status.HTTP_200_OK)
 
 
-class GroupDetail(APIView):
+class GroupDetailAPIView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self,request, group_pk):
@@ -253,7 +253,7 @@ class GroupDetail(APIView):
         group.delete()
         return Response({"message: 그룹을 삭제 했습니다."},status=status.HTTP_200_OK)
     
-class GroupSplit(APIView):
+class GroupSplitAPIView(APIView):
     # permission_classes = [IsAuthenticated]
     
     def get(self, request, group_pk):
@@ -351,7 +351,7 @@ class MemberAPIView(APIView):
             return False
 
 
-class MemberDetail(APIView):
+class MemberDetailAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, group_pk, member_pk):
@@ -421,7 +421,7 @@ class MemberDetail(APIView):
             return False
 
 
-class MemberGrades(APIView):
+class MemberGradesAPIView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
