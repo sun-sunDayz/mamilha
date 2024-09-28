@@ -24,7 +24,6 @@ const App = () => {
         <Tab.Screen name="Main" component={Main} />
         <Tab.Screen name="Login" component={Login} />
         <Tab.Screen name="SignUp" component={SignUp} />
-        <Tab.Screen name="Finances" component={Finances} />
         <Tab.Screen name="Profile" component={Profile} />
         <Tab.Screen name="PasswordChange" component={PasswordChange} />
       </Tab.Navigator>
@@ -37,6 +36,7 @@ const App = () => {
           <Stack.Screen name="Bottom" component={BottomTabScreen} />
           <Stack.Screen name="CreateGroup" component={CreateGroup} />
           <Stack.Screen name="UpdateGroup" component={UpdateGroup} />
+          <Stack.Screen name="Finances" component={Finances} />
           <Stack.Screen name="CreateFinance" component={CreateFinance} />
           <Stack.Screen name="UpdateFinance" component={UpdateFinance} />
           <Stack.Screen name="FinanceDetail" component={FinanceDetail} />
