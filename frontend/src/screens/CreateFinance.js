@@ -7,11 +7,8 @@ import FinanceForm from '../components/FinanceForm';
 
 const CreateFinance = ({route}) => {
   const navigation = useNavigation(); // 네비게이션 객체 가져오기
-  const group_pk = route.params.group_pk
-
-  const handleGoBack = () => {
-    navigation.goBack(); // 뒤로가기 액션
-  };
+  // const group_pk = route.params.group_pk;
+  const group_pk = 1;
 
   // 지출 생성
   const handleCreate = formData => {
@@ -26,15 +23,20 @@ const CreateFinance = ({route}) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleGoBack}>
-          <Icon name="close" size={40} color="#616161" />
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Icon name="close" size={30} color="#616161" />
         </TouchableOpacity>
-        <Text style={styles.headerText}>지출 등록</Text>
-        {/* 빈 공간 */}
-        <View style={{width: 40}}></View>
+        <View>
+          <Text style={styles.title}>지출 등록</Text>
+        </View>
+        <View style={styles.emptyIcon}></View>
       </View>
       <View style={styles.content}>
-        <FinanceForm onSubmit={handleFormSubmit} buttonLabel="생성하기" group_pk={group_pk}/>
+        <FinanceForm
+          onSubmit={handleFormSubmit}
+          buttonLabel="생성하기"
+          group_pk={group_pk}
+        />
       </View>
     </SafeAreaView>
   );
@@ -51,11 +53,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    height: 41,
     paddingHorizontal: 20,
+    paddingVertical: 10,
   },
-  headerText: {
-    fontSize: 20,
+  title: {
+    fontSize: 18,
     fontWeight: 'bold',
+    color: 'black',
+  },
+  emptyIcon: {
+    height: 30,
+    width: 30,
   },
 });
