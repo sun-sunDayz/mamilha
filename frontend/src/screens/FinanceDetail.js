@@ -133,11 +133,11 @@ const FinanceDetail = ({ route }) => {
                     <View style={styles.MembersContant}>
                         {splitMembers && splitMembers.map((member, index) => (
                             <View style={[styles.MembeerView,
-                            index > 0 && { borderTopWidth: 1, borderTopColor: '#ADAFBD', paddingTop: 7 }]}
+                            index > 0 && { borderTopWidth: 0.2, borderTopColor: '#ADAFBD', paddingTop: 7 }]}
                                 key={index}>
                                 <View style={styles.MembeerViewContant}>
                                     <Icon name="person-circle" size={30} color="#5DAF6A" />
-                                    <Text style={styles.MemberText}>{member.member}</Text>
+                                    <Text style={styles.MemberText}> {member.member} </Text>
                                     {member.currencyUser && (
                                         <Text style={styles.MemberTextMe}>(Me)</Text>  //로그인 user와 같은 이름이 있는 경우 표시
                                     )} 
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
         color: "#616161",
     },
     separator: {
-        height: 1,
+        height: 0.5,
         width: '100%',
         backgroundColor: 'rgba(0,0,0,0.2)',
         marginVertical: 10,
@@ -234,10 +234,10 @@ const styles = StyleSheet.create({
         paddingBottom: 120,
     },
     ContentTitle: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: '700',
+        color : '#000000',
         paddingTop: 10,
-        paddingBottom: 10
     },
     ContentTop: {
 
@@ -254,7 +254,8 @@ const styles = StyleSheet.create({
     ContentTopText: {
         fontSize: 20,
         top: 5,
-        paddingLeft: 5
+        paddingLeft: 5,
+        color : '#000000',
     },
     ContentMiddle: {
         flex: 1
@@ -267,10 +268,12 @@ const styles = StyleSheet.create({
     ContentText: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#434343'
+        color: '#000000'
     },
     ContentBottomText: {
+        marginTop: 5,
         fontSize: 16,
+        color: '#434343',
     },
     UpdateGroupButton: {
         position: 'absolute',
@@ -338,13 +341,13 @@ const styles = StyleSheet.create({
     },
     MembersContant: {
         color: '#000000',
+        marginTop: 10,
         padding: 10,
         paddingLeft: 15,
         backgroundColor: '#ffffff',
         borderRadius: 15,
     },
     MembeerView: {
-        paddingBottom: 7,
         flexDirection: 'row',
         justifyContent: 'space-between',
     },
@@ -355,11 +358,11 @@ const styles = StyleSheet.create({
     MemberText: {
         alignItems: 'center',
         color: '#434343',
-        fontSize: 18,
+        fontSize: 16,
     },
     MemberTextMe: {
         color: '#5DAF6A',
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: '700',
     },
     MembeerUnderBar: {
