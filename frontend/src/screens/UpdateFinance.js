@@ -7,12 +7,8 @@ import FinanceForm from '../components/FinanceForm';
 
 const UpdateFinance = ({route}) => {
   const navigation = useNavigation(); // 네비게이션 객체 가져오기
-  const data = route.params.data
-  const group_pk = route.params.group_pk
-
-  const handleGoBack = () => {
-    navigation.goBack(); // 뒤로가기 액션
-  };
+  const data = route.params.data;
+  const group_pk = route.params.group_pk;
 
   // 지출 편집
   const handleUpdate = formData => {
@@ -22,19 +18,20 @@ const UpdateFinance = ({route}) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={handleGoBack}>
-          <Icon name="close" size={40} color="#616161" />
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Icon name="close" size={30} color="#616161" />
         </TouchableOpacity>
-        <Text style={styles.headerText}>지출 등록</Text>
-        {/* 빈 공간 */}
-        <View style={{width: 40}}></View>
+        <View>
+          <Text style={styles.title}>지출 편집</Text>
+        </View>
+        <View style={styles.emptyIcon}></View>
       </View>
       <View>
         <FinanceForm
           initialData={data}
           onSubmit={handleUpdate}
           buttonLabel="Save"
-          group_pk = {group_pk}
+          group_pk={group_pk}
         />
       </View>
     </SafeAreaView>
@@ -52,11 +49,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    height: 41,
     paddingHorizontal: 20,
+    paddingVertical: 10,
   },
-  headerText: {
-    fontSize: 20,
+  title: {
+    fontSize: 18,
     fontWeight: 'bold',
+    color: 'black',
+  },
+  emptyIcon: {
+    height: 30,
+    width: 30,
   },
 });

@@ -51,6 +51,9 @@
 
 	<key>UIAppFonts</key>
 <array>
+  <string>BMYEONSUNG_ttf.ttf</string>
+  <string>Pretendard-Regular.ttf</string>
+  <string>Pretendard-Bold.ttf</string>
   <string>AntDesign.ttf</string>
   <string>Entypo.ttf</string>
   <string>EvilIcons.ttf</string>
