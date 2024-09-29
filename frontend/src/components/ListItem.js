@@ -1,27 +1,34 @@
 import React from 'react';
-import { View, TouchableOpacity, Image, Text, StyleSheet } from 'react-native';
-import AwesomeIcon from 'react-native-vector-icons/FontAwesome';
+import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import Ionicon from 'react-native-vector-icons/Ionicons';
-import EntypoIcon from 'react-native-vector-icons/Entypo';
 
 const ListItem = ({ onPress, title, leader, members }) => {
   return (
     <TouchableOpacity style={styles.list} onPress={onPress}>
-        <Ionicon name="barbell" size={30} color="#A379E8"/>
+      <Ionicon name="barbell" size={30} color="#A379E8" />
       <View style={styles.listContainer}>
         <Text style={styles.listText}>{title}</Text>
         <View style={styles.listContainer2}>
-          <View style={styles.listContainer3}>
+          <View style={styles.flexTitle}>
             <Text style={styles.listTextSubTitle}>모임장</Text>
+          </View>
+          <View style={styles.flexLeader}>
             <Text style={styles.listTextSub}>{leader}</Text>
           </View>
-          <View style={styles.listContainer3}>
+          <View style={styles.flexTitle}>
             <Text style={styles.listTextSubTitle}>멤버</Text>
+          </View>
+          <View style={styles.flexMember}>
             <Text style={styles.listTextSub}>{members}</Text>
           </View>
         </View>
       </View>
-      <EntypoIcon name="chevron-thin-right" size={15} color="#000" style={styles.buttonImage}/>
+      <Ionicon
+        name="chevron-forward-outline"
+        size={20}
+        color="#ADAFBD"
+        style={styles.buttonImage}
+      />
     </TouchableOpacity>
   );
 };
@@ -30,41 +37,44 @@ const styles = StyleSheet.create({
   list: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 10,
+    padding: 15,
     backgroundColor: '#FFFFFF', // 배경색을 흰색으로 설정
-    borderRadius: 5,
-    marginBottom: 15,
-    width: '80%',
-  },
-  listImage: {
-    width: 30,
-    height: 30,
-    marginRight: 10,
+    borderRadius: 10,
+    marginHorizontal: 20,
+    marginVertical: 5,
   },
   listText: {
     fontSize: 16,
     color: '#000000', // title 텍스트 색상을 검정색으로 설정
+    fontWeight: '600',
   },
   listContainer: {
     marginLeft: 10,
+    flex: 1,
   },
   listContainer2: {
     flexDirection: 'row',
     marginTop: 5,
   },
-  listContainer3: {
-    flexDirection: 'row',
-    marginRight: 20,
+  flexTitle: {
+    flex: 2,
+  },
+  flexLeader: {
+    flex: 5,
+  },
+  flexMember: {
+    flex: 2,
   },
   listTextSubTitle: {
     fontSize: 14,
-    color: '#888888', // subtitle 색상 예시
+    color: '#616161',
     fontWeight: 'bold',
     marginRight: 5,
   },
   listTextSub: {
+    textAlign: 'left',
     fontSize: 14,
-    color: '#000000', // subtitle 텍스트 색상도 검정색으로 설정
+    color: '#616161',
   },
   buttonImage: {
     width: 20,
@@ -74,4 +84,3 @@ const styles = StyleSheet.create({
 });
 
 export default ListItem;
-
