@@ -43,11 +43,11 @@ const GroupCategory = ({ onChangeCategory, selectedCategory }) => {
           setDropdownWidth(width);
         }}
       >
-        <Text style={[styles.dropdownButtonText, { color: selectedItem ? '#000000' : '#C0C0C0' }]}>
+        <Text style={[styles.dropdownButtonText, { color: selectedItem ? '#000000' : '#ADAFBD' }]}>
           {selectedItem ? selectedItem : '카테고리 선택'}
         </Text>
         <View style={styles.dropdownIcon}>
-          <Ionicons name="chevron-expand" size={20} color='#6C6C6C' />
+          <Ionicons name="chevron-expand" size={20} color='#ADAFBD' />
         </View>
       </TouchableOpacity>
 
@@ -101,8 +101,8 @@ const styles = StyleSheet.create({
     height: 40,
   },
   dropdownButtonText: {
-    fontSize: 18,
-    color: '#C0C0C0',
+    fontSize: 16,
+    color: '#ADAFBD',
   },
   modalOverlay: {
     flex: 1,
