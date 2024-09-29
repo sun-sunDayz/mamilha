@@ -3,9 +3,10 @@ import {
     View, Text, ScrollView, StyleSheet, StatusBar, TouchableOpacity, SafeAreaView, Modal
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons'
 import Icon from 'react-native-vector-icons/Ionicons'
 import apiClient from '../services/apiClient';
-
+import CustomText from '../../CustomText';
 
 const FinanceDetail = ({ route }) => {
     const navigation = useNavigation();
@@ -81,11 +82,14 @@ const FinanceDetail = ({ route }) => {
     return (
         <SafeAreaView style={styles.Container}>
             <StatusBar backgroundColor='white' barStyle='dark-content' />
-            <View style={styles.TopContainer}>
+            <View style={styles.header}>
                 <TouchableOpacity onPress={handleGoBack} style={styles.CloseIcon} >
-                    <Icon name="chevron-back" size={40} color="#6C6C6C" />
+                    <Ionicons name="chevron-back-outline" size={30} color="#616161" />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => setIsUpdateModalOpen(true)} style={styles.CloseIcon} >
+                <View>
+                    <CustomText style={styles.title}></CustomText>
+                </View>
+                <TouchableOpacity onPress={()=>navigation.navigate('UpdateGroup', {'group_pk':group_pk})}> 
                     <Text style={styles.DeleteText}>삭제</Text>
                 </TouchableOpacity>
             </View>
@@ -187,10 +191,22 @@ const FinanceDetail = ({ route }) => {
 }
 
 const styles = StyleSheet.create({
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+    },
+    title: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: 'black',
+    },
     Container: {
         flex: 1,
-        backgroundColor: "#F1F1F9",
-        margin: 10,
+        paddingTop: 10,
+        backgroundColor: '#f1f1f9',
     },
     TopContainer: {
         flexDirection: 'row',
@@ -203,8 +219,7 @@ const styles = StyleSheet.create({
         padding: 0
     },
     DeleteText: {
-        fontSize: 20,
-        fontWeight: '700',
+        fontSize: 16,
         right: 10,
         color: "#616161",
     },
