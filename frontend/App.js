@@ -22,9 +22,12 @@ const App = () => {
     <NavigationContainer>
       <UserProvider>
         <Stack.Navigator screenOptions={{headerShown: false}}>
-          <Stack.Screen name="SignUp" component={SignUp} />
           <Stack.Screen name="Main" component={Main} />
+          <Stack.Screen name="SignUp" component={SignUp} />
           <Stack.Screen name="CreateGroup" component={CreateGroup} />
+          <Stack.Screen name="Profile" component={Profile} />
+          <Stack.Screen name="Login" component={Login} />
+          <Stack.Screen name="PasswordChange" component={PasswordChange} />
           <Stack.Screen name="UpdateGroup" component={UpdateGroup} />
           <Stack.Screen name="Finances" component={Finances} />
           <Stack.Screen name="CreateFinance" component={CreateFinance} />
