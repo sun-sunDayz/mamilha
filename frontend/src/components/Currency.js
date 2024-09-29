@@ -44,11 +44,11 @@ const Currency = ({ onChangeCurrency, selectedCurrency }) => {
                     setDropdownWidth(width);
                 }}
             >
-                <Text style={[styles.dropdownButtonText, { color: selectedItem ? '#000000' : '#C0C0C0' }]}>
+                <Text style={[styles.dropdownButtonText, { color: selectedItem ? '#000000' : '#ADAFBD' }]}>
                     {selectedItem ? selectedItem : '통화 선택'}
                 </Text>
                 <View style={styles.dropdownIcon}>
-                    <Icon name="chevron-expand" size={20} color='#6C6C6C' />
+                    <Icon name="chevron-expand" size={20} color='#ADAFBD' />
                 </View>
             </TouchableOpacity>
 
@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
         height: 40,
     },
     dropdownButtonText: {
-        fontSize: 18,
+        fontSize: 16,
         color: '#C0C0C0',
     },
     modalOverlay: {
