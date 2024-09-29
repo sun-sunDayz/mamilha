@@ -32,7 +32,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
 
   // 일시 (Date)
 
-  const [date, setDate] = useState(formData.date ? new Date(initialData.date) : null);
+  const [date, setDate] = useState(formData.date ? new Date(initialData.date) : new Date());
   const [open, setOpen] = useState(false);
 
   const handleConfirm = selectedDate => {

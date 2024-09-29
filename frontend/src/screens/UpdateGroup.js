@@ -86,6 +86,7 @@ const UpdateGroup = ({route, navigation}) => {
                         <TextInput
                             placeholder="모임 이름 입력"
                             keyboardType="default"
+                            placeholderTextColor="#ADAFBD"
                             style={styles.GroupNameInput}
                             value={groupName}
                             onChangeText={setGroupName}
@@ -99,8 +100,8 @@ const UpdateGroup = ({route, navigation}) => {
                         <Text style={styles.SectionTitle}>통화 카테고리</Text>
                         <Currency selectedCurrency={currency} onChangeCurrency={setCurrency} />
                     </View>
-                    <View style={styles.MemberContainer}>
-                        <Text style={styles.MemberTitle}>멤버</Text>
+                    <View style={styles.SectionContainer}>
+                        <Text style={styles.SectionTitle}>멤버</Text>
                         <View style={styles.MemberUserContainer}>
                             <Text style={styles.MemberUserName}>닉네임</Text>
                             <Text style={styles.MemberUserMe}>(나)</Text>
@@ -168,12 +169,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 20,
         paddingVertical: 10,
-      },
-      title: {
+    },
+    title: {
         fontSize: 18,
         fontWeight: 'bold',
         color: 'black',
-      },
+    },
     TopContainer: {
         position: 'relative',
     },
@@ -193,7 +194,7 @@ const styles = StyleSheet.create({
     },
     GroupNameInput: {
         height: 40,
-        fontSize: 18,
+        fontSize: 16,
         color: '#000000',
         marginTop: 10,
         padding: 10,
@@ -206,11 +207,13 @@ const styles = StyleSheet.create({
         paddingBottom: 150,
     },
     SectionContainer: {
-        margin: 10
+        marginBottom: 10,
+        marginHorizontal: 10
     },
     SectionTitle: {
-        fontSize: 15,
+        fontSize: 12,
         fontWeight: '700',
+        color: '#000000',
     },
     UpdateGroupButton: {
         position: 'absolute',
@@ -276,13 +279,6 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color: '#ffffff'
     },
-    MemberContainer: {
-        margin: 10
-    },
-    MemberTitle: {
-        fontSize: 15,
-        fontWeight: '700'
-    },
     MemberUserContainer: {
         borderRadius: 15,
         backgroundColor: '#ffffff',
@@ -292,14 +288,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row'
     },
     MemberUserName: {
-        fontSize: 18,
+        fontSize: 16,
         color: '#000000'
     },
     MemberUserMe: {
-        fontSize: 18,
+        fontSize: 16,
         fontWeight: '600',
         color: '#5DAF6A',
-        marginTop: -2,
         marginLeft: 5
     },
 });
