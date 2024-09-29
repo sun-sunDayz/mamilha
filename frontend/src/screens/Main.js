@@ -1,20 +1,11 @@
-import React, {useEffect, useState, useContext} from 'react';
-import {
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  SafeAreaView,
-} from 'react-native';
+
+import React, { useEffect, useState, useContext } from 'react';
+import { View, Text, Image, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import ListItem from '../components/ListItem';
 import ButtonGroup from '../components/ButtonGroup';
-import AwesomeIcon from 'react-native-vector-icons/FontAwesome';
-import EntypoIcon from 'react-native-vector-icons/Entypo';
-import {UserContext} from '../userContext';
-import apiClient from '../services/apiClient';
-import Icon from 'react-native-vector-icons/Ionicons';
-
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { UserContext } from '../userContext';
+import apiClient from '../services/apiClient'
 const Main = ({navigation}) => {
   const currentUser = useContext(UserContext);
   const [data, setData] = useState(null);
@@ -46,16 +37,19 @@ const Main = ({navigation}) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+
+    <SafeAreaView SafeAreaView style={styles.container}>
       <View style={styles.nicknameContainer}>
         <TouchableOpacity
           style={styles.nicknameButton}
           onPress={() => {
             onHandleProfile();
           }}>
-          <Icon name="person-circle-outline" size={32} color="#5DAF6A" />
+
+          <Ionicons name="person-circle-outline" size={30} color="#5DAF6A" />
           <Text style={styles.buttonText}>{nickname}</Text>
-          <Icon name="chevron-forward-outline" size={20} color="#ADAFBD" />
+          <Ionicons name="chevron-forward-outline" size={20} color="#ADAFBD" />
+
         </TouchableOpacity>
       </View>
       <ButtonGroup
@@ -88,20 +82,28 @@ const Main = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'top',
-    alignItems: 'center',
-    backgroundColor: '#F1F1F9',
+
+    paddingTop: 10,
+    backgroundColor: '#f1f1f9',
   },
   nicknameContainer: {
-    marginTop: 16,
-    marginBottom: 12,
     flexDirection: 'row',
-    width: '90%',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+
   },
   nicknameButton: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
+
+    borderRadius: 5,
+  },
+
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+
   },
   button: {
     flexDirection: 'row',
@@ -120,15 +122,17 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     fontSize: 16,
     marginHorizontal: 10,
+    fontWeight: '700',
   },
   meetingListContainer: {
     marginTop: 32,
     marginBottom: 10,
     alignItems: 'flex-start',
-    width: '80%',
+    paddingHorizontal: 20,
   },
   meetingListText: {
     fontSize: 16,
+    color : '#000000',
     fontWeight: 'bold',
     textAlign: 'left',
   },
