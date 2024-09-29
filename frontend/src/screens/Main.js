@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import ListItem from '../components/ListItem';
@@ -6,6 +5,7 @@ import ButtonGroup from '../components/ButtonGroup';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { UserContext } from '../userContext';
 import apiClient from '../services/apiClient'
+
 const Main = ({navigation}) => {
   const currentUser = useContext(UserContext);
   const [data, setData] = useState(null);
@@ -37,7 +37,6 @@ const Main = ({navigation}) => {
   };
 
   return (
-
     <SafeAreaView SafeAreaView style={styles.container}>
       <View style={styles.nicknameContainer}>
         <TouchableOpacity
@@ -45,11 +44,9 @@ const Main = ({navigation}) => {
           onPress={() => {
             onHandleProfile();
           }}>
-
           <Ionicons name="person-circle-outline" size={30} color="#5DAF6A" />
           <Text style={styles.buttonText}>{nickname}</Text>
           <Ionicons name="chevron-forward-outline" size={20} color="#ADAFBD" />
-
         </TouchableOpacity>
       </View>
       <ButtonGroup
@@ -82,7 +79,6 @@ const Main = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
     paddingTop: 10,
     backgroundColor: '#f1f1f9',
   },
@@ -90,20 +86,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 20,
     paddingVertical: 10,
-
   },
   nicknameButton: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-
     borderRadius: 5,
   },
 
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-
   },
   button: {
     flexDirection: 'row',
