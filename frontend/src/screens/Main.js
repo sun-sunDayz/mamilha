@@ -6,36 +6,35 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import { UserContext } from '../userContext';
 import apiClient from '../services/apiClient'
 
-const Main = ({ navigation }) => {
+const Main = ({navigation}) => {
   const currentUser = useContext(UserContext);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [nickname, setNickname] = useState('방문자');
-  const [groups, setGroups] = useState([])
+  const [groups, setGroups] = useState([]);
 
   useEffect(() => {
     if (currentUser) {
       setNickname(currentUser.nickname);
     } else {
-      setNickname('<손님>');
+      setNickname('손님');
     }
   }, [currentUser]);
 
-
   useEffect(() => {
-    apiClient.get(`/api/groups/`)
+    apiClient
+      .get(`/api/groups/`)
       .then(response => {
-        setGroups(response.data)
+        setGroups(response.data);
       })
       .catch(error => {
-        console.error('데이터를 불러오는데 실패했습니다', error)
+        console.error('데이터를 불러오는데 실패했습니다', error);
       });
   }, []);
 
   const onHandleProfile = async () => {
-    navigation.navigate('Profile')
+    navigation.navigate('Profile');
   };
-
 
   return (
     <SafeAreaView SafeAreaView style={styles.container}>
@@ -58,14 +57,19 @@ const Main = ({ navigation }) => {
         <Text style={styles.meetingListText}>모임 목록</Text>
       </View>
       <View>
-      {groups.map((group) => (
+        {groups.map(group => (
           <ListItem
-          key={group.id}
-          onPress={() => navigation.navigate('Finances', { "group_pk": group.id, 'title':group.name })}
-          title={group.name}
-          leader={group.leader}
-          members={group.members}
-        />
+            key={group.id}
+            onPress={() =>
+              navigation.navigate('Finances', {
+                group_pk: group.id,
+                title: group.name,
+              })
+            }
+            title={group.name}
+            leader={group.leader}
+            members={group.members}
+          />
         ))}
       </View>
     </SafeAreaView>
@@ -108,12 +112,13 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#000000',
+    fontWeight: '800',
     fontSize: 16,
     marginHorizontal: 10,
     fontWeight: '700',
   },
   meetingListContainer: {
-    marginTop: 20,
+    marginTop: 32,
     marginBottom: 10,
     alignItems: 'flex-start',
     paddingHorizontal: 20,

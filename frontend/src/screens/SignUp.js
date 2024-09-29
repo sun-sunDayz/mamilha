@@ -7,11 +7,13 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  SafeAreaView,
 } from 'react-native';
 import apiClient from '../services/apiClient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useDebounce from '../api/useDebounce';
-import { login } from '../api/Accounts';
+import {login} from '../api/Accounts';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const SignUpScreen = ({navigation}) => {
   const [name, setName] = useState('');
@@ -237,19 +239,18 @@ const SignUpScreen = ({navigation}) => {
 
     // 회원가입 API 호출 로직 추가
     try {
-      const response = await apiClient
-        .post('/api/users/', {
-          username: idUp,
-          password: passwordUp,
-          email: emailUp,
-          name: name,
-          nickname: nickname,
-        })
+      const response = await apiClient.post('/api/users/', {
+        username: idUp,
+        password: passwordUp,
+        email: emailUp,
+        name: name,
+        nickname: nickname,
+      });
       if (response.status === 201) {
         // 성공 시 추가 작업 (e.g., 로그인 화면으로 이동)
 
         Alert.alert('회원가입 성공');
-        await login(idUp, passwordUp)
+        await login(idUp, passwordUp);
         navigation.navigate('Main');
       } else {
         Alert.alert('회원가입 실패', '알 수 없는 오류가 발생했습니다.');
@@ -268,11 +269,21 @@ const SignUpScreen = ({navigation}) => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="close" size={30} color="#616161" />
+        </TouchableOpacity>
+        <View>
+          <Text style={styles.title}>회원가입</Text>
+        </View>
+        <View style={styles.emptyIcon}></View>
+      </View>
+
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.label}>아이디</Text>
         <TextInput
-          placeholder="아이디를 입력하세요"
+          placeholder="아이디 입력"
           onChangeText={text => setIdUp(text)}
           autoCapitalize="none"
           style={styles.input}
@@ -281,7 +292,7 @@ const SignUpScreen = ({navigation}) => {
 
         <Text style={styles.label}>비밀번호</Text>
         <TextInput
-          placeholder="비밀번호를 입력하세요"
+          placeholder="비밀번호 입력"
           onChangeText={text => setPasswordUp(text)}
           secureTextEntry
           style={styles.input}
@@ -292,7 +303,7 @@ const SignUpScreen = ({navigation}) => {
 
         <Text style={styles.label}>비밀번호 확인</Text>
         <TextInput
-          placeholder="비밀번호를 다시 입력하세요"
+          placeholder="비밀번호 확인"
           onChangeText={text => setPasswordConfirmUp(text)}
           secureTextEntry
           style={styles.input}
@@ -303,7 +314,7 @@ const SignUpScreen = ({navigation}) => {
 
         <Text style={styles.label}>이메일</Text>
         <TextInput
-          placeholder="이메일을 입력하세요"
+          placeholder="이메일 입력"
           onChangeText={text => setEmailUp(text)}
           autoCapitalize="none"
           style={styles.input}
@@ -312,7 +323,7 @@ const SignUpScreen = ({navigation}) => {
 
         <Text style={styles.label}>이름</Text>
         <TextInput
-          placeholder="이름을 입력하세요"
+          placeholder="이름 입력"
           value={name}
           onChangeText={text => setName(text.toLowerCase())}
           style={styles.input}
@@ -321,7 +332,7 @@ const SignUpScreen = ({navigation}) => {
 
         <Text style={styles.label}>닉네임</Text>
         <TextInput
-          placeholder="닉네임을 입력하세요"
+          placeholder="닉네임 입력"
           value={nickname}
           onChangeText={text => setNickname(text.toLowerCase())}
           style={styles.input}
@@ -332,15 +343,32 @@ const SignUpScreen = ({navigation}) => {
       </ScrollView>
 
       <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-        <Text style={styles.buttonText}>회원가입</Text>
+        <Text style={styles.buttonText}>가입하기</Text>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#F1F1F9',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+  emptyIcon: {
+    height: 30,
+    width: 30,
   },
   scrollContainer: {
     padding: 20,
@@ -359,6 +387,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     paddingLeft: 8,
     backgroundColor: '#f9f9f9', // 배경색을 살짝 넣어줘서 입력창이 구분되도록 설정
+    color: '#434343',
   },
   button: {
     position: 'absolute',
