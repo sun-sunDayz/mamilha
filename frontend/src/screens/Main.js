@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import ListItem from '../components/ListItem';
@@ -5,39 +6,38 @@ import ButtonGroup from '../components/ButtonGroup';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { UserContext } from '../userContext';
 import apiClient from '../services/apiClient'
-
-const Main = ({ navigation }) => {
+const Main = ({navigation}) => {
   const currentUser = useContext(UserContext);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [nickname, setNickname] = useState('방문자');
-  const [groups, setGroups] = useState([])
+  const [groups, setGroups] = useState([]);
 
   useEffect(() => {
     if (currentUser) {
       setNickname(currentUser.nickname);
     } else {
-      setNickname('<손님>');
+      setNickname('손님');
     }
   }, [currentUser]);
 
-
   useEffect(() => {
-    apiClient.get(`/api/groups/`)
+    apiClient
+      .get(`/api/groups/`)
       .then(response => {
-        setGroups(response.data)
+        setGroups(response.data);
       })
       .catch(error => {
-        console.error('데이터를 불러오는데 실패했습니다', error)
+        console.error('데이터를 불러오는데 실패했습니다', error);
       });
   }, []);
 
   const onHandleProfile = async () => {
-    navigation.navigate('Profile')
+    navigation.navigate('Profile');
   };
 
-
   return (
+
     <SafeAreaView SafeAreaView style={styles.container}>
       <View style={styles.nicknameContainer}>
         <TouchableOpacity
@@ -45,9 +45,11 @@ const Main = ({ navigation }) => {
           onPress={() => {
             onHandleProfile();
           }}>
+
           <Ionicons name="person-circle-outline" size={30} color="#5DAF6A" />
           <Text style={styles.buttonText}>{nickname}</Text>
           <Ionicons name="chevron-forward-outline" size={20} color="#ADAFBD" />
+
         </TouchableOpacity>
       </View>
       <ButtonGroup
@@ -58,14 +60,19 @@ const Main = ({ navigation }) => {
         <Text style={styles.meetingListText}>모임 목록</Text>
       </View>
       <View>
-      {groups.map((group) => (
+        {groups.map(group => (
           <ListItem
-          key={group.id}
-          onPress={() => navigation.navigate('Finances', { "group_pk": group.id, 'title':group.name })}
-          title={group.name}
-          leader={group.leader}
-          members={group.members}
-        />
+            key={group.id}
+            onPress={() =>
+              navigation.navigate('Finances', {
+                group_pk: group.id,
+                title: group.name,
+              })
+            }
+            title={group.name}
+            leader={group.leader}
+            members={group.members}
+          />
         ))}
       </View>
     </SafeAreaView>
@@ -75,6 +82,7 @@ const Main = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+
     paddingTop: 10,
     backgroundColor: '#f1f1f9',
   },
@@ -82,17 +90,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     paddingHorizontal: 20,
     paddingVertical: 10,
+
   },
   nicknameButton: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
+
     borderRadius: 5,
   },
 
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+
   },
   button: {
     flexDirection: 'row',
@@ -108,12 +119,13 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#000000',
+    fontWeight: '800',
     fontSize: 16,
     marginHorizontal: 10,
     fontWeight: '700',
   },
   meetingListContainer: {
-    marginTop: 20,
+    marginTop: 32,
     marginBottom: 10,
     alignItems: 'flex-start',
     paddingHorizontal: 20,
