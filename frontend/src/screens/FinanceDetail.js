@@ -62,7 +62,7 @@ const FinanceDetail = ({ route }) => {
 
     const handleDelete = async () => {
         try {
-            await apiClient.delete(`/api/finance/${group_pk}/${finance_pk}`);
+            await apiClient.delete(`/api/finances/${group_pk}/${finance_pk}`);
             navigation.goBack();
         } catch (error) {
             alert(error.response.data.error);

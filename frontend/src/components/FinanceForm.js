@@ -157,6 +157,11 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
     setSelectedMethod(tab);
   };
 
+  const comma = amount => {
+    const noCamma = amount.toString().replace(/,/g, '')
+    return noCamma.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.content}>
@@ -357,7 +362,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
               <TextInput
                 placeholder="금액 입력"
                 style={styles.amountInput}
-                value={`${formData.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`}
+                value={comma(formData.amount)}
                 onChangeText={text => handleChange('amount', text)}
               />
               <Text style={styles.contentText}>원</Text>
