@@ -1,11 +1,14 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from groups.models import Group, Member
 from .models import Finance, FinanceCategory, FinanceType, PayMethod, SplitMethod, Split
 from django.utils import timezone
 
 class FinancesAPIView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get(self, request, group_pk):
         group = Group.objects.get(pk=group_pk)
         finances = Finance.objects.filter(group=group)
@@ -28,6 +31,7 @@ class FinancesAPIView(APIView):
         data = request.data
         group = Group.objects.get(pk=group_pk)
         amount = data.get('amount', None)
+        amount = int(amount.replace(",", ""))
         description = data.get('description', None)
 
         # 하단의 정보들은 테이블에서 레코드 탐색을 해야함
@@ -38,9 +42,10 @@ class FinancesAPIView(APIView):
         split_method = data.get('split_method', None)
         
         try:
-            payer = Member.objects.get(name=payer, group=group)
+            print(f'amount={amount}, payer={payer}, group={group}, finance type={finance_type}, cate={finance_category}, method={pay_method}, split_method={split_method}')
+            payer = Member.objects.get(id=payer, group=group)
             finance_type = FinanceType.objects.get(name=finance_type)
-            finance_category = FinanceCategory.objects.get(name=finance_category)
+            finance_category = FinanceCategory.objects.get(id=finance_category)
             pay_method = PayMethod.objects.get(name=pay_method)
             split_method = SplitMethod.objects.get(name=split_method)
         except Member.DoesNotExist:
@@ -72,6 +77,8 @@ class FinancesAPIView(APIView):
         return Response(status=status.HTTP_201_CREATED)
     
 class FinancesDetailAPIView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     def get(self, request, group_pk, finance_pk):
         finance = Finance.objects.get(pk=finance_pk)
         if finance.group.pk != group_pk:
@@ -135,6 +142,7 @@ class FinancesDetailAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class FinancesSplitAPIView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request, finance_pk):
         user = request.user.username
@@ -173,4 +181,15 @@ class FinancesSplitAPIView(APIView):
             )
             return Response(status=status.HTTP_201_CREATED)
         
-        
+class FinanceCategorysAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        finance_categorys = FinanceCategory.objects.all()
+        categorys = []
+        for category in finance_categorys:
+            categorys.append({
+                "id" : category.id,
+                "name" : category.name,
+            })
+        return Response(categorys, status=status.HTTP_200_OK)
