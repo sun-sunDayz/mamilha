@@ -1,9 +1,8 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import ListItem from '../components/ListItem';
 import ButtonGroup from '../components/ButtonGroup';
-import AwesomeIcon from 'react-native-vector-icons/FontAwesome';
-import EntypoIcon from 'react-native-vector-icons/Entypo';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { UserContext } from '../userContext';
 import apiClient from '../services/apiClient'
 
@@ -39,16 +38,16 @@ const Main = ({ navigation }) => {
 
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView SafeAreaView style={styles.container}>
       <View style={styles.nicknameContainer}>
         <TouchableOpacity
           style={styles.nicknameButton}
           onPress={() => {
             onHandleProfile();
           }}>
-          <AwesomeIcon name="user-circle-o" size={25} color="#5DAF6A" />
+          <Ionicons name="person-circle-outline" size={30} color="#5DAF6A" />
           <Text style={styles.buttonText}>{nickname}</Text>
-          <EntypoIcon name="chevron-thin-right" size={15} color="#000" />
+          <Ionicons name="chevron-forward-outline" size={20} color="#ADAFBD" />
         </TouchableOpacity>
       </View>
       <ButtonGroup
@@ -69,23 +68,20 @@ const Main = ({ navigation }) => {
         />
         ))}
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'top',
-    alignItems: 'center',
+    paddingTop: 10,
     backgroundColor: '#f1f1f9',
   },
   nicknameContainer: {
-    marginTop: 15,
-    marginBottom: 15,
     flexDirection: 'row',
-    justifyContent: 'flex-start',
-    width: '80%',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
   },
   nicknameButton: {
     flexDirection: 'row',
@@ -97,7 +93,6 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '80%',
   },
   button: {
     flexDirection: 'row',
@@ -115,15 +110,17 @@ const styles = StyleSheet.create({
     color: '#000000',
     fontSize: 16,
     marginHorizontal: 10,
+    fontWeight: '700',
   },
   meetingListContainer: {
     marginTop: 20,
     marginBottom: 10,
     alignItems: 'flex-start',
-    width: '80%',
+    paddingHorizontal: 20,
   },
   meetingListText: {
     fontSize: 16,
+    color : '#000000',
     fontWeight: 'bold',
     textAlign: 'left',
   },
