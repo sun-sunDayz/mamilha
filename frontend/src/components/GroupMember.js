@@ -31,6 +31,7 @@ const GroupMember = ({ onChangeMembers, onAddMember}) => {
                         <TextInput
                             style={styles.input}
                             placeholder="멤버 별명 입력"
+                            placeholderTextColor="#ADAFBD"
                             keyboardType="default"
                             value={input['name']}
                             onChangeText={(text) => {
@@ -58,7 +59,7 @@ const GroupMember = ({ onChangeMembers, onAddMember}) => {
 const styles = StyleSheet.create({
     input: {
         height: 40,
-        fontSize: 18,
+        fontSize: 16,
         marginTop: 10,
         padding: 10,
         paddingLeft: 15,
