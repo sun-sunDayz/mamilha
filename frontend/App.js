@@ -1,6 +1,7 @@
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import EStyleSheet from 'react-native-extended-stylesheet';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
+import {View, Text, TextInput} from 'react-native';
 import Main from './src/screens/Main';
 import Login from './src/screens/Login';
 import SignUp from './src/screens/SignUp';
@@ -12,28 +13,17 @@ import PasswordChange from './src/screens/PasswordChange';
 import {NavigationContainer} from '@react-navigation/native';
 import CreateFinance from './src/screens/CreateFinance';
 import UpdateFinance from './src/screens/UpdateFinance';
-import FinanceDetail from './src/screens/FinanceDetail'
-import { UserProvider } from './src/userContext';
+import FinanceDetail from './src/screens/FinanceDetail';
+import {UserProvider} from './src/userContext';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
-  const Tab = createBottomTabNavigator();
-  const BottomTabScreen = () => {
-    return (
-      <Tab.Navigator screenOptions={{headerShown: false}}>
-        <Tab.Screen name="Main" component={Main} />
-        <Tab.Screen name="Login" component={Login} />
-        <Tab.Screen name="SignUp" component={SignUp} />
-        <Tab.Screen name="Profile" component={Profile} />
-        <Tab.Screen name="PasswordChange" component={PasswordChange} />
-      </Tab.Navigator>
-    );
-  };
   return (
     <NavigationContainer>
       <UserProvider>
         <Stack.Navigator screenOptions={{headerShown: false}}>
-          <Stack.Screen name="Bottom" component={BottomTabScreen} />
+          <Stack.Screen name="SignUp" component={SignUp} />
+          <Stack.Screen name="Main" component={Main} />
           <Stack.Screen name="CreateGroup" component={CreateGroup} />
           <Stack.Screen name="UpdateGroup" component={UpdateGroup} />
           <Stack.Screen name="Finances" component={Finances} />
