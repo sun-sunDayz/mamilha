@@ -134,9 +134,9 @@ const Spending = ({group_pk}) => {
                   <CustomText style={styles.name}>
                     {truncateText(item.description, 14)}
                   </CustomText>
-                  <View style={{ flexDirection: 'row' }}>
-                    <CustomText style={styles.date}>{item.created_at}</CustomText>
-                    <CustomText>결제자</CustomText>
+                  <View style={{ flexDirection: 'row', marginTop:'auto' }}>
+                    <CustomText style={styles.date}>{item.date}</CustomText>
+                    <CustomText style={styles.payer}>결제자</CustomText>
                     <CustomText style={styles.date}>
                       {truncateText(item.payer, 30)}
                     </CustomText>
@@ -223,31 +223,31 @@ const styles = StyleSheet.create({
     backgroundColor: '#E8AE79',
   },
   iconDefault: {
-    backgroundColor: 'gray',
+    backgroundColor: '#616161',
   },
   details: {
     flex: 5,
   },
   name: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: 'bold',
     color: 'black',
   },
   date: {
-    fontSize: 11,
-    color: 'gray',
+    fontSize: 12,
+    color: '#616161',
     marginTop: 4,
     marginRight: 4,
   },
   payer: {
-    fontSize: 11,
-    fontWeight: 'bold',
+    fontSize: 12,
+    fontWeight: '700',
     color: '#616161',
     marginTop: 4,
     marginRight: 4,
   },
   amount: {
-    fontSize: 14,
+    fontSize: 16,
     fontWeight: 'bold',
     color: 'black',
     textAlign: 'right',
