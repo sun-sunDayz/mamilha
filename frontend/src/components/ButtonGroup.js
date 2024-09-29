@@ -22,7 +22,9 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '80%',
+    alignItems: 'center',
+    marginHorizontal: 20,
+    marginVertical: 10,
   },
   button: {
     flexDirection: 'row',
@@ -31,7 +33,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 16,
     backgroundColor: '#5DAF6A',
-    borderRadius: 12,
+
+    borderRadius: 10,
     flex: 1,
   },
   buttonText: {
