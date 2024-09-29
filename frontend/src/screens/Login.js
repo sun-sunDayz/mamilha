@@ -7,30 +7,31 @@ import {
   Alert,
   TouchableOpacity,
 } from 'react-native';
-import { login } from '../api/Accounts';
+import {login} from '../api/Accounts';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 const Login = ({navigation}) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(''); 
+  const [error, setError] = useState('');
 
   const handleLogin = async e => {
-    const result = await login(username, password)
-    if(result) {
-      setError('')
+    const result = await login(username, password);
+    if (result) {
+      setError('');
       navigation.navigate('Main');
     } else {
-      setError('로그인에 실패했습니다.')
+      setError('로그인에 실패했습니다.');
     }
   };
 
-  const handleUsernameChange = (text) => {
+  const handleUsernameChange = text => {
     const formattedText = text.charAt(0).toLowerCase() + text.slice(1);
     setUsername(formattedText);
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Mamilha</Text>
       <View style={styles.inputContainer}>
         <TextInput
@@ -54,7 +55,7 @@ const Login = ({navigation}) => {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>로그인</Text>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -63,8 +64,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#F1F1F9',
+    paddingHorizontal: 32,
   },
   title: {
     fontSize: 32,
@@ -80,15 +81,15 @@ const styles = StyleSheet.create({
   input: {
     width: '100%',
     padding: 10,
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff',
   },
   topInput: {
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
   },
   bottomInput: {
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
+    borderBottomLeftRadius: 10,
+    borderBottomRightRadius: 10,
   },
   separator: {
     height: 1,
@@ -110,11 +111,11 @@ const styles = StyleSheet.create({
     padding: 15,
     alignItems: 'center',
     backgroundColor: '#5DAF6A',
-    borderRadius: 8,
+    borderRadius: 10,
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: '#ffffff',
+    fontWeight: '800',
     fontSize: 16,
   },
 });

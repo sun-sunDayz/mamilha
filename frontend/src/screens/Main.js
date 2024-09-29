@@ -1,54 +1,61 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
+import React, {useEffect, useState, useContext} from 'react';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+} from 'react-native';
 import ListItem from '../components/ListItem';
 import ButtonGroup from '../components/ButtonGroup';
 import AwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
-import { UserContext } from '../userContext';
-import apiClient from '../services/apiClient'
+import {UserContext} from '../userContext';
+import apiClient from '../services/apiClient';
+import Icon from 'react-native-vector-icons/Ionicons';
 
-const Main = ({ navigation }) => {
+const Main = ({navigation}) => {
   const currentUser = useContext(UserContext);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [nickname, setNickname] = useState('방문자');
-  const [groups, setGroups] = useState([])
+  const [groups, setGroups] = useState([]);
 
   useEffect(() => {
     if (currentUser) {
       setNickname(currentUser.nickname);
     } else {
-      setNickname('<손님>');
+      setNickname('손님');
     }
   }, [currentUser]);
 
-
   useEffect(() => {
-    apiClient.get(`/api/groups/`)
+    apiClient
+      .get(`/api/groups/`)
       .then(response => {
-        setGroups(response.data)
+        setGroups(response.data);
       })
       .catch(error => {
-        console.error('데이터를 불러오는데 실패했습니다', error)
+        console.error('데이터를 불러오는데 실패했습니다', error);
       });
   }, []);
 
   const onHandleProfile = async () => {
-    navigation.navigate('Profile')
+    navigation.navigate('Profile');
   };
 
-
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.nicknameContainer}>
         <TouchableOpacity
           style={styles.nicknameButton}
           onPress={() => {
             onHandleProfile();
           }}>
-          <AwesomeIcon name="user-circle-o" size={25} color="#5DAF6A" />
+          <Icon name="person-circle-outline" size={32} color="#5DAF6A" />
           <Text style={styles.buttonText}>{nickname}</Text>
-          <EntypoIcon name="chevron-thin-right" size={15} color="#000" />
+          <Icon name="chevron-forward-outline" size={20} color="#ADAFBD" />
         </TouchableOpacity>
       </View>
       <ButtonGroup
@@ -59,17 +66,22 @@ const Main = ({ navigation }) => {
         <Text style={styles.meetingListText}>모임 목록</Text>
       </View>
       <View>
-      {groups.map((group) => (
+        {groups.map(group => (
           <ListItem
-          key={group.id}
-          onPress={() => navigation.navigate('Finances', { "group_pk": group.id, 'title':group.name })}
-          title={group.name}
-          leader={group.leader}
-          members={group.members}
-        />
+            key={group.id}
+            onPress={() =>
+              navigation.navigate('Finances', {
+                group_pk: group.id,
+                title: group.name,
+              })
+            }
+            title={group.name}
+            leader={group.leader}
+            members={group.members}
+          />
         ))}
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -78,26 +90,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'top',
     alignItems: 'center',
-    backgroundColor: '#f1f1f9',
+    backgroundColor: '#F1F1F9',
   },
   nicknameContainer: {
-    marginTop: 15,
-    marginBottom: 15,
+    marginTop: 16,
+    marginBottom: 12,
     flexDirection: 'row',
-    justifyContent: 'flex-start',
-    width: '80%',
+    width: '90%',
   },
   nicknameButton: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
-    borderRadius: 5,
-  },
-
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '80%',
   },
   button: {
     flexDirection: 'row',
@@ -113,11 +117,12 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#000000',
+    fontWeight: '800',
     fontSize: 16,
     marginHorizontal: 10,
   },
   meetingListContainer: {
-    marginTop: 20,
+    marginTop: 32,
     marginBottom: 10,
     alignItems: 'flex-start',
     width: '80%',
