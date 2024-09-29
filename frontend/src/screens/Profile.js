@@ -7,9 +7,11 @@ import {
   StyleSheet,
   Alert,
   ScrollView,
+  SafeAreaView,
 } from 'react-native';
 import {UserContext} from '../userContext';
 import {updateProfile} from '../api/Accounts';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const ProfileScreen = ({navigation}) => {
   const currentUser = useContext(UserContext);
@@ -45,13 +47,22 @@ const ProfileScreen = ({navigation}) => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="close" size={30} color="#616161" />
+        </TouchableOpacity>
+        <View>
+          <Text style={styles.title}>회원가입</Text>
+        </View>
+        <View style={styles.emptyIcon}></View>
+      </View>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.label}>아이디</Text>
         <TextInput
           value={id}
           editable={false} // 아이디는 수정 불가능하게 설정
-          style={[styles.input, {backgroundColor: '#f0f0f0'}]} // 수정 불가능한 필드는 배경색을 다르게 설정
+          style={[styles.input, {backgroundColor: '#D9D9D9'}]} // 수정 불가능한 필드는 배경색을 다르게 설정
         />
 
         <Text style={styles.label}>비밀번호</Text>
@@ -63,7 +74,7 @@ const ProfileScreen = ({navigation}) => {
 
         <Text style={styles.label}>이메일</Text>
         <TextInput
-          placeholder="이메일을 입력하세요"
+          placeholder="이메일 입력"
           value={email}
           onChangeText={setEmail}
           style={styles.input}
@@ -71,7 +82,7 @@ const ProfileScreen = ({navigation}) => {
 
         <Text style={styles.label}>이름</Text>
         <TextInput
-          placeholder="이름을 입력하세요"
+          placeholder="이름 입력"
           value={name}
           onChangeText={setName}
           style={styles.input}
@@ -79,7 +90,7 @@ const ProfileScreen = ({navigation}) => {
 
         <Text style={styles.label}>닉네임</Text>
         <TextInput
-          placeholder="닉네임을 입력하세요"
+          placeholder="닉네임 입력"
           value={nickname}
           onChangeText={setNickname}
           style={styles.input}
@@ -89,20 +100,37 @@ const ProfileScreen = ({navigation}) => {
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
         <Text style={styles.buttonText}>수정하기</Text>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#F1F1F9',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+  emptyIcon: {
+    height: 30,
+    width: 30,
   },
   scrollContainer: {
     padding: 20,
     paddingBottom: 100, // 버튼 위치 고려하여 패딩 추가
   },
   label: {
-    marginBottom: 5,
+    marginBottom: 8,
     fontSize: 12,
     fontWeight: 'bold',
   },
@@ -111,22 +139,24 @@ const styles = StyleSheet.create({
     borderColor: 'transparent', // 테두리 투명하게 설정
     borderWidth: 1,
     borderRadius: 8, // 모서리를 둥글게 설정
-    marginBottom: 12,
+    marginBottom: 16,
     paddingLeft: 8,
     backgroundColor: '#f9f9f9', // 배경색을 살짝 넣어줘서 입력창이 구분되도록 설정
+    color: '#434343',
   },
   passwordButton: {
     paddingVertical: 10, // 텍스트 위아래 여백
-    paddingHorizontal: 15, // 텍스트 좌우 여백
+    paddingHorizontal: 10, // 텍스트 좌우 여백
     alignItems: 'center',
-    backgroundColor: '#5DAF6A',
+    backgroundColor: '#EDEDED',
+    borderColor: '#6C6C6C',
+    borderWidth: 0.4,
     borderRadius: 8,
     alignSelf: 'flex-start', // 버튼 크기를 텍스트에 맞게 설정
-    marginBottom: 20,
+    marginBottom: 16,
   },
   passwordButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: '#6C6C6C',
     fontSize: 16,
   },
   saveButton: {
@@ -141,8 +171,8 @@ const styles = StyleSheet.create({
     margin: 20, // 좌우 여백
   },
   buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
+    color: '#ffffff',
+    fontWeight: '800',
     fontSize: 16,
   },
 });

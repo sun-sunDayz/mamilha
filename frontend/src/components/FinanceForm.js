@@ -14,7 +14,6 @@ import apiClient from '../services/apiClient';
 import moment from 'moment';
 import {useNavigation} from '@react-navigation/native';
 
-
 const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
   const navigation = useNavigation(); // 네비게이션 객체 가져오기
   const [formData, setFormData] = useState({
@@ -83,7 +82,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
   // 결제자(payer) & 참여 멤버(selected members)
   const [members, setMembers] = useState([]); // 멤버 리스트
   const [payer, setPayer] = useState(formData.payer); // 결제자 선택
-  const [selectedMembers, setSelectedMembers] = useState([]); // 선택된 참여 멤버 상태
+  
   // useEffect를 사용하여 컴포넌트가 마운트될 때 API 호출
   useEffect(() => {
     const fetchMembers = async () => {
@@ -115,11 +114,68 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
 
   const [isPayerFocus, setIsPayerFocus] = useState(false);
 
+  // 각 멤버의 체크 상태를 관리하는 state
+  const [checkedMembers, setCheckedMembers] = useState(
+    members.map(() => false), // 초기값을 모두 false로 설정
+  );
+
+  const toggleCheck = index => {
+    // 체크 상태를 변경하는 함수
+    const newCheckedMembers = [...checkedMembers];
+    newCheckedMembers[index] = !newCheckedMembers[index];
+    setCheckedMembers(newCheckedMembers);
+  };
+
+  // 선택된 멤버의 수 계산
+  const checkedCount = checkedMembers.filter(isChecked => isChecked).length;
+
+  // 입력된 price 값을 checkedCount로 나누는 함수
+  const dividedPrice =
+    checkedCount > 0 && formData.price
+      ? (parseFloat(formData.price) / checkedCount).toFixed(2) // 소수점 2자리까지 표시
+      : '0';
+
+  // TextInput 값이 변경될 때 호출되는 함수
   const handleChange = (name, value) => {
     setFormData({...formData, [name]: value});
   };
 
+  // 소수점 처리 함수
+  const distributePrice = (totalPrice, count) => {
+    const baseAmount = Math.floor(totalPrice / count); // 소수점 아래를 버린 기본 금액
+    const remainder = totalPrice - baseAmount * count; // 나머지 (몰아줄 금액)
+
+    // 멤버들에게 배정된 금액 리스트
+    const amounts = Array(count).fill(baseAmount);
+
+    // 첫 번째 멤버에게 나머지를 추가로 몰아줌
+    if (remainder > 0) {
+      amounts[0] += remainder;
+    }
+
+    return amounts;
+  };
+
   const handleSubmit = async () => {
+    const checkedCount = checkedMembers.filter(isChecked => isChecked).length;
+
+    if (checkedCount === 0) {
+      alert('참여 멤버를 선택해 주세요.');
+      return;
+    }
+
+    // 총 가격을 참여한 멤버 수로 나눠서 금액을 배분
+    const totalPrice = parseFloat(formData.price);
+    const memberAmounts = distributePrice(totalPrice, checkedCount); // 금액 배분
+
+    // 선택된 멤버와 각 멤버에게 배정된 금액을 매핑
+    const selectedMembers = members
+      .filter((_, index) => checkedMembers[index])
+      .map((member, index) => ({
+        id: member.value,
+        amount: memberAmounts[index], // 멤버별 배정된 금액
+      }));
+
     try {
       const response = await apiClient.post(
         // 'http://localhost:8000/api/finances/1/',
@@ -128,6 +184,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
           ...formData,
           type: selectedType,
           method: selectedMethod,
+          members: selectedMembers,
         },
         {
           headers: {
@@ -358,6 +415,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
                 placeholder="금액 입력"
                 style={styles.amountInput}
                 value={`${formData.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`}
+                keyboardType="numeric"
                 onChangeText={text => handleChange('amount', text)}
               />
               <Text style={styles.contentText}>원</Text>
@@ -378,22 +436,23 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
           <View style={styles.formRow}>
             <Text style={styles.label}>참여 멤버</Text>
             <View style={styles.table}>
-              {members.map(member => (
+              {members.map((member, index) => (
                 <View key={member.value} style={styles.tableRow}>
-                  <Text style={styles.tableCell}>{member.label}</Text>
-                  {/* 참여 멤버 선택 시 상태 업데이트 */}
-                  {/* <CheckBox
-                    value={selectedMembers.includes(member.value)}
-                    onValueChange={() => {
-                      if (selectedMembers.includes(member.value)) {
-                        setSelectedMembers(prev =>
-                          prev.filter(id => id !== member.value),
-                        );
-                      } else {
-                        setSelectedMembers(prev => [...prev, member.value]);
+                  <TouchableOpacity onPress={() => toggleCheck(index)}>
+                    <Icon
+                      name={
+                        checkedMembers[index]
+                          ? 'checkmark-circle'
+                          : 'ellipse-outline'
                       }
-                    }}
-                  /> */}
+                      size={24}
+                      color={checkedMembers[index] ? '#5DAF6A' : '#ADAFBD'}
+                    />
+                  </TouchableOpacity>
+                  <View style={styles.tableCell}>
+                    <Text style={styles.tableText}>{member.label}</Text>
+                    <Text style={styles.tablePrice}>{dividedPrice}원</Text>
+                  </View>
                 </View>
               ))}
             </View>
@@ -412,10 +471,10 @@ export default FinanceForm;
 const styles = StyleSheet.create({
   container: {
     justifyContent: 'space-between',
-    padding: 20,
+    paddingHorizontal: 20,
     marginBottom: 20,
   },
-  content: {},
+  content: {paddingBottom: 120},
   scrollContainer: {},
   formRow: {
     flexDirection: 'column',
@@ -494,7 +553,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     height: 40,
     width: '95%',
-    bottom: 0,
+    bottom: 60,
     backgroundColor: '#5DAF6A',
     borderRadius: 10,
     alignItems: 'center',
@@ -558,4 +617,29 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
   },
+  table: {
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    backgroundColor: '#FFFFFF',
+    width: '95%',
+    marginLeft: 8,
+  },
+  tableRow: {
+    flexDirection: 'row',
+    width: '100%',
+    borderColor: '#ADAFBD',
+    borderBottomWidth: 0.3,
+    paddingVertical: 10,
+    paddingHorizontal: 0,
+  },
+  tableCell: {
+    marginLeft: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '86%',
+  },
+  tableText: {},
+  tablePrice: {},
 });
