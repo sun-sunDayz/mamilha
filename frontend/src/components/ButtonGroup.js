@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, TouchableOpacity, Text, StyleSheet} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/Ionicons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const ButtonGroup = ({onPressFirstButton}) => {
   const navigation = useNavigation();
@@ -11,7 +11,7 @@ const ButtonGroup = ({onPressFirstButton}) => {
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate(onPressFirstButton)}>
-        <Icon name="add" size={20} color="#FFFFFF" />
+        <Ionicons name="add-outline" size={20} color="#FFFFFF" />
         <Text style={styles.buttonText}>모임 만들기</Text>
       </TouchableOpacity>
     </View>
