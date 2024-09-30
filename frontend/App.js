@@ -16,13 +16,32 @@ import CreateFinance from './src/screens/CreateFinance';
 import UpdateFinance from './src/screens/UpdateFinance';
 import FinanceDetail from './src/screens/FinanceDetail';
 import {UserProvider} from './src/userContext';
+// 개발환경 바텀 내비게이션
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 const App = () => {
   const Stack = createNativeStackNavigator();
+  // 개발환경 바텀 내비게이션
+  const Tab = createBottomTabNavigator();
+  const BottomTabScreen = () => {
+    return (
+      <Tab.Navigator screenOptions={{headerShown: false}}>
+        <Tab.Screen name="Main" component={Main} />
+        <Tab.Screen name="Login" component={Login} />
+        <Tab.Screen name="SignUp" component={SignUp} />
+        <Tab.Screen name="Profile" component={Profile} />
+        <Tab.Screen name="PasswordChange" component={PasswordChange} />
+      </Tab.Navigator>
+    );
+  };
+
   return (
     <NavigationContainer>
       <UserProvider>
         <Stack.Navigator screenOptions={{headerShown: false}}>
+          {/* 개발환경 바텀 내비게이션 */}
+          <Stack.Screen name="BottomTabScreen" component={BottomTabScreen} /> 
+          
           <Stack.Screen name="Intro" component={Intro} />
           <Stack.Screen name="Main" component={Main} />
           <Stack.Screen name="SignUp" component={SignUp} />

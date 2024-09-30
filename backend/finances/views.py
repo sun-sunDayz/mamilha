@@ -11,7 +11,7 @@ class FinancesAPIView(APIView):
 
     def get(self, request, group_pk):
         group = Group.objects.get(pk=group_pk)
-        finances = Finance.objects.filter(group=group)
+        finances = Finance.objects.filter(group=group, deleted=0)
         data = []
         for finance in finances:
             data.append({
@@ -33,6 +33,7 @@ class FinancesAPIView(APIView):
         amount = data.get('amount', None)
         amount = int(amount.replace(",", ""))
         description = data.get('description', None)
+        selet_members = data.get('members',None)
 
         # 하단의 정보들은 테이블에서 레코드 탐색을 해야함
         payer = data.get('payer', None)
@@ -64,7 +65,8 @@ class FinancesAPIView(APIView):
             split_method=split_method
         )
         # if split_method == '고정분할' :
-        members = Member.objects.filter(group=group).exclude(id=payer.id)
+        selet_members_id = [ i['id'] for i in selet_members]
+        members = Member.objects.filter(group=group, id__in = selet_members_id)
         member_count = members.count()
         if member_count > 0:
             split_amount = round(amount / member_count, 2)
