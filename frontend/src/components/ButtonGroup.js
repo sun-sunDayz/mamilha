@@ -1,19 +1,17 @@
 import React from 'react';
 import {View, TouchableOpacity, Text, StyleSheet} from 'react-native';
-import AwesomeIcon from 'react-native-vector-icons/FontAwesome';
-import { useNavigation } from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const ButtonGroup = ({onPressFirstButton}) => {
   const navigation = useNavigation();
 
-  const handleCreateGroup = () => {
-    navigation.navigate(onPressFirstButton);
-  };
-
   return (
     <View style={styles.buttonContainer}>
-      <TouchableOpacity style={styles.button} onPress={handleCreateGroup}>
-        <AwesomeIcon name="plus" size={25} color="#FFFFFF" />
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate(onPressFirstButton)}>
+        <Ionicons name="add-outline" size={20} color="#FFFFFF" />
         <Text style={styles.buttonText}>모임 만들기</Text>
       </TouchableOpacity>
     </View>
@@ -24,26 +22,26 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '80%',
+    alignItems: 'center',
+    marginHorizontal: 20,
+    marginVertical: 10,
   },
   button: {
     flexDirection: 'row',
-    alignItems: 'center', 
-    justifyContent: 'center', 
+    alignItems: 'center',
+    justifyContent: 'center',
     paddingHorizontal: 10,
-    paddingVertical: 15,
+    paddingVertical: 16,
     backgroundColor: '#5DAF6A',
-    borderRadius: 5,
+    borderRadius: 10,
     flex: 1,
-    marginHorizontal: 5,
   },
   buttonText: {
     color: '#FFFFFF',
-    fontWeight: 'bold',
-    fontSize: 14,
-    marginLeft: 10, 
+    fontWeight: '800',
+    fontSize: 16,
+    marginLeft: 10,
   },
 });
 
 export default ButtonGroup;
-

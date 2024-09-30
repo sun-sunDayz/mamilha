@@ -4,10 +4,15 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password
-
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework_simplejwt.tokens import RefreshToken
+from .serializers import UserSerializer
+from config.serializers import CustomTokenObtainPairSerializer
+from .util import AccountValidator
 from . import permissions
 
 User = get_user_model()
+validator = AccountValidator()
 # Create your views here.
 
 class UsersAPIView(APIView):
@@ -25,15 +30,17 @@ class UsersAPIView(APIView):
         username = data.get('username', None)
         password = data.get('password', None)
         nickname = data.get('nickname', None)
+        name = data.get('name', None)
         email = data.get('email', None)
 
         get_user_model().objects.create_user(
-            username=username, password=password, email=email, nickname=nickname)
+            username=username, password=password, email=email, nickname=nickname, first_name=name)
         
         return Response({
             "username": username,
             "password": password,
             "email": email,
+            "first_name": name,
             "nickname": nickname,
         }, status=status.HTTP_201_CREATED)
     
@@ -43,14 +50,21 @@ class UsersAPIView(APIView):
         data = request.data
         nickname = data.get('nickname', user.nickname)
         email = data.get('email', user.email)
+        name = data.get('name', user.first_name)
 
         user.email = email
         user.nickname = nickname
+        user.first_name = name
         user.save()
 
+        refresh = RefreshToken.for_user(user)
+        custom_serializer = CustomTokenObtainPairSerializer()
+        access_token = custom_serializer.get_token(user)
+
         return Response({
-            "message": "회원 정보가 수정되었습니다"
-        }, status=status.HTTP_200_OK)
+                "access": str(access_token),
+                "refresh": str(refresh),
+            }, status=status.HTTP_200_OK)
     
     #계정 탈퇴
     def delete(self, request):
@@ -99,3 +113,26 @@ class SetPasswordAPIView(APIView):
 
         return Response({"message": "인증에 성공했습니다."}, status=status.HTTP_200_OK)
 
+@api_view(['POST'])
+def validate_password(request):
+    validator.validate('password', request.data)
+    return validator.get_response_data()
+
+
+@api_view(['POST'])
+def validate_username(request):
+    validator.validate('username', request.data)
+    return validator.get_response_data()
+
+
+@api_view(['POST'])
+def validate_email(request):
+    validator.validate('email', request.data)
+    return validator.get_response_data()
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_info(request):
+    user = request.user
+    serializer = UserSerializer(user)
+    return Response(serializer.data)
