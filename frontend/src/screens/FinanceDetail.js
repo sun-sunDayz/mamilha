@@ -63,7 +63,7 @@ const FinanceDetail = ({ route }) => {
 
     const handleDelete = async () => {
         try {
-            await apiClient.delete(`/api/finance/${group_pk}/${finance_pk}`);
+            await apiClient.delete(`/api/finances/${group_pk}/${finance_pk}/`);
             navigation.goBack();
         } catch (error) {
             alert(error.response.data.error);
@@ -89,7 +89,7 @@ const FinanceDetail = ({ route }) => {
                 <View>
                     <CustomText style={styles.title}></CustomText>
                 </View>
-                <TouchableOpacity onPress={()=>navigation.navigate('UpdateGroup', {'group_pk':group_pk})}> 
+                <TouchableOpacity onPress={()=>handleDelete()}> 
                     <Text style={styles.DeleteText}>삭제</Text>
                 </TouchableOpacity>
             </View>
