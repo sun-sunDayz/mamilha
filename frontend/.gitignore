@@ -104,5 +104,6 @@ yarn-error.log*
 
 venv/
 .env
+.venv/
 
 config.py
