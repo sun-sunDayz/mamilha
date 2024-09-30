@@ -1,23 +1,63 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text, Image, TouchableOpacity, StyleSheet} from 'react-native';
-import ListItem from '../components/ListItem'
-import ButtonGroup from '../components/ButtonGroup'
+import ListItem from '../components/ListItem';
+import ButtonGroup from '../components/ButtonGroup';
 import AwesomeIcon from 'react-native-vector-icons/FontAwesome';
 import EntypoIcon from 'react-native-vector-icons/Entypo';
+import apiClient from '../services/apiClient';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 
 const Main = () => {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchData = async () => {
+  useEffect(() => {
+    const setTokensFromCookies = async () => {
+      const accessCookies = await Cookies.get('domain');
+      const access = accessCookies['access'];
+      const refresh = accessCookies['refresh'];
+
+      if (access && refresh) {
+        await AsyncStorage.setItem('accessToken', access.value);
+        await AsyncStorage.setItem('refreshToken', refresh.value);
+        Cookies.clearByName('domain', 'access');
+        Cookies.clearByName('domain', 'refresh');
+      } else {
+        await AsyncStorage.setItem('accessToken', '');
+        await AsyncStorage.setItem('refreshToken', '');
+      }
+    };
+    setTokensFromCookies();
+  }, []);
+
+  const getGroupCategory = async () => {
     try {
-      const response = await axios.get('http://localhost:8000/api/groups/category/');
-      setData(response.data);
+      const response = await apiClient.get('/api/groups/category/');
       console.log(response.data);
     } catch (error) {
-      alert('Test')
+      alert('Test');
       console.error('Error fetching data: ', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const addGroup = async () => {
+    try {
+      const response = await apiClient.post('/api/groups/', {
+        name: 'test2',
+        category: 'test',
+        currency: 'dollar',
+        members: [
+          {
+            name: 'admin',
+          },
+        ],
+      });
+      console.log(response.data);
+    } catch (error) {
+      console.error('Error fetching data: ', error.response.data.error);
     } finally {
       setLoading(false);
     }
@@ -29,7 +69,7 @@ const Main = () => {
         <TouchableOpacity
           style={styles.nicknameButton}
           onPress={() => {
-            fetchData();
+            getGroupCategory();
           }}>
           <AwesomeIcon name="user-circle-o" size={25} color="#5DAF6A" />
           <Text style={styles.buttonText}>닉네임</Text>
@@ -37,7 +77,7 @@ const Main = () => {
         </TouchableOpacity>
       </View>
       <ButtonGroup
-        onPressFirstButton= 'CreateGroup'
+        onPressFirstButton="CreateGroup"
         onPressSecondButton={() => alert('Button 2 pressed')}
       />
       <View style={styles.meetingListContainer}>
@@ -45,7 +85,7 @@ const Main = () => {
       </View>
       <View>
         <ListItem
-          onPress={() => alert('Button 2 pressed')}
+          onPress={() => addGroup()}
           title="마밀러 클라이밍"
           leader="히키"
           members="15"
@@ -97,7 +137,7 @@ const styles = StyleSheet.create({
   buttonImage: {
     width: 20,
     height: 20,
-    marginRight: 10, 
+    marginRight: 10,
   },
   buttonText: {
     color: '#000000',
@@ -107,13 +147,13 @@ const styles = StyleSheet.create({
   meetingListContainer: {
     marginTop: 20,
     marginBottom: 10,
-    alignItems: 'flex-start', 
-    width: '80%', 
+    alignItems: 'flex-start',
+    width: '80%',
   },
   meetingListText: {
     fontSize: 16,
     fontWeight: 'bold',
-    textAlign: 'left', 
+    textAlign: 'left',
   },
 });
 
