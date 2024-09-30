@@ -1,28 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, Modal, FlatList, StyleSheet } from 'react-native';
 import axios from 'axios';
+import Icon from 'react-native-vector-icons/Ionicons'
 
-const Currency = ({ onChangeCurrency }) => {
+const Currency = ({ onChangeCurrency, selectedCurrency }) => {
     const [isDropdownOpen, setDropdownOpen] = useState(false);
-    const [selectedItem, setSelectedItem] = useState(null);
+    const [selectedItem, setSelectedItem] = useState(selectedCurrency);
     const [dropdownWidth, setDropdownWidth] = useState(0);
     const [Data, setData] = useState([]);
 
     useEffect(() => {
         axios.get('http://127.0.0.1:8000/api/groups/currency/')
-          .then(response => {
-            setData(response.data);
-          })
-          .catch(error => {
-            console.error('데이터를 불러오는데 실패했습니다', error);
-          });
-      }, []);
+            .then(response => {
+                setData(response.data);
+            })
+            .catch(error => {
+                console.error('데이터를 불러오는데 실패했습니다', error);
+            });
+    }, []);
 
+    useEffect(() => {
+        setSelectedItem(selectedCurrency);
+    }, [selectedCurrency]);
 
     useEffect(() => {
         onChangeCurrency(selectedItem);
     }, [selectedItem, onChangeCurrency]);
-
 
 
     const handleItemPress = (item) => {
@@ -38,12 +41,14 @@ const Currency = ({ onChangeCurrency }) => {
                 onLayout={(event) => {
                     const { width } = event.nativeEvent.layout;
                     setDropdownWidth(width);
-
                 }}
             >
                 <Text style={[styles.dropdownButtonText, { color: selectedItem ? '#000000' : '#C0C0C0' }]}>
                     {selectedItem ? selectedItem : '통화 선택'}
                 </Text>
+                <View style={styles.dropdownIcon}>
+                    <Icon name="chevron-expand" size={20} color='#6C6C6C' />
+                </View>
             </TouchableOpacity>
 
             {isDropdownOpen && (
@@ -90,6 +95,7 @@ const styles = StyleSheet.create({
         paddingLeft: 15,
         backgroundColor: '#ffffff',
         borderRadius: 15,
+        height: 40,
     },
     dropdownButtonText: {
         fontSize: 18,
@@ -120,5 +126,11 @@ const styles = StyleSheet.create({
     },
     dropdownItemText: {
         fontSize: 16,
+    },
+    dropdownIcon: {
+        position: 'absolute',
+        right: 20,
+        top: 10,
+        height: 25,
     },
 });
