@@ -2,6 +2,7 @@ import EStyleSheet from 'react-native-extended-stylesheet';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 import {View, Text, TextInput} from 'react-native';
+import Intro from './src/screens/Intro';
 import Main from './src/screens/Main';
 import Login from './src/screens/Login';
 import SignUp from './src/screens/SignUp';
@@ -22,6 +23,7 @@ const App = () => {
     <NavigationContainer>
       <UserProvider>
         <Stack.Navigator screenOptions={{headerShown: false}}>
+          <Stack.Screen name="Intro" component={Intro} />
           <Stack.Screen name="Main" component={Main} />
           <Stack.Screen name="SignUp" component={SignUp} />
           <Stack.Screen name="CreateGroup" component={CreateGroup} />
