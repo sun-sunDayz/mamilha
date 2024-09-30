@@ -1,11 +1,13 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from groups.models import Group, Member
-from .models import Finance, FinanceCategory, FinanceType, PayMethod, SplitMethod
+from .models import Finance, FinanceCategory, FinanceType, PayMethod, SplitMethod, Split
 from django.utils import timezone
 
 class FinancesAPIView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request, group_pk):
         group = Group.objects.get(pk=group_pk)
@@ -20,7 +22,8 @@ class FinancesAPIView(APIView):
                 "finance_type": finance.finance_type.name,
                 "finance_category": finance.finance_category.name,
                 "pay_method": finance.pay_method.name,
-                "split_method": finance.split_method.name
+                "split_method": finance.split_method.name,
+                "date": finance.created_at.strftime("%Y.%m.%d")
             })
         return Response(data)
     
@@ -28,6 +31,7 @@ class FinancesAPIView(APIView):
         data = request.data
         group = Group.objects.get(pk=group_pk)
         amount = data.get('amount', None)
+        amount = int(amount.replace(",", ""))
         description = data.get('description', None)
 
         # 하단의 정보들은 테이블에서 레코드 탐색을 해야함
@@ -38,13 +42,16 @@ class FinancesAPIView(APIView):
         split_method = data.get('split_method', None)
         
         try:
-            payer = Member.objects.get(name=payer)
+            print(f'amount={amount}, payer={payer}, group={group}, finance type={finance_type}, cate={finance_category}, method={pay_method}, split_method={split_method}')
+            payer = Member.objects.get(id=payer, group=group)
             finance_type = FinanceType.objects.get(name=finance_type)
-            finance_category = FinanceCategory.objects.get(name=finance_category)
+            finance_category = FinanceCategory.objects.get(id=finance_category)
             pay_method = PayMethod.objects.get(name=pay_method)
             split_method = SplitMethod.objects.get(name=split_method)
-        except:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Member.DoesNotExist:
+            return Response({"message": "해당 그룹에 속하지 않은 결제자입니다."}, status=status.HTTP_400_BAD_REQUEST)
+        except (FinanceType.DoesNotExist, FinanceCategory.DoesNotExist, PayMethod.DoesNotExist, SplitMethod.DoesNotExist):
+            return Response({"message": "잘못된 결제 유형, 카테고리, 결제 방법 또는 정산 방법입니다."}, status=status.HTTP_400_BAD_REQUEST)
         
         finance = Finance.objects.create(
             group=group,
@@ -56,10 +63,21 @@ class FinancesAPIView(APIView):
             pay_method=pay_method,
             split_method=split_method
         )
-
+        # if split_method == '고정분할' :
+        members = Member.objects.filter(group=group).exclude(id=payer.id)
+        member_count = members.count()
+        if member_count > 0:
+            split_amount = round(amount / member_count, 2)
+            for member in members:
+                Split.objects.create(
+                    finance=finance,
+                    member=member,
+                    amount=split_amount
+                )
         return Response(status=status.HTTP_201_CREATED)
     
 class FinancesDetailAPIView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request, group_pk, finance_pk):
         finance = Finance.objects.get(pk=finance_pk)
@@ -73,7 +91,8 @@ class FinancesDetailAPIView(APIView):
             "finance_type": finance.finance_type.name,
             "finance_category": finance.finance_category.name,
             "pay_method": finance.pay_method.name,
-            "split_method": finance.split_method.name
+            "split_method": finance.split_method.name,
+            "date" : finance.date
         }
         return Response(data)
     
@@ -123,17 +142,24 @@ class FinancesDetailAPIView(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class FinancesSplitAPIView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get(self, request, finance_pk):
+        user = request.user.username
         finance = Finance.objects.get(pk=finance_pk)
         splits = finance.split_set.all()
         data = []
         for split in splits:
-            data.append({
-                "finance_id": split.finance.id,
-                "member": split.member.name,
-                "amount": split.amount
-            })
+            split_data = {
+            "finance_id": split.finance.id,
+            "member": split.member.name,
+            "amount": split.amount,
+            }
+
+            if split.member.name == user:
+                split_data["currencyUser"] = user
+        
+            data.append(split_data)
         return Response(data)
     
     def post(self, request, finance_pk):
@@ -155,4 +181,15 @@ class FinancesSplitAPIView(APIView):
             )
             return Response(status=status.HTTP_201_CREATED)
         
-        
+class FinanceCategorysAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        finance_categorys = FinanceCategory.objects.all()
+        categorys = []
+        for category in finance_categorys:
+            categorys.append({
+                "id" : category.id,
+                "name" : category.name,
+            })
+        return Response(categorys, status=status.HTTP_200_OK)
