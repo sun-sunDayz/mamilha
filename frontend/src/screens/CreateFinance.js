@@ -7,8 +7,8 @@ import FinanceForm from '../components/FinanceForm';
 
 const CreateFinance = ({route}) => {
   const navigation = useNavigation(); // 네비게이션 객체 가져오기
-  // const group_pk = route.params.group_pk;
-  const group_pk = 1;
+  const group_pk = route.params.group_pk;
+  // const group_pk = 1;
 
   // 지출 생성
   const handleCreate = formData => {

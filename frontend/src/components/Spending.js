@@ -151,7 +151,7 @@ const Spending = ({group_pk}) => {
         </ScrollView>
         <TouchableOpacity
           style={styles.addButton}
-          onPress={() => navigation.navigate('CreateFinance')}>
+          onPress={() => handelCreateFinance()}>
           <Ionicons
             name="add-circle"
             size={50}
