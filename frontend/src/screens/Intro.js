@@ -1,65 +1,32 @@
 import React, {useState} from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  Alert,
-  TouchableOpacity,
-} from 'react-native';
-import {login} from '../api/Accounts';
+import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
-const Login = ({navigation}) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-
-  const handleLogin = async e => {
-    const result = await login(username, password);
-    if (result) {
-      setError('');
-      navigation.navigate('Main');
-    } else {
-      setError('로그인에 실패했습니다.');
-    }
+const Intro = ({navigation}) => {
+  const handleLogin = async () => {
+    navigation.navigate('Login'); // 회원가입 페이지로 이동 (적절한 경로로 수정)
   };
 
   const handleSignup = () => {
-    navigation.navigate('SignUp');
-  };
-
-  const handleUsernameChange = text => {
-    const formattedText = text.charAt(0).toLowerCase() + text.slice(1);
-    setUsername(formattedText);
+    navigation.navigate('SignUp'); // 회원가입 페이지로 이동 (적절한 경로로 수정)
   };
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>Mamilha</Text>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={[styles.input, styles.topInput]}
-          placeholder="아이디"
-          value={username}
-          onChangeText={handleUsernameChange}
-        />
-        <View style={styles.separator} />
-        <TextInput
-          style={[styles.input, styles.bottomInput]}
-          placeholder="비밀번호"
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry={true}
-        />
-      </View>
-      <View style={styles.errorContainer}>
-        {error ? <Text style={styles.errorText}>{error}</Text> : null}
-      </View>
+      <Image
+        source={require('../../assets/mamilha.png')}
+        style={{
+          width: 150,
+          height: 150,
+          alignItems: 'center',
+          marginBottom: 50,
+        }}
+      />
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>로그인</Text>
       </TouchableOpacity>
 
+      {/* 회원가입 버튼 */}
       <TouchableOpacity style={styles.signupButton} onPress={handleSignup}>
         <Text style={styles.signupButtonText}>회원가입</Text>
       </TouchableOpacity>
@@ -142,4 +109,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Login;
+export default Intro;
