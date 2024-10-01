@@ -2,10 +2,6 @@ import EStyleSheet from 'react-native-extended-stylesheet';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 import {View, Text, TextInput} from 'react-native';
-<<<<<<< HEAD
-import Intro from './src/screens/Intro';
-=======
->>>>>>> ec327251560c0c68d99a6bfb3972d98b7b78b11a
 import Main from './src/screens/Main';
 import Login from './src/screens/Login';
 import SignUp from './src/screens/SignUp';
@@ -20,10 +16,6 @@ import UpdateFinance from './src/screens/UpdateFinance';
 import FinanceDetail from './src/screens/FinanceDetail';
 import {UserProvider} from './src/userContext';
 
-<<<<<<< HEAD
-const App = () => {
-  const Stack = createNativeStackNavigator();
-=======
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 const App = () => {
@@ -41,16 +33,11 @@ const App = () => {
       </Tab.Navigator>
     );
   };
->>>>>>> ec327251560c0c68d99a6bfb3972d98b7b78b11a
   return (
     <NavigationContainer>
       <UserProvider>
         <Stack.Navigator screenOptions={{headerShown: false}}>
-<<<<<<< HEAD
-          <Stack.Screen name="Intro" component={Intro} />
-=======
           <Stack.Screen name="BottomTabScreen" component={BottomTabScreen} />
->>>>>>> ec327251560c0c68d99a6bfb3972d98b7b78b11a
           <Stack.Screen name="Main" component={Main} />
           <Stack.Screen name="SignUp" component={SignUp} />
           <Stack.Screen name="CreateGroup" component={CreateGroup} />

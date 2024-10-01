@@ -63,11 +63,7 @@ const FinanceDetail = ({ route }) => {
 
     const handleDelete = async () => {
         try {
-<<<<<<< HEAD
-            await apiClient.delete(`/api/finance/${group_pk}/${finance_pk}`);
-=======
             await apiClient.delete(`/api/finances/${group_pk}/${finance_pk}/`);
->>>>>>> ec327251560c0c68d99a6bfb3972d98b7b78b11a
             navigation.goBack();
         } catch (error) {
             alert(error.response.data.error);
@@ -93,11 +89,7 @@ const FinanceDetail = ({ route }) => {
                 <View>
                     <CustomText style={styles.title}></CustomText>
                 </View>
-<<<<<<< HEAD
-                <TouchableOpacity onPress={()=>navigation.navigate('UpdateGroup', {'group_pk':group_pk})}> 
-=======
                 <TouchableOpacity onPress={()=>handleDelete()}> 
->>>>>>> ec327251560c0c68d99a6bfb3972d98b7b78b11a
                     <Text style={styles.DeleteText}>삭제</Text>
                 </TouchableOpacity>
             </View>
