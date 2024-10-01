@@ -131,10 +131,18 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
 
   // 입력된 price 값을 checkedCount로 나누는 함수
   const dividedPrice =
+<<<<<<< HEAD
     checkedCount > 0 && formData.price
       ? (parseFloat(formData.price) / checkedCount).toFixed(2) // 소수점 2자리까지 표시
       : '0';
 
+=======
+    checkedCount > 0 && formData.amount
+      ? (parseFloat(formData.amount) / checkedCount) // 소수점 2자리까지 표시
+      : '0';
+  console.log(dividedPrice)
+  console.log(checkedCount)
+>>>>>>> ec327251560c0c68d99a6bfb3972d98b7b78b11a
   // TextInput 값이 변경될 때 호출되는 함수
   const handleChange = (name, value) => {
     setFormData({...formData, [name]: value});
@@ -214,6 +222,14 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
     setSelectedMethod(tab);
   };
 
+<<<<<<< HEAD
+=======
+  const comma = amount => {
+    const noCamma = amount.replace(/,/g, '')
+    return noCamma.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+  };
+
+>>>>>>> ec327251560c0c68d99a6bfb3972d98b7b78b11a
   return (
     <View style={styles.container}>
       <View style={styles.content}>
@@ -414,7 +430,11 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
               <TextInput
                 placeholder="금액 입력"
                 style={styles.amountInput}
+<<<<<<< HEAD
                 value={`${formData.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`}
+=======
+                value={comma(formData.amount)}
+>>>>>>> ec327251560c0c68d99a6bfb3972d98b7b78b11a
                 keyboardType="numeric"
                 onChangeText={text => handleChange('amount', text)}
               />
@@ -451,7 +471,11 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
                   </TouchableOpacity>
                   <View style={styles.tableCell}>
                     <Text style={styles.tableText}>{member.label}</Text>
+<<<<<<< HEAD
                     <Text style={styles.tablePrice}>{dividedPrice}원</Text>
+=======
+                    <Text style={styles.tablePrice}>{checkedMembers[index] ? `${dividedPrice}원` : '0원'}</Text>
+>>>>>>> ec327251560c0c68d99a6bfb3972d98b7b78b11a
                   </View>
                 </View>
               ))}

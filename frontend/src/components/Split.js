@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import apiClient from '../services/apiClient';
 
+<<<<<<< HEAD
 // 새로운 split으로 총 정산금액 계산하는 함수
 const calculateFinalBalances = (splitList) => {
     const aggregatedMap = {};
@@ -36,6 +37,8 @@ const calculateFinalBalances = (splitList) => {
 
 
 
+=======
+>>>>>>> ec327251560c0c68d99a6bfb3972d98b7b78b11a
 const truncateText = (text, limit) => {
     if (text.length > limit) {
         return text.substring(0, limit) + '...';
@@ -52,7 +55,10 @@ const truncateAmount = (amount) => {
 
 const Split = ({group_pk}) => {
     const [data, setData] = useState([]);
+<<<<<<< HEAD
     const [finalSettlements, setFinalSettlements] = useState([]);
+=======
+>>>>>>> ec327251560c0c68d99a6bfb3972d98b7b78b11a
 
     useEffect(() => {
         const getSplits = async () => {
@@ -61,7 +67,10 @@ const Split = ({group_pk}) => {
                 const splits = response.data;
                 setData(splits);
                 console.log(splits)
+<<<<<<< HEAD
                 const finalBalances = calculateFinalBalances(splits);
+=======
+>>>>>>> ec327251560c0c68d99a6bfb3972d98b7b78b11a
                 setFinalSettlements(finalBalances);
             } catch (error) {
                 console.error('Error fetching data: ', error);
@@ -72,7 +81,11 @@ const Split = ({group_pk}) => {
 
     return (
         <View style={styles.container}>
+<<<<<<< HEAD
             {finalSettlements.length === 0 ? (
+=======
+            {data.length === 0 ? (
+>>>>>>> ec327251560c0c68d99a6bfb3972d98b7b78b11a
                 <View style={styles.emptySpendView}>
                     <Ionicons style={styles.emptyIcon} name="checkmark-done-circle" size={150} color="#79C7E8" />
                     <Text style={styles.emptyText}>정산이 모두 완료되었어요!</Text>

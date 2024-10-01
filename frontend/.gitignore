@@ -104,5 +104,9 @@ yarn-error.log*
 
 venv/
 .env
+<<<<<<< HEAD
+=======
+.venv/
+>>>>>>> ec327251560c0c68d99a6bfb3972d98b7b78b11a
 
 config.py
