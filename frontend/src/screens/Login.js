@@ -25,13 +25,6 @@ const Login = ({navigation}) => {
     }
   };
 
-<<<<<<< HEAD
-  const handleSignup = () => {
-    navigation.navigate('SignUp');
-  };
-
-=======
->>>>>>> ec327251560c0c68d99a6bfb3972d98b7b78b11a
   const handleUsernameChange = text => {
     const formattedText = text.charAt(0).toLowerCase() + text.slice(1);
     setUsername(formattedText);
@@ -62,13 +55,6 @@ const Login = ({navigation}) => {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>로그인</Text>
       </TouchableOpacity>
-<<<<<<< HEAD
-
-      <TouchableOpacity style={styles.signupButton} onPress={handleSignup}>
-        <Text style={styles.signupButtonText}>회원가입</Text>
-      </TouchableOpacity>
-=======
->>>>>>> ec327251560c0c68d99a6bfb3972d98b7b78b11a
     </SafeAreaView>
   );
 };
@@ -126,32 +112,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#5DAF6A',
     borderRadius: 10,
-<<<<<<< HEAD
-    marginBottom: 12, // 로그인 버튼 아래 공간 추가
-=======
->>>>>>> ec327251560c0c68d99a6bfb3972d98b7b78b11a
   },
   buttonText: {
     color: '#ffffff',
     fontWeight: '800',
     fontSize: 16,
   },
-<<<<<<< HEAD
-  signupButton: {
-    width: '100%',
-    padding: 15,
-    alignItems: 'center',
-    backgroundColor: '#ffffff', // 배경 흰색
-    borderRadius: 10,
-    borderColor: '#5DAF6A',
-  },
-  signupButtonText: {
-    color: '#5DAF6A', // 텍스트 초록색
-    fontWeight: '800',
-    fontSize: 16,
-  },
-=======
->>>>>>> ec327251560c0c68d99a6bfb3972d98b7b78b11a
 });
 
 export default Login;
