@@ -41,7 +41,7 @@ const Spending = ({ group_pk }) => {
   useEffect(() => {
     getFinances();
   }, []);
-  console.log(Data)
+
 
   const handelCreateFinance = () => {
     navigation.navigate('CreateFinance', { group_pk: group_pk });
