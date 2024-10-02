@@ -7,50 +7,10 @@ import {
   ScrollView,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import React, {useState, useEffect, useCallback} from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import apiClient from '../services/apiClient';
-import {useNavigation, useFocusEffect} from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import CustomText from '../../CustomText';
-
-const getIconStyle = icon => {
-  switch (icon) {
-    case '외식':
-      return styles.iconRed;
-    case '주류':
-      return styles.iconOrange;
-    case '주유':
-      return styles.iconYellow;
-    case '쇼핑':
-      return styles.iconGreen;
-    case '교통':
-      return styles.iconBlue;
-    default:
-      return styles.iconPurple;
-  }
-};
-
-const getIconComponent = icon => {
-  switch (icon) {
-    case '외식':
-      return <Ionicons name="restaurant-outline" size={25} color="white" />;
-    case '주류':
-      return <Ionicons name="beer-outline" size={25} color="white" />;
-    case '주유':
-      return <Ionicons name="card-outline" size={25} color="white" />;
-    case '쇼핑':
-      return <Ionicons name="cart-outline" size={25} color="white" />;
-    case '교통':
-      return <Ionicons name="car-outline" size={25} color="white" />;
-    default:
-      return (
-        <Ionicons
-          name="ellipsis-horizontal-circle-outline"
-          size={25}
-          color="white"
-        />
-      );
-  }
-};
 
 const truncateText = (text, limit) => {
   if (text.length > limit) {
@@ -66,7 +26,7 @@ const truncateAmount = amount => {
   return amount.toLocaleString() + '원';
 };
 
-const Spending = ({group_pk}) => {
+const Spending = ({ group_pk }) => {
   const [Data, setData] = useState([]);
   const navigation = useNavigation();
 
@@ -78,13 +38,13 @@ const Spending = ({group_pk}) => {
       console.error('Error fetching data: ', error);
     }
   };
-
   useEffect(() => {
     getFinances();
   }, []);
+  console.log(Data)
 
   const handelCreateFinance = () => {
-    navigation.navigate('CreateFinance', {group_pk: group_pk});
+    navigation.navigate('CreateFinance', { group_pk: group_pk });
   };
 
   useFocusEffect(
@@ -99,7 +59,7 @@ const Spending = ({group_pk}) => {
         <View style={styles.emptySpendView}>
           <TouchableOpacity onPress={() => handelCreateFinance()}>
             <Ionicons
-              style={{marginBottom: 20}}
+              style={{ marginBottom: 20 }}
               name="add-circle"
               size={150}
               color="#A379E8"
@@ -112,53 +72,57 @@ const Spending = ({group_pk}) => {
         </View>
       ) : (
         <>
-        <ScrollView contentContainerStyle={styles.scrollView}>
-          {Data.map(item => (
-            <TouchableOpacity
-              key={item.id.toString()}
-              onPress={() => {
-                navigation.navigate('FinanceDetail', {
-                  group_pk: group_pk,
-                  finance_pk: item.id,
-                });
-              }}>
-              <View style={styles.listItem}>
-                <View
-                  style={[
-                    styles.iconContainer,
-                    getIconStyle(item.finance_category),
-                  ]}>
-                  {getIconComponent(item.finance_category)}
-                </View>
-                <View style={styles.details}>
-                  <CustomText style={styles.name}>
-                    {truncateText(item.description, 14)}
-                  </CustomText>
-                  <View style={{ flexDirection: 'row', marginTop:'auto' }}>
-                    <CustomText style={styles.date}>{item.date}</CustomText>
-                    <CustomText style={styles.payer}>결제자</CustomText>
-                    <CustomText style={styles.date}>
-                      {truncateText(item.payer, 30)}
+          <ScrollView contentContainerStyle={styles.scrollView}>
+            {Data.map(item => (
+              <TouchableOpacity
+                key={item.id.toString()}
+                onPress={() => {
+                  navigation.navigate('FinanceDetail', {
+                    group_pk: group_pk,
+                    finance_pk: item.id,
+                  });
+                }}>
+                <View style={styles.listItem}>
+                  <View
+                    style={[
+                      styles.iconContainer,
+                      styles[item.finance_category_icon_color] || styles.iconPurple,
+                    ]}>
+                    <Ionicons
+                      name={item.finance_category_icon || 'ellipsis-horizontal-circle-outline'}
+                      size={25}
+                      color="white"
+                    />
+                  </View>
+                  <View style={styles.details}>
+                    <CustomText style={styles.name}>
+                      {truncateText(item.description, 14)}
                     </CustomText>
+                    <View style={{ flexDirection: 'row', marginTop: 'auto' }}>
+                      <CustomText style={styles.date}>{item.date}</CustomText>
+                      <CustomText style={styles.payer}>결제자</CustomText>
+                      <CustomText style={styles.date}>
+                        {truncateText(item.payer, 30)}
+                      </CustomText>
+                    </View>
+                  </View>
+                  <View style={{ flex: 4 }}>
+                    <CustomText style={styles.amount}>{truncateAmount(item.amount)}</CustomText>
                   </View>
                 </View>
-                <View style={{ flex: 4 }}>
-                  <CustomText style={styles.amount}>{truncateAmount(item.amount)}</CustomText>
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => handelCreateFinance()}>
-          <Ionicons
-            name="add-circle"
-            size={50}
-            color="#5DAF6A"
-          />
-        </TouchableOpacity>
-      </>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => handelCreateFinance()}>
+            <Ionicons
+              name="add-circle"
+              size={50}
+              color="#5DAF6A"
+            />
+          </TouchableOpacity>
+        </>
       )}
     </View>
   );
