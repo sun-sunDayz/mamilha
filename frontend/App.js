@@ -3,6 +3,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import React from 'react';
 import {View, Text, TextInput} from 'react-native';
 import Main from './src/screens/Main';
+import Intro from './src/screens/Intro';
 import Login from './src/screens/Login';
 import SignUp from './src/screens/SignUp';
 import CreateGroup from './src/screens/CreateGroup';
@@ -25,6 +26,7 @@ const App = () => {
   const BottomTabScreen = () => {
     return (
       <Tab.Navigator screenOptions={{headerShown: false}}>
+        <Tab.Screen name="Intro" component={Intro} />
         <Tab.Screen name="Main" component={Main} />
         <Tab.Screen name="Login" component={Login} />
         <Tab.Screen name="SignUp" component={SignUp} />
