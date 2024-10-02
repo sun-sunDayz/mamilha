@@ -107,7 +107,7 @@ class GroupAPIView(APIView):
             grades = Grades.objects.get(admin=1),
             group = group
         )
-        
+        print(members)
         for member in member_validated:
             Member.objects.create(
             name=member['name'],
