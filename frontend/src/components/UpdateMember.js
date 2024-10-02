@@ -36,6 +36,7 @@ const UpdateMember = ({ onUpdateMembers, selectedMembers }) => {
                             setActives(newInputs);
                         }}
                     />
+                    {active.id === 0 ? (<Text style={styles.MemberUserMe}>(나)</Text>) : null}
                     {active['active'] ? (
                         <TouchableOpacity onPress={() => toggleActive(active['id'])} style={styles.activeButton}>
                             <Text style={styles.activeText}> 활성 </Text>

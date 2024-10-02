@@ -138,8 +138,6 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
     checkedCount > 0 && formData.amount
       ? parseFloat(formData.amount) / checkedCount // 소수점 2자리까지 표시
       : '0';
-  console.log(dividedPrice);
-  console.log(checkedCount);
   // TextInput 값이 변경될 때 호출되는 함수
   const handleChange = (name, value) => {
     setFormData({...formData, [name]: value});

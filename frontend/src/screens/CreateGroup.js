@@ -16,6 +16,11 @@ const CreateGroup = ({ navigation }) => {
     const [currency, setCurrency] = useState('');
     const [members, setMembers] = useState([]);
     const scrollViewRef = useRef(null);
+    const [nickname, setNickname] = useState('');
+
+    const handleAddMember = () => {
+        scrollViewRef.current?.scrollToEnd({ animated: true });
+    };
 
     const handleCreateGroup = async () => {
         try {
@@ -23,29 +28,29 @@ const CreateGroup = ({ navigation }) => {
                 name: groupName,
                 category: groupCategory,
                 currency: currency,
-                members: members,
+                members: [{ id: 0, name: nickname, active: 1 }, ...members],
             });
             setGroupName('');
             setGroupCategory('');
             setCurrency('');
+            setNickname('');
             setMembers([]);
-            navigation.navigate('Main');
+            navigation.goBack();
         } catch (error) {
             alert(error.response.data.error);
         }
     };
 
     const handleHome = () => {
-        navigation.navigate('Main');
+        navigation.goBack();
         setGroupName('');
         setGroupCategory('');
         setCurrency('');
         setMembers([]);
+        setNickname('');
     };
 
-    const handleAddMember = () => {
-        scrollViewRef.current?.scrollToEnd({ animated: true });
-    };
+    
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -82,7 +87,14 @@ const CreateGroup = ({ navigation }) => {
                     <View style={styles.SectionContainer}>
                         <Text style={styles.SectionTitle}>멤버</Text>
                         <View style={styles.MemberUserContainer}>
-                            <Text style={styles.MemberUserName}>닉네임</Text>
+                            <TextInput 
+                                style={styles.MemberUserName}
+                                placeholder="내 별명 입력"
+                                placeholderTextColor="#ADAFBD"
+                                keyboardType="default"
+                                value={nickname}
+                                onChangeText={setNickname}
+                            />
                             <Text style={styles.MemberUserMe}>(나)</Text>
                         </View>
                         <GroupMember onChangeMembers={setMembers} onAddMember={handleAddMember} />
