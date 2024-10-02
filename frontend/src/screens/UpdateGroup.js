@@ -10,7 +10,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import apiClient from '../services/apiClient';
 
 
-const UpdateGroup = ({route, navigation}) => {
+const UpdateGroup = ({ route, navigation }) => {
     const [groupName, setGroupName] = useState('');
     const [groupCategory, setGroupCategory] = useState('');
     const [currency, setCurrency] = useState('');
@@ -19,7 +19,8 @@ const UpdateGroup = ({route, navigation}) => {
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
     const [modalWidth, setModalWidth] = useState(0)
     const scrollViewRef = useRef(null);
-    
+
+
     const group_pk = route.params.group_pk
 
     useEffect(() => {
@@ -69,15 +70,15 @@ const UpdateGroup = ({route, navigation}) => {
     };
 
     return (
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        
             <SafeAreaView style={styles.Container}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => navigation.goBack()}>
                         <Ionicons name="close" size={30} color="#616161" />
                     </TouchableOpacity>
-                        <View>
-                            <Text style={styles.title}>모임 정보</Text>
-                        </View>
+                    <View>
+                        <Text style={styles.title}>모임 정보</Text>
+                    </View>
                     <Ionicons name="settings-outline" size={30} color="transparent" />
                 </View>
                 <ScrollView ref={scrollViewRef} contentContainerStyle={styles.ScrollViewContent}>
@@ -102,17 +103,13 @@ const UpdateGroup = ({route, navigation}) => {
                     </View>
                     <View style={styles.SectionContainer}>
                         <Text style={styles.SectionTitle}>멤버</Text>
-                        <View style={styles.MemberUserContainer}>
-                            <Text style={styles.MemberUserName}>닉네임</Text>
-                            <Text style={styles.MemberUserMe}>(나)</Text>
-                        </View>
                         <UpdateMember
                             onUpdateMembers={setUpdateMembers}
                             selectedMembers={updateMembers}
                         />
                         <GroupMember onChangeMembers={setMembers}
                             onAddMember={handleAddMember}
-                            />
+                        />
                     </View>
                 </ScrollView>
 
@@ -153,7 +150,6 @@ const UpdateGroup = ({route, navigation}) => {
                         </TouchableOpacity>
                     </Modal>)}
             </SafeAreaView>
-        </TouchableWithoutFeedback>
     );
 }
 
