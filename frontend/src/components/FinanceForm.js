@@ -13,6 +13,7 @@ import DatePicker from 'react-native-date-picker';
 import apiClient from '../services/apiClient';
 import moment from 'moment';
 import {useNavigation} from '@react-navigation/native';
+import GroupCategory from '../components/GroupCategory';
 
 const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
   const navigation = useNavigation(); // 네비게이션 객체 가져오기
@@ -31,7 +32,9 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
 
   // 일시 (Date)
 
-  const [date, setDate] = useState(formData.date ? new Date(initialData.date) : new Date());
+  const [date, setDate] = useState(
+    formData.date ? new Date(initialData.date) : new Date(),
+  );
   const [open, setOpen] = useState(false);
 
   const handleConfirm = selectedDate => {
@@ -42,8 +45,12 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
 
   // 구분 (Type)
 
-  const [selectedType, setSelectedType] = useState(formData.finance_type||'지출'); // 초기값은 '지출'
-  const [selectedMethod, setSelectedMethod] = useState(formData.pay_method||'카드'); // 초기값은 '카드'
+  const [selectedType, setSelectedType] = useState(
+    formData.finance_type || '지출',
+  ); // 초기값은 '지출'
+  const [selectedMethod, setSelectedMethod] = useState(
+    formData.pay_method || '카드',
+  ); // 초기값은 '카드'
 
   // 카테고리 (Category)
   const [categoryData, setCategoryData] = useState([]);
@@ -54,9 +61,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await apiClient.get(
-          '/api/finances/categorys/',
-        );
+        const response = await apiClient.get('/api/finances/categorys/');
         // API 응답 데이터를 state에 저장
         const categories = response.data.map(item => ({
           label: item.name, // 'labelField'에 해당하는 필드
@@ -65,7 +70,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
         setCategoryData(categories);
 
         const selectedCategory = categories.find(
-          item => item.label === formData.finance_category // 카테고리 비교
+          item => item.label === formData.finance_category, // 카테고리 비교
         );
         if (selectedCategory) {
           setCategory(selectedCategory.value); // 일치하는 값이 있으면 설정
@@ -78,11 +83,10 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
     fetchCategories();
   }, [formData.finance_category]); // 빈 배열을 전달하여 컴포넌트가 처음 마운트될 때만 실행
 
-
   // 결제자(payer) & 참여 멤버(selected members)
   const [members, setMembers] = useState([]); // 멤버 리스트
   const [payer, setPayer] = useState(formData.payer); // 결제자 선택
-  
+
   // useEffect를 사용하여 컴포넌트가 마운트될 때 API 호출
   useEffect(() => {
     const fetchMembers = async () => {
@@ -99,7 +103,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
         setMembers(membersData);
 
         const selectedPayer = membersData.find(
-          item => item.label === formData.payer  // 결제자 비교 
+          item => item.label === formData.payer, // 결제자 비교
         );
         if (selectedPayer) {
           setPayer(selectedPayer.value); // 일치하는 값이 있으면 설정
@@ -132,9 +136,8 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
   // 입력된 price 값을 checkedCount로 나누는 함수
   const dividedPrice =
     checkedCount > 0 && formData.amount
-      ? (parseFloat(formData.amount) / checkedCount) // 소수점 2자리까지 표시
+      ? parseFloat(formData.amount) / checkedCount // 소수점 2자리까지 표시
       : '0';
-
   // TextInput 값이 변경될 때 호출되는 함수
   const handleChange = (name, value) => {
     setFormData({...formData, [name]: value});
@@ -193,10 +196,9 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
         },
       );
 
-
       if (response.status === 201) {
         alert('지출 등록에 성공했습니다');
-        navigation.navigate('Finances', { "group_pk": group_pk })
+        navigation.navigate('Finances', {group_pk: group_pk});
         // Form reset or navigation can be handled here
       } else {
         alert('저장 실패: ' + result.message);
@@ -215,8 +217,8 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
   };
 
   const comma = amount => {
-    const noCamma = amount.replace(/,/g, '')
-    return noCamma.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+    const noCamma = amount.replace(/,/g, '');
+    return noCamma.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
   return (
@@ -326,8 +328,8 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
                 setIsCategoryFocus(false);
                 handleChange('category', item.value);
                 setFormData(prevState => ({
-                  ...prevState, 
-                  finance_category: item.value 
+                  ...prevState,
+                  finance_category: item.value,
                 }));
               }}
             />
@@ -354,6 +356,10 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
                 handleChange('payer', item.value);
               }}
             />
+            <GroupCategory
+              selectedCategory={category}
+              onChangeCategory={setCategory}
+            />
           </View>
 
           <View style={styles.formRow}>
@@ -367,15 +373,12 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
                     : styles.inactiveTab,
                 ]}
                 onPress={() => {
-                  setSelectedMethod('카드')
+                  setSelectedMethod('카드');
                   setFormData(prevState => ({
-                    ...prevState, 
-                    pay_method: '카드' 
+                    ...prevState,
+                    pay_method: '카드',
                   }));
-                }
-
-
-                }>
+                }}>
                 <Text
                   style={[
                     styles.tabText,
@@ -394,10 +397,10 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
                     : styles.inactiveTab,
                 ]}
                 onPress={() => {
-                  setSelectedMethod('현금')
+                  setSelectedMethod('현금');
                   setFormData(prevState => ({
-                    ...prevState, 
-                    pay_method: '현금' 
+                    ...prevState,
+                    pay_method: '현금',
                   }));
                 }}>
                 <Text
@@ -456,7 +459,9 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
                   </TouchableOpacity>
                   <View style={styles.tableCell}>
                     <Text style={styles.tableText}>{member.label}</Text>
-                    <Text style={styles.tablePrice}>{checkedMembers[index] ? `${dividedPrice}원` : '0원'}</Text>
+                    <Text style={styles.tablePrice}>
+                      {checkedMembers[index] ? `${dividedPrice}원` : '0원'}
+                    </Text>
                   </View>
                 </View>
               ))}
