@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useCallback, useRef} from 'react';
 import {
   View,
   Text,
@@ -9,8 +9,10 @@ import {
 } from 'react-native';
 import {login} from '../api/Accounts';
 import {SafeAreaView} from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Login = ({navigation}) => {
+  const userRef = useRef(null);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -20,6 +22,11 @@ const Login = ({navigation}) => {
     if (result) {
       setError('');
       navigation.navigate('Main');
+      setUsername('')
+      setPassword('')
+      if (userRef.current) {
+        userRef.current.focus(); 
+      }
     } else {
       setError('로그인에 실패했습니다.');
     }
@@ -30,11 +37,13 @@ const Login = ({navigation}) => {
     setUsername(formattedText);
   };
 
+
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Mamilha</Text>
       <View style={styles.inputContainer}>
         <TextInput
+          ref={userRef}  
           style={[styles.input, styles.topInput]}
           placeholder="아이디"
           value={username}
