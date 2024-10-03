@@ -10,7 +10,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import {UserContext} from '../userContext';
-import {updateProfile} from '../api/Accounts';
+import {updateProfile, logout} from '../api/Accounts';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const ProfileScreen = ({navigation}) => {
@@ -46,6 +46,18 @@ const ProfileScreen = ({navigation}) => {
     navigation.navigate('PasswordChange'); // PasswordChangeScreen 페이지로 이동하도록 설정
   };
 
+  // 로그아웃
+  const handleLogout = async () => {
+    try {
+      await logout();
+      Alert.alert('로그아웃 완료');
+      navigation.navigate('Intro'); // 로그아웃 후 시작 화면으로 이동
+    } catch (error) {
+      console.log('Logout Error: ', error);
+      Alert.alert('로그아웃 실패');
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -57,49 +69,61 @@ const ProfileScreen = ({navigation}) => {
         </View>
         <View style={styles.emptyIcon}></View>
       </View>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Text style={styles.label}>아이디</Text>
-        <TextInput
-          value={id}
-          editable={false} // 아이디는 수정 불가능하게 설정
-          style={[styles.input, {backgroundColor: '#D9D9D9'}]} // 수정 불가능한 필드는 배경색을 다르게 설정
-        />
-
-        <Text style={styles.label}>비밀번호</Text>
-        <TouchableOpacity
-          style={styles.passwordButton}
-          onPress={handlePasswordChange}>
-          <Text style={styles.passwordButtonText}>비밀번호 변경</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.label}>이메일</Text>
-        <TextInput
-          placeholder="이메일 입력"
-          value={email}
-          onChangeText={setEmail}
-          style={styles.input}
-        />
-
-        <Text style={styles.label}>이름</Text>
-        <TextInput
-          placeholder="이름 입력"
-          value={name}
-          onChangeText={setName}
-          style={styles.input}
-        />
-
-        <Text style={styles.label}>닉네임</Text>
-        <TextInput
-          placeholder="닉네임 입력"
-          value={nickname}
-          onChangeText={setNickname}
-          style={styles.input}
-        />
-      </ScrollView>
-
-      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.buttonText}>수정하기</Text>
-      </TouchableOpacity>
+      <View style={styles.content}>
+        <ScrollView style={styles.scrollContainer}>
+          <View style={styles.formRow}>
+            <Text style={styles.label}>아이디</Text>
+            <TextInput
+              value={id}
+              editable={false} // 아이디는 수정 불가능하게 설정
+              style={[styles.textInput, styles.disabledInput]}
+            />
+          </View>
+          <View style={styles.formRow}>
+            <Text style={styles.label}>비밀번호</Text>
+            <TouchableOpacity
+              style={styles.passwordButton}
+              onPress={handlePasswordChange}>
+              <Text style={styles.passwordButtonText}>비밀번호 변경</Text>
+            </TouchableOpacity>
+          </View>
+          <View style={styles.formRow}>
+            <Text style={styles.label}>이메일</Text>
+            <TextInput
+              placeholder="이메일 입력"
+              value={email}
+              onChangeText={setEmail}
+              style={styles.textInput}
+            />
+          </View>
+          <View style={styles.formRow}>
+            <Text style={styles.label}>이름</Text>
+            <TextInput
+              placeholder="이름 입력"
+              value={name}
+              onChangeText={setName}
+              style={styles.textInput}
+            />
+          </View>
+          <View style={styles.formRow}>
+            <Text style={styles.label}>닉네임</Text>
+            <TextInput
+              placeholder="닉네임 입력"
+              value={nickname}
+              onChangeText={setNickname}
+              style={styles.textInput}
+            />
+          </View>
+        </ScrollView>
+        <View style={styles.bottomContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleSave}>
+            <Text style={styles.buttonText}>수정하기</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button2} onPress={handleLogout}>
+            <Text style={styles.button2Text}>로그아웃</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </SafeAreaView>
   );
 };
@@ -107,7 +131,12 @@ const ProfileScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F1F1F9',
+    backgroundColor: '#f1f1f9',
+  },
+  content: {
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    marginBottom: 20,
   },
   header: {
     flexDirection: 'row',
@@ -126,25 +155,30 @@ const styles = StyleSheet.create({
     width: 30,
   },
   scrollContainer: {
-    padding: 20,
-    paddingBottom: 100, // 버튼 위치 고려하여 패딩 추가
+    paddingBottom: 200, // ScrollView 내용물 아래 여유 공간 추가
+  },
+  formRow: {
+    flexDirection: 'column',
+    marginBottom: 16,
   },
   label: {
-    marginBottom: 8,
-    fontSize: 12,
+    color: '#000000',
+    fontSize: 14,
     fontWeight: 'bold',
+    margin: 8,
   },
-  input: {
+  textInput: {
     height: 40,
-    borderColor: 'transparent', // 테두리 투명하게 설정
-    borderWidth: 1,
-    borderRadius: 8, // 모서리를 둥글게 설정
-    marginBottom: 16,
-    paddingLeft: 8,
-    backgroundColor: '#f9f9f9', // 배경색을 살짝 넣어줘서 입력창이 구분되도록 설정
+    borderRadius: 8,
+    padding: 10,
+    backgroundColor: '#FFFFFF',
+    width: '95%',
+    marginLeft: 8,
     color: '#434343',
   },
+  disabledInput: {backgroundColor: '#D9D9D9'},
   passwordButton: {
+    marginLeft: 8,
     paddingVertical: 10, // 텍스트 위아래 여백
     paddingHorizontal: 10, // 텍스트 좌우 여백
     alignItems: 'center',
@@ -153,11 +187,10 @@ const styles = StyleSheet.create({
     borderWidth: 0.4,
     borderRadius: 8,
     alignSelf: 'flex-start', // 버튼 크기를 텍스트에 맞게 설정
-    marginBottom: 16,
   },
   passwordButtonText: {
     color: '#6C6C6C',
-    fontSize: 16,
+    fontSize: 14,
   },
   saveButton: {
     position: 'absolute',
@@ -170,8 +203,34 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     margin: 20, // 좌우 여백
   },
+  bottomContainer: {
+    position: 'absolute',
+    alignSelf: 'center',
+    bottom: 0,
+    width: '95%',
+  },
+  button: {
+    width: '100%',
+    padding: 15,
+    alignItems: 'center',
+    backgroundColor: '#5DAF6A',
+    borderRadius: 10,
+  },
   buttonText: {
     color: '#ffffff',
+    fontWeight: '800',
+    fontSize: 16,
+  },
+  button2: {
+    width: '100%',
+    padding: 15,
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    borderRadius: 10,
+    marginTop: 20,
+  },
+  button2Text: {
+    color: '#5DAF6A',
     fontWeight: '800',
     fontSize: 16,
   },

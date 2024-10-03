@@ -55,6 +55,11 @@ const Login = ({navigation}) => {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>로그인</Text>
       </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.miniButton}
+        onPress={() => navigation.navigate('SignUp')}>
+        <Text style={styles.miniButtonText}>회원가입</Text>
+      </TouchableOpacity>
     </SafeAreaView>
   );
 };
@@ -117,6 +122,14 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontWeight: '800',
     fontSize: 16,
+  },
+  miniButton: {
+    marginTop: 16,
+    padding: 12,
+  },
+  miniButtonText: {
+    fontSize: 14,
+    color: '#5DAF6A',
   },
 });
 

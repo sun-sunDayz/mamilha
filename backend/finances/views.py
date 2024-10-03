@@ -21,6 +21,8 @@ class FinancesAPIView(APIView):
                 "payer": finance.payer.name,
                 "finance_type": finance.finance_type.name,
                 "finance_category": finance.finance_category.name,
+                "finance_category_icon": finance.finance_category.icon,
+                "finance_category_icon_color": finance.finance_category.icon_color,
                 "pay_method": finance.pay_method.name,
                 "split_method": finance.split_method.name,
                 "date": finance.created_at.strftime("%Y.%m.%d")
