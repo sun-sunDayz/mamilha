@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
+import { View, Text, Image, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
 import ListItem from '../components/ListItem';
 import ButtonGroup from '../components/ButtonGroup';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -56,7 +56,7 @@ const Main = ({navigation}) => {
       <View style={styles.meetingListContainer}>
         <Text style={styles.meetingListText}>모임 목록</Text>
       </View>
-      <View>
+      <ScrollView>
         {groups.map(group => (
           <ListItem
             key={group.id}
@@ -71,7 +71,7 @@ const Main = ({navigation}) => {
             members={group.members}
           />
         ))}
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
