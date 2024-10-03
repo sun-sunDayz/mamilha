@@ -14,13 +14,9 @@ const CreateGroup = ({ navigation }) => {
     const [groupName, setGroupName] = useState('');
     const [groupCategory, setGroupCategory] = useState('');
     const [currency, setCurrency] = useState('');
-    const [members, setMembers] = useState([]);
+    const [members, setMembers] = useState([{ id: 1, name: '', active: 1 }]);
     const scrollViewRef = useRef(null);
     const [nickname, setNickname] = useState('');
-
-    const handleAddMember = () => {
-        scrollViewRef.current?.scrollToEnd({ animated: true });
-    };
 
     const handleCreateGroup = async () => {
         try {
@@ -34,23 +30,27 @@ const CreateGroup = ({ navigation }) => {
             setGroupCategory('');
             setCurrency('');
             setNickname('');
-            setMembers([]);
-            navigation.goBack();
+            setMembers([{ id: 1, name: '', active: 1 }]);
+            navigation.navigate('Main');
         } catch (error) {
             alert(error.response.data.error);
         }
     };
 
-    const handleHome = () => {
-        navigation.goBack();
-        setGroupName('');
-        setGroupCategory('');
-        setCurrency('');
-        setMembers([]);
-        setNickname('');
+    const addInput = () => {
+        const newId = members.length > 0 ? members[members.length - 1].id + 1 : 1;
+        setMembers([...members, { id: newId, name: '', active: 1 }]);
+        scrollViewRef.current?.scrollToEnd({ animated: true });
     };
 
-    
+    const deleteInput = (id) => {
+        if (members.length > 1) {
+            setMembers(members.filter(member => member.id !== id));
+        } else if (members.length == 1) {
+            setMembers([{ id: 1, name: '', active: 1 }])
+        }
+    };
+
 
     return (
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -87,7 +87,7 @@ const CreateGroup = ({ navigation }) => {
                     <View style={styles.SectionContainer}>
                         <Text style={styles.SectionTitle}>멤버</Text>
                         <View style={styles.MemberUserContainer}>
-                            <TextInput 
+                            <TextInput
                                 style={styles.MemberUserName}
                                 placeholder="내 별명 입력"
                                 placeholderTextColor="#ADAFBD"
@@ -97,7 +97,35 @@ const CreateGroup = ({ navigation }) => {
                             />
                             <Text style={styles.MemberUserMe}>(나)</Text>
                         </View>
-                        <GroupMember onChangeMembers={setMembers} onAddMember={handleAddMember} />
+                        <View>
+                            <View>
+                                {members.map((input, index) => (
+                                    <View key={input.id} >
+                                        <TextInput
+                                            style={styles.input}
+                                            placeholder="멤버 별명 입력"
+                                            placeholderTextColor="#ADAFBD"
+                                            keyboardType="default"
+                                            value={input['name']}
+                                            onChangeText={(text) => {
+                                                const newInputs = members.map(item =>
+                                                    item.id === input.id ? { ...item, name: text } : item);
+                                                setMembers(newInputs);
+                                            }}
+                                        />
+                                        <TouchableOpacity onPress={() => deleteInput(input.id)} style={styles.deleteButton}>
+                                            <Ionicons name="trash-outline" size={18} color='#C65757' />
+                                        </TouchableOpacity>
+                                    </View>
+                                ))}
+                            </View>
+                            <View style={{ alignItems: 'center', marginTop: 10 }}>
+                                <TouchableOpacity onPress={addInput} style={styles.addButton}>
+                                    <Ionicons name="add-circle" size={35} color='#5DAF6A' />
+                                </TouchableOpacity>
+
+                            </View>
+                        </View>
                     </View>
                 </ScrollView>
 
@@ -121,12 +149,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 20,
         paddingVertical: 10,
-      },
-      title: {
+    },
+    title: {
         fontSize: 18,
         fontWeight: 'bold',
         color: 'black',
-      },
+    },
     TopContainer: {
         position: 'relative',
     },
@@ -182,7 +210,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '700',
     },
-    MemberUserContainer:{
+    MemberUserContainer: {
         borderRadius: 15,
         backgroundColor: '#ffffff',
         marginTop: 10,
@@ -190,15 +218,41 @@ const styles = StyleSheet.create({
         paddingLeft: 15,
         flexDirection: 'row'
     },
-    MemberUserName:{ 
+    MemberUserName: {
         fontSize: 16,
-        color: '#000000' 
+        color: '#000000'
     },
-    MemberUserMe:{
+    MemberUserMe: {
         fontSize: 16,
         fontWeight: '700',
         color: '#5DAF6A',
         marginLeft: 5
+    },
+    input: {
+        height: 40,
+        fontSize: 16,
+        marginTop: 10,
+        padding: 10,
+        paddingLeft: 15,
+        backgroundColor: '#ffffff',
+        borderRadius: 15,
+    },
+    addButton: {
+        height: 40,
+        width: 40,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    deleteButton: {
+        position: 'absolute',
+        right: 12,
+        top: 18,
+        height: 25,
+        width: 25,
+        borderRadius: 15,
+        backgroundColor: '#FFCDCD',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
 });
 
