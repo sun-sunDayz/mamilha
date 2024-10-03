@@ -102,11 +102,11 @@ class GroupAPIView(APIView):
 
         #그룹 생성자 admin Member로 추가
         for member in member_validated:
-            if member.id == 0 :
-                user_instance = user,
-                grades = Grades.objects.get(admin=1),
+            if member['id'] == 0 :
+                user_instance = user
+                grades = Grades.objects.get(admin=1)
             else:
-                grades=Grades.objects.get(admin=0, edit=0, view=1),
+                grades=Grades.objects.get(admin=0, edit=0, view=1)
                 user_instance=None
 
             Member.objects.create(
