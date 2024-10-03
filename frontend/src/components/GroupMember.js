@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TextInput, StyleSheet, TouchableOpacity } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 
-const GroupMember = ({ onChangeMembers, onAddMember}) => {
+const GroupMember = ({onChangeMembers, onAddMember}) => {
     const [inputs, setInputs] = useState([{ id: 1, name: '', active: 1 }]);
-
+    
     useEffect(() => {
         onChangeMembers(inputs);
-    }, [inputs, onChangeMembers]);
+    }, [inputs]);
 
     const addInput = () => {
         const newId = inputs.length > 0 ? inputs[inputs.length - 1].id + 1 : 1;

@@ -1,34 +1,32 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
+import {Image, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
-const Intro = ({navigation}) => {
-  const handleLogin = async () => {
-    navigation.navigate('Login'); // 회원가입 페이지로 이동 (적절한 경로로 수정)
-  };
+const Login = ({navigation}) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-  const handleSignup = () => {
-    navigation.navigate('SignUp'); // 회원가입 페이지로 이동 (적절한 경로로 수정)
+  const handleUsernameChange = text => {
+    const formattedText = text.charAt(0).toLowerCase() + text.slice(1);
+    setUsername(formattedText);
   };
 
   return (
     <SafeAreaView style={styles.container}>
       <Image
-        source={require('../../assets/mamilha.png')}
-        style={{
-          width: 150,
-          height: 150,
-          alignItems: 'center',
-          marginBottom: 50,
-        }}
+        source={require('../../assets/images/mamilha_logo.png')}
+        style={styles.image}
       />
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('Login')}>
         <Text style={styles.buttonText}>로그인</Text>
       </TouchableOpacity>
-
-      {/* 회원가입 버튼 */}
-      <TouchableOpacity style={styles.signupButton} onPress={handleSignup}>
-        <Text style={styles.signupButtonText}>회원가입</Text>
+      <TouchableOpacity
+        style={styles.button2}
+        onPress={() => navigation.navigate('SignUp')}>
+        <Text style={styles.button2Text}>회원가입</Text>
       </TouchableOpacity>
     </SafeAreaView>
   );
@@ -42,44 +40,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F1F9',
     paddingHorizontal: 32,
   },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    fontStyle: 'italic',
-    color: '#5DAF6A',
-    marginBottom: 24,
-  },
-  inputContainer: {
-    width: '100%',
-    marginBottom: 12,
-  },
-  input: {
-    width: '100%',
-    padding: 10,
-    backgroundColor: '#ffffff',
-  },
-  topInput: {
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
-  },
-  bottomInput: {
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-  },
+  image: {height: 204, width: 204, marginBottom: 84},
   separator: {
     height: 1,
     backgroundColor: '#F1F1F9',
-  },
-  errorContainer: {
-    height: 20, // 고정된 높이 설정
-    justifyContent: 'center', // 텍스트가 중앙에 위치하도록 설정
-    alignItems: 'flex-start', // 에러 메시지를 왼쪽에 정렬
-    marginBottom: 12,
-    width: '100%', // 에러 메시지가 입력 필드의 전체 너비를 사용하도록 설정
-  },
-  errorText: {
-    color: 'red', // 에러 메시지 색상 설정
-    textAlign: 'left', // 에러 메시지 텍스트를 왼쪽 정렬
   },
   button: {
     width: '100%',
@@ -87,26 +51,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#5DAF6A',
     borderRadius: 10,
-    marginBottom: 12, // 로그인 버튼 아래 공간 추가
   },
   buttonText: {
     color: '#ffffff',
     fontWeight: '800',
     fontSize: 16,
   },
-  signupButton: {
+  button2: {
     width: '100%',
     padding: 15,
     alignItems: 'center',
-    backgroundColor: '#ffffff', // 배경 흰색
+    backgroundColor: '#ffffff',
     borderRadius: 10,
-    borderColor: '#5DAF6A',
+    marginTop: 20,
   },
-  signupButtonText: {
-    color: '#5DAF6A', // 텍스트 초록색
+  button2Text: {
+    color: '#5DAF6A',
     fontWeight: '800',
     fontSize: 16,
   },
 });
 
-export default Intro;
+export default Login;
