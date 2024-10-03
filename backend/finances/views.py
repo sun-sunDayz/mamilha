@@ -43,7 +43,6 @@ class FinancesAPIView(APIView):
         finance_category = data.get('finance_category', None)
         pay_method = data.get('pay_method', None)
         split_method = data.get('split_method', None)
-
         try:
             print(f'amount={amount}, payer={payer}, group={group}, finance type={finance_type}, cate={finance_category}, method={pay_method}, split_method={split_method}')
             payer = Member.objects.get(id=payer, group=group)
