@@ -356,10 +356,6 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
                 handleChange('payer', item.value);
               }}
             />
-            <GroupCategory
-              selectedCategory={category}
-              onChangeCategory={setCategory}
-            />
           </View>
 
           <View style={styles.formRow}>
