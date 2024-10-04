@@ -25,7 +25,7 @@ class FinancesAPIView(APIView):
                 "finance_category_icon_color": finance.finance_category.icon_color,
                 "pay_method": finance.pay_method.name,
                 "split_method": finance.split_method.name,
-                "date": finance.created_at.strftime("%Y.%m.%d")
+                "date": finance.date,
             })
         return Response(data)
     
@@ -194,5 +194,7 @@ class FinanceCategorysAPIView(APIView):
             categorys.append({
                 "id" : category.id,
                 "name" : category.name,
+                "icon" : category.icon,
+                "icon_color" : category.icon_color,
             })
         return Response(categorys, status=status.HTTP_200_OK)
