@@ -128,15 +128,15 @@ const Spending = ({ group_pk }) => {
               );
             })}
           </ScrollView>
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => handelCreateFinance()}>
-            <Ionicons
-              name="add-circle"
-              size={50}
-              color="#5DAF6A"
-            />
-          </TouchableOpacity>
+            <View style={styles.addButtonContainer}>
+              <TouchableOpacity
+              style={styles.addButton}
+              activeOpacity={1}
+              onPress={() => handelCreateFinance()} 
+              >
+                <Ionicons name="add-circle" size={50} color="#5DAF6A" />
+              </TouchableOpacity>
+            </View>
         </>
       )}
     </View>
@@ -234,15 +234,18 @@ const styles = StyleSheet.create({
   scrollView: {
     flexGrow: 1,
   },
-  addButton: {
+  addButtonContainer: {
     position: 'absolute',
-    backgroundColor: 'transparent',
-    bottom: 0,
-    right: 0,
+    bottom: 30,
     left: 0,
-    padding: 20,
+    right: 0,
+    alignItems: 'center',
+  },
+  addButton: {
+    borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'transparent',
   },
   dateContainer: {
     alignItems: 'left',
