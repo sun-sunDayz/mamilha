@@ -35,7 +35,7 @@ class FinancesAPIView(APIView):
         amount = data.get('amount', None)
         amount = int(amount.replace(",", ""))
         description = data.get('description', None)
-        selet_members = data.get('members', [])
+        select_members = data.get('members', [])
 
         # 하단의 정보들은 테이블에서 레코드 탐색을 해야함
         payer = data.get('payer', None)
@@ -43,6 +43,7 @@ class FinancesAPIView(APIView):
         finance_category = data.get('finance_category', None)
         pay_method = data.get('pay_method', None)
         split_method = data.get('split_method', None)
+
         try:
             print(f'amount={amount}, payer={payer}, group={group}, finance type={finance_type}, cate={finance_category}, method={pay_method}, split_method={split_method}')
             payer = Member.objects.get(id=payer, group=group)
@@ -66,17 +67,19 @@ class FinancesAPIView(APIView):
             split_method=split_method
         )
         # if split_method == '고정분할' :
-        selet_members_id = [i['id'] for i in selet_members]
-        members = Member.objects.filter(group=group, id__in=selet_members_id)
+        select_members_id = [i['id'] for i in select_members]
+        members = Member.objects.filter(group=group, id__in=select_members_id)
         member_count = members.count()
         if member_count > 0:
-            split_amount = round(amount / member_count, 2)
+            # split_amount = round(amount / member_count, 2)
             for member in members:
-                Split.objects.create(
-                    finance=finance,
-                    member=member,
-                    amount=split_amount
-                )
+                select_member_data = next((item for item in select_members if item['id'] == member.id), None)
+
+                if select_member_data:
+                    Split.objects.create(
+                        finance=finance,
+                        member=member,
+                        amount=select_member_data['amount'])
         return Response(status=status.HTTP_201_CREATED)
     
 class FinancesDetailAPIView(APIView):
