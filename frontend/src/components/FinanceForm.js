@@ -57,6 +57,10 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
   const [category, setCategory] = useState(null);
   const [isCategoryFocus, setIsCategoryFocus] = useState(false);
 
+  // 결제자(payer) & 참여 멤버(selected members)
+  const [members, setMembers] = useState([]); // 멤버 리스트
+  const [payer, setPayer] = useState(formData.payer); // 결제자 선택
+
   // useEffect를 사용하여 컴포넌트가 마운트될 때 API 호출
   useEffect(() => {
     const fetchCategories = async () => {
@@ -69,26 +73,15 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
         }));
         setCategoryData(categories);
 
-        const selectedCategory = categories.find(
-          item => item.label === formData.finance_category, // 카테고리 비교
-        );
-        if (selectedCategory) {
-          setCategory(selectedCategory.value); // 일치하는 값이 있으면 설정
+        if(categories.length > 0) {
+          setCategory(categories[0].value); // 일치하는 값이 있으면 설정
         }
+
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
     };
 
-    fetchCategories();
-  }, [formData.finance_category]); // 빈 배열을 전달하여 컴포넌트가 처음 마운트될 때만 실행
-
-  // 결제자(payer) & 참여 멤버(selected members)
-  const [members, setMembers] = useState([]); // 멤버 리스트
-  const [payer, setPayer] = useState(formData.payer); // 결제자 선택
-
-  // useEffect를 사용하여 컴포넌트가 마운트될 때 API 호출
-  useEffect(() => {
     const fetchMembers = async () => {
       try {
         const response = await apiClient.get(
@@ -99,26 +92,27 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
         const membersData = response.data.map(item => ({
           label: item.name, // 'labelField'에 해당하는 필드
           value: item.id, // 'valueField'에 해당하는 필드
-          checked: false,
+          checked: true,
           amount: 0,
         }));
 
         setMembers(membersData);
 
-        const selectedPayer = membersData.find(
-          item => item.label === formData.payer, // 결제자 비교
-        );
-        if (selectedPayer) {
-          setPayer(selectedPayer.value); // 일치하는 값이 있으면 설정
+        if(membersData.length > 0) {
+          setPayer(membersData[0].value); // 일치하는 값이 있으면 설정
         }
+
       } catch (error) {
         console.error('Error fetching members:', error);
       }
     };
 
     fetchMembers();
-  }, [formData.payer]); // 빈 배열을 전달하여 컴포넌트가 처음 마운트될 때만 실행
+    fetchCategories();
+  }, []);
 
+
+  // amount값 변경 시 members정보 업데이트
   useEffect(() => {
     const updatedMembers = distributeAmount(members);
     setMembers(updatedMembers);
