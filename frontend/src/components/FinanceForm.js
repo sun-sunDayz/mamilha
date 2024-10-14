@@ -53,9 +53,14 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
   ); // 초기값은 '카드'
 
   // 카테고리 (Category)
-  const [categoryData, setCategoryData] = useState([]);
-  const [category, setCategory] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState(formData.finance_category);
   const [isCategoryFocus, setIsCategoryFocus] = useState(false);
+  const [isPayerFocus, setIsPayerFocus] = useState(false);
+
+  // 결제자(payer) & 참여 멤버(selected members)
+  const [members, setMembers] = useState([]); // 멤버 리스트
+  const [payer, setPayer] = useState(formData.payer); // 결제자 선택
 
   // useEffect를 사용하여 컴포넌트가 마운트될 때 API 호출
   useEffect(() => {
@@ -67,28 +72,17 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
           label: item.name, // 'labelField'에 해당하는 필드
           value: item.id, // 'valueField'에 해당하는 필드
         }));
-        setCategoryData(categories);
+        setCategories(categories);
 
-        const selectedCategory = categories.find(
-          item => item.label === formData.finance_category, // 카테고리 비교
-        );
-        if (selectedCategory) {
-          setCategory(selectedCategory.value); // 일치하는 값이 있으면 설정
+        if(categories.length > 0) {
+          setCategory(categories[0].value); // 일치하는 값이 있으면 설정
         }
+
       } catch (error) {
         console.error('Error fetching categories:', error);
       }
     };
 
-    fetchCategories();
-  }, [formData.finance_category]); // 빈 배열을 전달하여 컴포넌트가 처음 마운트될 때만 실행
-
-  // 결제자(payer) & 참여 멤버(selected members)
-  const [members, setMembers] = useState([]); // 멤버 리스트
-  const [payer, setPayer] = useState(formData.payer); // 결제자 선택
-
-  // useEffect를 사용하여 컴포넌트가 마운트될 때 API 호출
-  useEffect(() => {
     const fetchMembers = async () => {
       try {
         const response = await apiClient.get(
@@ -99,47 +93,104 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
         const membersData = response.data.map(item => ({
           label: item.name, // 'labelField'에 해당하는 필드
           value: item.id, // 'valueField'에 해당하는 필드
+          checked: true,
+          amount: 0,
         }));
+
         setMembers(membersData);
 
-        const selectedPayer = membersData.find(
-          item => item.label === formData.payer, // 결제자 비교
-        );
-        if (selectedPayer) {
-          setPayer(selectedPayer.value); // 일치하는 값이 있으면 설정
+        if(membersData.length > 0) {
+          setPayer(membersData[0].value); // 일치하는 값이 있으면 설정
         }
+
       } catch (error) {
         console.error('Error fetching members:', error);
       }
     };
 
     fetchMembers();
-  }, [formData.payer]); // 빈 배열을 전달하여 컴포넌트가 처음 마운트될 때만 실행
+    fetchCategories();
+  }, []);
 
-  const [isPayerFocus, setIsPayerFocus] = useState(false);
+  useEffect(() => {
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      payer: payer,
+    }));
+    updateMemberDistributeAmount();
+  }, [payer]);
 
-  // 각 멤버의 체크 상태를 관리하는 state
-  const [checkedMembers, setCheckedMembers] = useState(
-    members.map(() => false), // 초기값을 모두 false로 설정
-  );
+  useEffect(() => {
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      finance_category: category,
+    }));
+
+  }, [category]);
+
+  // amount값 변경 시 members정보 업데이트
+  useEffect(() => {
+    updateMemberDistributeAmount()
+  }, [formData.amount]);
+
+
+  const updateMemberDistributeAmount = () => {
+    const updatedMembers = distributeAmount(members);
+    setMembers(updatedMembers);
+  }
 
   const toggleCheck = index => {
-    // 체크 상태를 변경하는 함수
-    const newCheckedMembers = [...checkedMembers];
-    newCheckedMembers[index] = !newCheckedMembers[index];
-    setCheckedMembers(newCheckedMembers);
+    // checked 값 토글
+    setMembers(prevMember => {
+      const members = prevMember.map((member, i) =>
+        i === index ? {...member, checked: !member.checked} : member,
+      );
+
+      // 토글 후 바로 금액 재분배
+      return distributeAmount(members);
+    });
   };
 
-  // 선택된 멤버의 수 계산
-  const checkedCount = checkedMembers.filter(isChecked => isChecked).length;
+  // checked된 멤버들에게만 amount를 분배하는 함수
+  const distributeAmount = members => {
+    const checkedMembers = members.filter(member => member.checked);
+    const checkedCount = checkedMembers.length;
 
-  // 입력된 price 값을 checkedCount로 나누는 함수
-  const dividedPrice =
-    checkedCount > 0 && formData.amount
-      ? parseFloat(formData.amount) / checkedCount // 소수점 2자리까지 표시
-      : '0';
+    if (checkedCount === 0) {
+      return members;
+    }
+
+    amount = formData.amount ? formData.amount : 0;
+
+    const totalAmount = parseFloat(amount);
+    const baseAmount = Math.floor(totalAmount / checkedCount); // 각 멤버에게 분배할 기본 금액
+    const remainder = Math.round(totalAmount % checkedCount); // 나머지 계산
+
+    const newMembers = members.map(member => {
+      if (member.checked) {
+        const memberIndex = checkedMembers.indexOf(member);
+        let newAmount = 0;
+
+        if(payer === member.value) {
+          newAmount = baseAmount + remainder;
+        } else {
+          newAmount = baseAmount;
+        }
+        // const newAmount =
+        //   memberIndex === 0 ? baseAmount + remainder : baseAmount; // 첫 번째 멤버에게 나머지 추가
+        return {...member, amount: newAmount};
+      }
+      return member;
+    });
+
+    return newMembers;
+  };
+
   // TextInput 값이 변경될 때 호출되는 함수
   const handleChange = (name, value) => {
+    if (name === 'amount') {
+      (value = value.replace(/,/g, '')), 10;
+    }
     setFormData({...formData, [name]: value});
   };
 
@@ -160,7 +211,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
   };
 
   const handleSubmit = async () => {
-    const checkedCount = checkedMembers.filter(isChecked => isChecked).length;
+    const checkedCount = members.filter(member => member.checked).length;
 
     if (checkedCount === 0) {
       alert('참여 멤버를 선택해 주세요.');
@@ -173,10 +224,10 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
 
     // 선택된 멤버와 각 멤버에게 배정된 금액을 매핑
     const selectedMembers = members
-      .filter((_, index) => checkedMembers[index])
+      .filter(member => member.checked)
       .map((member, index) => ({
         id: member.value,
-        amount: memberAmounts[index], // 멤버별 배정된 금액
+        amount: member.amount,
       }));
 
     try {
@@ -315,7 +366,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
               placeholderStyle={styles.placeholderStyle}
               selectedTextStyle={styles.selectedTextStyle}
               iconStyle={styles.iconStyle}
-              data={categoryData}
+              data={categories}
               maxHeight={300}
               labelField="label"
               valueField="value"
@@ -445,18 +496,18 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
                   <TouchableOpacity onPress={() => toggleCheck(index)}>
                     <Icon
                       name={
-                        checkedMembers[index]
-                          ? 'checkmark-circle'
-                          : 'ellipse-outline'
+                        member.checked ? 'checkmark-circle' : 'ellipse-outline'
                       }
                       size={24}
-                      color={checkedMembers[index] ? '#5DAF6A' : '#ADAFBD'}
+                      color={member.checked ? '#5DAF6A' : '#ADAFBD'}
                     />
                   </TouchableOpacity>
                   <View style={styles.tableCell}>
                     <Text style={styles.tableText}>{member.label}</Text>
                     <Text style={styles.tablePrice}>
-                      {checkedMembers[index] ? `${dividedPrice}원` : '0원'}
+                      {member.checked
+                        ? `${comma(member.amount.toString())}원`
+                        : '0원'}
                     </Text>
                   </View>
                 </View>
