@@ -98,10 +98,9 @@ const Spending = ({ group_pk }) => {
                     }}>
                     <View style={styles.listItem}>
                       <View
-                        style={[
-                          styles.iconContainer,
-                          styles[item.finance_category_icon_color] || styles.iconPurple,
-                        ]}>
+                        style={[styles.iconContainer]}
+                        backgroundColor={`#${item.finance_category_icon_color}`}
+                        >
                         <Ionicons
                           name={item.finance_category_icon || 'ellipsis-horizontal-circle-outline'}
                           size={25}
