@@ -35,7 +35,6 @@ const Spending = ({ group_pk }) => {
       const response = await apiClient.get(`/api/finances/${group_pk}/`);
       // 날짜를 기반으로 데이터 정렬
       const sortedData = response.data.sort((a, b) => new Date(a.date) - new Date(b.date));
-      setData(sortedData);
     } catch (error) {
       console.error('Error fetching data: ', error);
     }
