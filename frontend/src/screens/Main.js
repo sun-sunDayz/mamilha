@@ -1,10 +1,18 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView } from 'react-native';
-import ListItem from '../components/ListItem';
+import React, {useEffect, useState, useContext} from 'react';
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  SafeAreaView,
+  ScrollView,
+} from 'react-native';
+import GroupListItem from '../components/GroupListItem';
 import ButtonGroup from '../components/ButtonGroup';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { UserContext } from '../userContext';
-import apiClient from '../services/apiClient'
+import {UserContext} from '../userContext';
+import apiClient from '../services/apiClient';
 
 const Main = ({navigation}) => {
   const currentUser = useContext(UserContext);
@@ -25,6 +33,7 @@ const Main = ({navigation}) => {
     apiClient
       .get(`/api/groups/`)
       .then(response => {
+        console.log(response.data)
         setGroups(response.data);
       })
       .catch(error => {
@@ -58,7 +67,7 @@ const Main = ({navigation}) => {
       </View>
       <ScrollView>
         {groups.map(group => (
-          <ListItem
+          <GroupListItem
             key={group.id}
             onPress={() =>
               navigation.navigate('Finances', {
@@ -69,6 +78,8 @@ const Main = ({navigation}) => {
             title={group.name}
             leader={group.leader}
             members={group.members}
+            icon={group.category_icon}
+            icon_color={group.category_icon_color}
           />
         ))}
       </ScrollView>
@@ -125,7 +136,7 @@ const styles = StyleSheet.create({
   },
   meetingListText: {
     fontSize: 16,
-    color : '#000000',
+    color: '#000000',
     fontWeight: 'bold',
     textAlign: 'left',
   },
