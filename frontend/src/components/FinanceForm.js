@@ -53,9 +53,10 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
   ); // 초기값은 '카드'
 
   // 카테고리 (Category)
-  const [categoryData, setCategoryData] = useState([]);
-  const [category, setCategory] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [category, setCategory] = useState(formData.finance_category);
   const [isCategoryFocus, setIsCategoryFocus] = useState(false);
+  const [isPayerFocus, setIsPayerFocus] = useState(false);
 
   // 결제자(payer) & 참여 멤버(selected members)
   const [members, setMembers] = useState([]); // 멤버 리스트
@@ -71,7 +72,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
           label: item.name, // 'labelField'에 해당하는 필드
           value: item.id, // 'valueField'에 해당하는 필드
         }));
-        setCategoryData(categories);
+        setCategories(categories);
 
         if(categories.length > 0) {
           setCategory(categories[0].value); // 일치하는 값이 있으면 설정
@@ -111,14 +112,32 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
     fetchCategories();
   }, []);
 
+  useEffect(() => {
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      payer: payer,
+    }));
+    updateMemberDistributeAmount();
+  }, [payer]);
+
+  useEffect(() => {
+    setFormData(prevFormData => ({
+      ...prevFormData,
+      finance_category: category,
+    }));
+
+  }, [category]);
 
   // amount값 변경 시 members정보 업데이트
   useEffect(() => {
-    const updatedMembers = distributeAmount(members);
-    setMembers(updatedMembers);
+    updateMemberDistributeAmount()
   }, [formData.amount]);
 
-  const [isPayerFocus, setIsPayerFocus] = useState(false);
+
+  const updateMemberDistributeAmount = () => {
+    const updatedMembers = distributeAmount(members);
+    setMembers(updatedMembers);
+  }
 
   const toggleCheck = index => {
     // checked 값 토글
@@ -150,8 +169,15 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
     const newMembers = members.map(member => {
       if (member.checked) {
         const memberIndex = checkedMembers.indexOf(member);
-        const newAmount =
-          memberIndex === 0 ? baseAmount + remainder : baseAmount; // 첫 번째 멤버에게 나머지 추가
+        let newAmount = 0;
+
+        if(payer === member.value) {
+          newAmount = baseAmount + remainder;
+        } else {
+          newAmount = baseAmount;
+        }
+        // const newAmount =
+        //   memberIndex === 0 ? baseAmount + remainder : baseAmount; // 첫 번째 멤버에게 나머지 추가
         return {...member, amount: newAmount};
       }
       return member;
@@ -340,7 +366,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
               placeholderStyle={styles.placeholderStyle}
               selectedTextStyle={styles.selectedTextStyle}
               iconStyle={styles.iconStyle}
-              data={categoryData}
+              data={categories}
               maxHeight={300}
               labelField="label"
               valueField="value"
