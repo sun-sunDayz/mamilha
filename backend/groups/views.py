@@ -71,6 +71,7 @@ class GroupAPIView(APIView):
         category_name = data.get('category')
         currency_name = data.get('currency')
         members = data.get('members')
+        nick_name = data.get('nickName')
             
 
         #빈 값일 경우 Error 처리
@@ -103,18 +104,16 @@ class GroupAPIView(APIView):
         )
 
         #그룹 생성자 admin Member로 추가
-        for member in member_validated:
-            if member['id'] == 0 :
-                user_instance = user
-                grades = Grades.objects.get(admin=1)
-            else:
-                grades=Grades.objects.get(admin=0, edit=0, view=1)
-                user_instance=None
+        Member.objects.create(
+            name=nick_name,
+            user = user,
+            grades = Grades.objects.get(admin=1),
+            group=group)
 
+        for member in member_validated:
             Member.objects.create(
             name=member['name'],
-            user=user_instance,
-            grades=grades,
+            grades=Grades.objects.get(admin=0, edit=0, view=1),
             group=group)
 
 
