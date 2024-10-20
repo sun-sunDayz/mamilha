@@ -19,18 +19,10 @@ const GroupCategory = ({ onChangeCategory, selectedCategory }) => {
       });
   }, []);
 
-  useEffect(() => {
-    setSelectedItem(selectedCategory);
-  }, [selectedCategory]);
-
-
-  useEffect(() => {
-    onChangeCategory(selectedItem);
-  }, [selectedItem, onChangeCategory]);
-
   const handleItemPress = (item) => {
     setSelectedItem(item.category_name);
     setDropdownOpen(false);
+    onChangeCategory(item.category_name);
   };
 
   return (

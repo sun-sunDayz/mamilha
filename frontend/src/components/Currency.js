@@ -20,18 +20,11 @@ const Currency = ({ onChangeCurrency, selectedCurrency }) => {
             });
     }, []);
 
-    useEffect(() => {
-        setSelectedItem(selectedCurrency);
-    }, [selectedCurrency]);
-
-    useEffect(() => {
-        onChangeCurrency(selectedItem);
-    }, [selectedItem, onChangeCurrency]);
-
 
     const handleItemPress = (item) => {
         setSelectedItem(item.currency_name);
         setDropdownOpen(false);
+        onChangeCurrency(item.currency_name);
     };
 
     return (
