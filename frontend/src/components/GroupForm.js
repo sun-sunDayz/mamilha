@@ -1,24 +1,27 @@
 import React, { useState, useRef } from 'react';
 import {
-    View, Text, ScrollView, StyleSheet, TextInput, StatusBar, TouchableWithoutFeedback, Keyboard, TouchableOpacity, SafeAreaView
+    View, Text, ScrollView, StyleSheet, TextInput, StatusBar, TouchableWithoutFeedback, Keyboard, TouchableOpacity, SafeAreaView, Modal
 } from 'react-native';
 import GroupCategory from '../components/GroupCategory';
 import Currency from '../components/Currency';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import apiClient from '../services/apiClient';
-import {useNavigation} from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
 const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
     const scrollViewRef = useRef(null);
     const navigation = useNavigation();
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
+    const [modalWidth, setModalWidth] = useState(0)
+    const [actives, setActives] = useState(initialData.members);
     const [formData, setFormData] = useState({
         name: '',
         category: '',
         currency: '',
         nickName: '',
         members: [{ id: 1, name: '', active: 1 }],
-        new_members: '',
-        update_members: '',
+        new_members: [{ id: 1, name: '', active: 1 }],
+        update_members: actives,
         ...initialData,
     });
 
@@ -27,18 +30,20 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
     };
 
     // 멤버 추가, 삭제 부분
+    const member = screenName === 'CreateGroup' ? 'members' : 'new_members';
+
     const addInput = () => {
-        const newId = formData.members.length > 0 ? formData.members[formData.members.length - 1].id + 1 : 1;
-        handleChange('members', [...formData.members, { id: newId, name: '', active: 1 }])
+        const newId = formData[member].length > 0 ? formData[member][formData[member].length - 1].id + 1 : 1;
+        handleChange(member, [...formData[member], { id: newId, name: '', active: 1 }])
         scrollViewRef.current?.scrollToEnd({ animated: true });
     };
 
     const deleteInput = (id) => {
-        if (formData.members.length > 1) {
-            handleChange('members', formData.members.filter(member => member.id !== id))
+        if (formData[member].length > 1) {
+            handleChange(member, formData[member].filter(member => member.id !== id))
 
-        } else if (formData.members.length == 1) {
-            handleChange('members', [{ id: 1, name: '', active: 1 }])
+        } else if (formData[member].length == 1) {
+            handleChange(member, [{ id: 1, name: '', active: 1 }])
         }
     };
 
@@ -54,11 +59,20 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
                 await apiClient.put(`/api/groups/${group_pk}/`, {
                     ...formData,
                 });
+                setIsUpdateModalOpen(false)
             }
-            navigation.goBack();
+            navigation.goBack()
         } catch (error) {
             alert(error.response?.data?.error || "요청 실패");
         }
+    };
+
+    const toggleActive = (id) => {
+        setActives(prevActives => {
+            return prevActives.map(item =>
+                item.id === id ? { ...item, active: item.active === 1 ? 0 : 1 } : item
+            );
+        });
     };
 
     return (
@@ -86,20 +100,54 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
                     </View>
                     <View style={styles.SectionContainer}>
                         <Text style={styles.SectionTitle}>멤버</Text>
-                        <View style={styles.MemberUserContainer}>
-                            <TextInput
-                                style={styles.MemberUserName}
-                                placeholder="내 별명 입력"
-                                placeholderTextColor="#ADAFBD"
-                                keyboardType="default"
-                                value={formData.nickName}
-                                onChangeText={text => handleChange('nickName', text)}
-                            />
-                            <Text style={styles.MemberUserMe}>(나)</Text>
-                        </View>
+                        {screenName === 'UpdateGroup' &&
+                            <View>
+                                {actives.map((active, index) => (
+                                    <View key={active['id']} style={styles.MemberUserContainer}>
+                                        <TextInput
+                                            style={styles.MemberUserName}
+                                            placeholder="멤버 별명 입력"
+                                            placeholderTextColor="#ADAFBD"
+                                            keyboardType="default"
+                                            value={active['name']}
+                                            onChangeText={(text) => {
+                                                const newInputs = actives.map(item =>
+                                                    item.id === active['id'] ? { ...item, name: text } : item);
+                                                setActives(newInputs);
+                                            }}
+                                        />
+                                        {active['id'] === 0 && (
+                                            <Text style={styles.MemberUserMe}>(나)</Text>
+                                        )}
+                                        {active['active'] ? (
+                                            <TouchableOpacity onPress={() => toggleActive(active['id'])} style={styles.activeButton}>
+                                                <Text style={styles.activeText}> 활성 </Text>
+                                            </TouchableOpacity>
+                                        ) : (
+                                            <TouchableOpacity onPress={() => toggleActive(active['id'])} style={styles.inActiveButton}>
+                                                <Text style={styles.inActiveText}> 비활성 </Text>
+                                            </TouchableOpacity>
+                                        )}
+                                    </View>
+                                ))}
+                            </View>}
+
+                        {screenName === 'CreateGroup' &&
+                            <View style={styles.MemberUserContainer}>
+                                <TextInput
+                                    style={styles.MemberUserName}
+                                    placeholder="내 별명 입력"
+                                    placeholderTextColor="#ADAFBD"
+                                    keyboardType="default"
+                                    value={formData.nickName}
+                                    onChangeText={text => handleChange('nickName', text)}
+                                />
+                                <Text style={styles.MemberUserMe}>(나)</Text>
+                            </View>
+                        }
                         <View>
                             <View>
-                                {formData.members.map((input, index) => (
+                                { formData[member].map((input, index) => (
                                     <View key={input.id} >
                                         <TextInput
                                             style={styles.input}
@@ -108,14 +156,15 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
                                             keyboardType="default"
                                             value={input['name']}
                                             onChangeText={(text) => {
-                                                const newInputs = formData.members.map(item =>
-                                                    item.id === input.id ? { ...item, name: text } : item);
-                                                handleChange('members', newInputs)
+                                                const newInputs = formData[member].map(item =>
+                                                    item.id === input.id ? { ...item, name: text } : item
+                                                );
+                                                handleChange( member, newInputs);
                                             }}
                                         />
                                         <TouchableOpacity onPress={() => deleteInput(input.id)} style={styles.deleteButton}>
                                             <Ionicons name="trash-outline" size={18} color='#C65757' />
-                                        </TouchableOpacity> 
+                                        </TouchableOpacity>
                                     </View>
                                 ))}
                             </View>
@@ -128,9 +177,50 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
                     </View>
                 </ScrollView>
             </View>
+            {screenName == 'CreateGroup' ? 
             <TouchableOpacity onPress={handleSubmit} style={styles.CreateGroupButton} >
                 <Text style={styles.CreateGroupButtonText}>생성하기</Text>
             </TouchableOpacity>
+            :
+            <TouchableOpacity onPress={() => setIsUpdateModalOpen(true)}
+                    style={styles.CreateGroupButton}
+                    onLayout={(event) => {
+                        const { width } = event.nativeEvent.layout;
+                        setModalWidth(width);
+                    }}>
+                    <Text style={styles.CreateGroupButtonText}>수정하기</Text>
+            </TouchableOpacity>
+            }
+            
+            {isUpdateModalOpen && (
+                    <Modal
+                        transparent={true}
+                        animationType="fade"
+                        visible={isUpdateModalOpen}
+                        onRequestClose={() => setIsUpdateModalOpen(false)}>
+                        <TouchableOpacity
+                            style={styles.UpdateModalOverlay}
+                            activeOpacity={1}
+                            onPressOut={() => setIsUpdateModalOpen(false)}
+                        >
+                            <View style={[styles.updateModal, { width: modalWidth }]}>
+                                <Text style={styles.udateModalTitel}>모임 정보를 수정하시겠습니까?</Text>
+                                <View style={styles.udateModalButton}>
+                                    <TouchableOpacity
+                                        onPress={() => setIsUpdateModalOpen(false)}
+                                        style={styles.udateModalButtonNo} >
+                                        <Text style={styles.udateModalButtonNoText}>아니오</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        onPress={handleSubmit}
+                                        style={styles.udateModalButtonYes}>
+                                        <Text style={styles.udateModalButtonYesText} >네</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        </TouchableOpacity>
+                    </Modal>)}
+
         </View>
     );
 };
@@ -220,6 +310,91 @@ const styles = StyleSheet.create({
         color: '#ffffff',
         fontSize: 16,
         fontWeight: '700',
+    },
+    // 활성화버튼
+    activeButton: {
+        position: 'absolute',
+        right: 12,
+        top: 8,
+        height: 25,
+        width: 60,
+        borderRadius: 5,
+        borderColor: '#5DAF6A',
+        borderWidth: 1,
+        backgroundColor: 'rgba(93,175,106,0.2)',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    activeText: {
+        fontSize: 14,
+        color: '#5DAF6A'
+    },
+    inActiveButton: {
+        position: 'absolute',
+        right: 12,
+        top: 8,
+        height: 25,
+        width: 60,
+        borderRadius: 5,
+        borderColor: '#6C6C6C',
+        borderWidth: 1,
+        backgroundColor: 'rgba(108,108,108,0.2)',
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    inActiveText: {
+        fontSize: 14,
+        color: '#6C6C6C'
+    },
+    //모달창
+    UpdateModalOverlay: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0,0,0,0.2)',
+    },
+    updateModal: {
+        borderWidth: 1,
+        borderColor: '#cccccc',
+        backgroundColor: '#ffffff',
+        borderRadius: 15,
+        paddingTop: 40,
+        paddingBottom: 30,
+        alignItems: 'center',
+    },
+    udateModalTitel: {
+        fontSize: 18,
+        fontWeight: '700',
+        marginBottom: 30,
+        color: '#434343'
+    },
+    udateModalButton: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    udateModalButtonNo: {
+        width: '40%',
+        alignItems: 'center',
+        padding: 10,
+    },
+    udateModalButtonNoText: {
+        color: '#5DAF6A',
+        fontSize: 18,
+        fontWeight: '700',
+    },
+    udateModalButtonYes: {
+        width: '40%',
+        alignItems: 'center',
+        backgroundColor: '#5DAF6A',
+        borderRadius: 10,
+        paddingTop: 13,
+        paddingBottom: 13,
+    },
+    udateModalButtonYesText: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: '#ffffff'
     },
 });
 

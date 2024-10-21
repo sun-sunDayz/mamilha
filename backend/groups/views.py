@@ -162,25 +162,26 @@ class GroupDetailAPIView(APIView):
         
         member = []
         num = 0
-        for i in members[1::]:
-            num +=1
+        for i in members:
             member.append({
                 "id": num,
                 "name": i.name,
                 "active": i.active
             })
+            num +=1
 
         return Response({
                 "name": group.name,
                 "category" : group.category.name,
                 "currency": group.currency.currency,
-                "member" : member
+                "members" : member
                 }, status=status.HTTP_200_OK)
 
 
     def put(self, request, group_pk):
         user = request.user
         data = request.data
+        print(data)
         group = get_object_or_404(Group, pk=group_pk)
         old_members= get_list_or_404(Member, group = group)[1:]
         
