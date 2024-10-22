@@ -322,25 +322,6 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
               <TouchableOpacity
                 style={[
                   styles.tabButton,
-                  selectedType === '수입'
-                    ? styles.activeTab
-                    : styles.inactiveTab,
-                ]}
-                onPress={() => setSelectedType('수입')}>
-                <Text
-                  style={[
-                    styles.tabText,
-                    selectedType === '수입'
-                      ? styles.activeTabText
-                      : styles.inactiveTabText,
-                  ]}>
-                  수입
-                </Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[
-                  styles.tabButton,
                   selectedType === '정산'
                     ? styles.activeTab
                     : styles.inactiveTab,
