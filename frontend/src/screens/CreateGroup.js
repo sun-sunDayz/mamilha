@@ -13,7 +13,7 @@ import apiClient from '../services/apiClient';
 const CreateGroup = ({ navigation }) => {
     const [groupName, setGroupName] = useState('');
     const [groupCategory, setGroupCategory] = useState('');
-    const [currency, setCurrency] = useState('');
+    const [currency, setCurrency] = useState('원');
     const [members, setMembers] = useState([{ id: 1, name: '', active: 1 }]);
     const scrollViewRef = useRef(null);
     const [nickname, setNickname] = useState('');
@@ -80,10 +80,7 @@ const CreateGroup = ({ navigation }) => {
                         <Text style={styles.SectionTitle}>모임 카테고리</Text>
                         <GroupCategory selectedCategory={groupCategory} onChangeCategory={setGroupCategory} />
                     </View>
-                    <View style={styles.SectionContainer}>
-                        <Text style={styles.SectionTitle}>통화 카테고리</Text>
-                        <Currency selectedCurrency={currency} onChangeCurrency={setCurrency} />
-                    </View>
+                    
                     <View style={styles.SectionContainer}>
                         <Text style={styles.SectionTitle}>멤버</Text>
                         <View style={styles.MemberUserContainer}>
