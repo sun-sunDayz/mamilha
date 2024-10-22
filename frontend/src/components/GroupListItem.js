@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 
-const ListItem = ({ onPress, title, leader, members }) => {
+const GroupListItem = ({ onPress, title, leader, members, icon, icon_color }) => {
+  useEffect(() => {
+    console.log(icon)
+  }, []);
+
   return (
     <TouchableOpacity style={styles.list} onPress={onPress}>
-      <Ionicon name="barbell" size={30} color="#A379E8" />
+      <Ionicon name={icon} size={30} color={`#${icon_color}`} />
       <View style={styles.listContainer}>
         <Text style={styles.listText}>{title}</Text>
         <View style={styles.listContainer2}>
@@ -83,4 +87,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ListItem;
+export default GroupListItem;

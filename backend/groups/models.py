@@ -5,6 +5,8 @@ from users.models import *
 
 class Group_category(models.Model):
     name = models.CharField(max_length=20,unique=True)
+    icon = models.CharField(max_length=30, default='')
+    icon_color = models.CharField(max_length=10, default='')
 
     def __str__(self):
         return self.name
