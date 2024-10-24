@@ -13,7 +13,8 @@ import DatePicker from 'react-native-date-picker';
 import apiClient from '../services/apiClient';
 import moment from 'moment';
 import {useNavigation} from '@react-navigation/native';
-import GroupCategory from '../components/GroupCategory';
+import FinanceCategory from './FinanceCategory';
+import Payer from './Payer';
 
 const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
   const navigation = useNavigation(); // 네비게이션 객체 가져오기
@@ -53,14 +54,18 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
   ); // 초기값은 '카드'
 
   // 카테고리 (Category)
+  const [financeCategory, setFinanceCategory] = useState(
+    formData.finance_category ? formData.finance_category.category_id : null,
+  );
   const [categories, setCategories] = useState([]);
-  const [category, setCategory] = useState(formData.finance_category);
+  const [category, setCategory] = useState([]);
+  // const [category, setCategory] = useState(formData.finance_category);
   const [isCategoryFocus, setIsCategoryFocus] = useState(false);
   const [isPayerFocus, setIsPayerFocus] = useState(false);
 
   // 결제자(payer) & 참여 멤버(selected members)
   const [members, setMembers] = useState([]); // 멤버 리스트
-  const [payer, setPayer] = useState(formData.payer); // 결제자 선택
+  const [payer, setPayer] = useState(formData.payer ? formData.payer : null); // 결제자 선택
 
   // useEffect를 사용하여 컴포넌트가 마운트될 때 API 호출
   useEffect(() => {
@@ -74,12 +79,11 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
         }));
         setCategories(categories);
 
-        if(categories.length > 0) {
+        if (categories.length > 0) {
           setCategory(categories[0].value); // 일치하는 값이 있으면 설정
         }
-
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error('카테고리 못 가져옴:', error);
       }
     };
 
@@ -99,10 +103,9 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
 
         setMembers(membersData);
 
-        if(membersData.length > 0) {
+        if (membersData.length > 0) {
           setPayer(membersData[0].value); // 일치하는 값이 있으면 설정
         }
-
       } catch (error) {
         console.error('Error fetching members:', error);
       }
@@ -125,19 +128,17 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
       ...prevFormData,
       finance_category: category,
     }));
-
   }, [category]);
 
   // amount값 변경 시 members정보 업데이트
   useEffect(() => {
-    updateMemberDistributeAmount()
+    updateMemberDistributeAmount();
   }, [formData.amount]);
-
 
   const updateMemberDistributeAmount = () => {
     const updatedMembers = distributeAmount(members);
     setMembers(updatedMembers);
-  }
+  };
 
   const toggleCheck = index => {
     // checked 값 토글
@@ -171,7 +172,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
         const memberIndex = checkedMembers.indexOf(member);
         let newAmount = 0;
 
-        if(payer === member.value) {
+        if (payer === member.value) {
           newAmount = baseAmount + remainder;
         } else {
           newAmount = baseAmount;
@@ -273,7 +274,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.formContainer}>
       <View style={styles.content}>
         <ScrollView style={styles.scrollContainer}>
           <View style={styles.formRow}>
@@ -342,51 +343,18 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
 
           <View style={styles.formRow}>
             <Text style={styles.label}>카테고리</Text>
-            <Dropdown
-              style={styles.dropdown}
-              placeholderStyle={styles.placeholderStyle}
-              selectedTextStyle={styles.selectedTextStyle}
-              iconStyle={styles.iconStyle}
-              data={categories}
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder={'카테고리 선택'}
-              value={category}
-              onFocus={() => setIsCategoryFocus(true)}
-              onBlur={() => setIsCategoryFocus(false)}
-              onChange={item => {
-                setCategory(item.value);
-                setIsCategoryFocus(false);
-                handleChange('category', item.value);
-                setFormData(prevState => ({
-                  ...prevState,
-                  finance_category: item.value,
-                }));
-              }}
+            <FinanceCategory
+              selectedCategory={financeCategory}
+              onChangeCategory={setFinanceCategory} // ID를 업데이트
             />
           </View>
 
           <View style={styles.formRow}>
             <Text style={styles.label}>결제자</Text>
-            <Dropdown
-              style={styles.dropdown}
-              placeholderStyle={styles.placeholderStyle}
-              selectedTextStyle={styles.selectedTextStyle}
-              iconStyle={styles.iconStyle}
-              data={members}
-              maxHeight={300}
-              labelField="label"
-              valueField="value"
-              placeholder={'결제자 선택'}
-              value={payer}
-              onFocus={() => setIsPayerFocus(true)}
-              onBlur={() => setIsPayerFocus(false)}
-              onChange={item => {
-                setPayer(item.value);
-                setIsPayerFocus(false);
-                handleChange('payer', item.value);
-              }}
+            <Payer
+              groupId={group_pk}
+              selectedPayer={payer}
+              onChangePayer={setPayer}
             />
           </View>
 
@@ -507,7 +475,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
 export default FinanceForm;
 
 const styles = StyleSheet.create({
-  container: {
+  formContainer: {
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     marginBottom: 20,

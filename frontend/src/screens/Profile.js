@@ -65,7 +65,7 @@ const ProfileScreen = ({navigation}) => {
           <Ionicons name="close" size={30} color="#616161" />
         </TouchableOpacity>
         <View>
-          <Text style={styles.title}>회원가입</Text>
+          <Text style={styles.title}>내 정보</Text>
         </View>
         <View style={styles.emptyIcon}></View>
       </View>
