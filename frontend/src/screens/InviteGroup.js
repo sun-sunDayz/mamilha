@@ -14,7 +14,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {UserContext} from '../userContext';
 import apiClient from '../services/apiClient';
 
-const Main = ({navigation, route}) => {
+const InviteGroup = ({navigation, route}) => {
   const currentUser = useContext(UserContext);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -52,41 +52,13 @@ const Main = ({navigation, route}) => {
 
   return (
     <SafeAreaView SafeAreaView style={styles.container}>
-      <View style={styles.nicknameContainer}>
-        <TouchableOpacity
-          style={styles.nicknameButton}
-          onPress={() => {
-            onHandleProfile();
-          }}>
-          <Ionicons name="person-circle-outline" size={30} color="#5DAF6A" />
-          <Text style={styles.buttonText}>{nickname}</Text>
-          <Ionicons name="chevron-forward-outline" size={20} color="#ADAFBD" />
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Ionicons name="chevron-back" size={30} color="#616161" />
         </TouchableOpacity>
+        <Ionicons name="settings-outline" size={30} color="transparent" />
       </View>
-      <ButtonGroup
-        onPressButton="CreateGroup"
-      />
-      <View style={styles.meetingListContainer}>
-        <Text style={styles.meetingListText}>모임 목록</Text>
-      </View>
-      <ScrollView>
-        {groups.map(group => (
-          <GroupListItem
-            key={group.id}
-            onPress={() =>
-              navigation.navigate('Finances', {
-                group_pk: group.id,
-                title: group.name,
-              })
-            }
-            title={group.name}
-            leader={group.leader}
-            members={group.members}
-            icon={group.category_icon}
-            icon_color={group.category_icon_color}
-          />
-        ))}
-      </ScrollView>
+      <ButtonGroup onPressButton="CreateGroup" />
     </SafeAreaView>
   );
 };
@@ -96,6 +68,18 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 10,
     backgroundColor: '#f1f1f9',
+  },
+  content: {
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
   },
   nicknameContainer: {
     flexDirection: 'row',
@@ -146,4 +130,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Main;
+export default InviteGroup;
