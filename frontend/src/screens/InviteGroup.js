@@ -15,11 +15,11 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {UserContext} from '../userContext';
 import apiClient from '../services/apiClient';
 
-const InviteGroup = ({navigation, route}) => {
+const InviteGroup = ({navigation, members}) => {
   const currentUser = useContext(UserContext);
   const [inviteCode, setInviteCode] = useState('');
   const handleNext = () => {
-    // navigation.navigate('InviteGroup', {inviteCode: inviteCode});
+    navigation.navigate('InviteGroupDetail', {inviteCode: inviteCode});
   };
 
   return (
