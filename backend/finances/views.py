@@ -20,7 +20,7 @@ class FinancesAPIView(APIView):
                 "description": finance.description,
                 "payer": finance.payer.name,
                 "finance_type": finance.finance_type.name,
-                "finance_category": finance.finance_category.name,
+                "finance_category": finance.finance_category.id,
                 "finance_category_icon": finance.finance_category.icon,
                 "finance_category_icon_color": finance.finance_category.icon_color,
                 "pay_method": finance.pay_method.name,
@@ -95,7 +95,7 @@ class FinancesDetailAPIView(APIView):
             "description": finance.description,
             "payer": finance.payer.name,
             "finance_type": finance.finance_type.name,
-            "finance_category": finance.finance_category.name,
+            "finance_category": finance.finance_category.id,
             "pay_method": finance.pay_method.name,
             "split_method": finance.split_method.name,
             "date" : finance.date
@@ -111,16 +111,16 @@ class FinancesDetailAPIView(APIView):
         description = data.get('description', finance.description)
 
         # 하단의 정보들은 테이블에서 레코드 탐색을 해야함
-        payer = data.get('payer', finance.payer.name)
+        payer = data.get('payer', finance.payer.id)
         finance_type = data.get('finance_type', finance.finance_type.name)
-        finance_category = data.get('finance_category', finance.finance_category.name)
+        finance_category = data.get('finance_category', finance.finance_category.id)
         pay_method = data.get('pay_method', finance.pay_method.name)
         split_method = data.get('split_method', finance.split_method.name)
         
         try:
-            payer = Member.objects.get(name=payer)
+            payer = Member.objects.get(id=payer)
             finance_type = FinanceType.objects.get(name=finance_type)
-            finance_category = FinanceCategory.objects.get(name=finance_category)
+            finance_category = FinanceCategory.objects.get(id=finance_category)
             pay_method = PayMethod.objects.get(name=pay_method)
             split_method = SplitMethod.objects.get(name=split_method)
         except:
@@ -178,7 +178,7 @@ class FinancesSplitAPIView(APIView):
             return Response({"message": "멤버와 금액이 일치하지 않습니다."}, status=status.HTTP_400_BAD_REQUEST)
         for member, amount in zip(members, amounts):
             try:
-                member = Member.objects.get(group=group, name=member)
+                member = Member.objects.get(group=group, id=member)
             except:
                 return Response({"message":"해당 그룹에 속하지 않은 멤버가 존재합니다."},status=status.HTTP_400_BAD_REQUEST)
             split = finance.split_set.create(
