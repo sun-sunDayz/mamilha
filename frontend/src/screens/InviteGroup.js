@@ -2,11 +2,12 @@ import React, {useEffect, useState, useContext} from 'react';
 import {
   View,
   Text,
-  Image,
+  TextInput,
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
   ScrollView,
+  Button,
 } from 'react-native';
 import GroupListItem from '../components/GroupListItem';
 import ButtonGroup from '../components/ButtonGroup';
@@ -16,38 +17,9 @@ import apiClient from '../services/apiClient';
 
 const InviteGroup = ({navigation, route}) => {
   const currentUser = useContext(UserContext);
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [nickname, setNickname] = useState('방문자');
-  const [groups, setGroups] = useState([]);
-
-  useEffect(() => {
-    if (currentUser) {
-      setNickname(currentUser.nickname);
-    } else {
-      setNickname('손님');
-    }
-  }, [currentUser]);
-
-  const fetchData = async () => {
-    try {
-      const response = await apiClient.get(`/api/groups/`);
-      setGroups(response.data);
-    } catch (error) {
-      console.error('데이터를 불러오는데 실패했습니다', error);
-    }
-  };
-
-  useEffect(() => {
-    fetchData(); // 컴포넌트 마운트 시 데이터 fetch
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-  }, [route.params]); // route.params가 변경될 때마다 fetchData 실행
-
-  const onHandleProfile = async () => {
-    navigation.navigate('Profile');
+  const [inviteCode, setInviteCode] = useState('');
+  const handleNext = () => {
+    // navigation.navigate('InviteGroup', {inviteCode: inviteCode});
   };
 
   return (
@@ -58,7 +30,21 @@ const InviteGroup = ({navigation, route}) => {
         </TouchableOpacity>
         <Ionicons name="settings-outline" size={30} color="transparent" />
       </View>
-      <ButtonGroup onPressButton="CreateGroup" />
+      <View style={styles.container}>
+        <Text style={styles.title}>초대코드를 입력해주세요</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="초대 코드 입력"
+          value={inviteCode}
+          onChangeText={setInviteCode}
+        />
+      </View>
+      <TouchableOpacity
+          onPress={handleNext}
+          style={styles.nextButton}>
+          <Text style={styles.nextButtonText}>다음</Text>
+        </TouchableOpacity>
+      
     </SafeAreaView>
   );
 };
@@ -68,6 +54,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingTop: 10,
     backgroundColor: '#f1f1f9',
+    paddingHorizontal: 20,
   },
   content: {
     justifyContent: 'space-between',
@@ -81,52 +68,33 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 10,
   },
-  nicknameContainer: {
-    flexDirection: 'row',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-  },
-  nicknameButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-    borderRadius: 5,
-  },
-
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 10,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 5,
-  },
-  buttonImage: {
-    width: 20,
-    height: 20,
-    marginRight: 10,
-  },
-  buttonText: {
-    color: '#000000',
-    fontWeight: '800',
-    fontSize: 16,
-    marginHorizontal: 10,
-    fontWeight: '700',
-  },
-  meetingListContainer: {
-    marginTop: 32,
-    marginBottom: 10,
-    alignItems: 'flex-start',
-    paddingHorizontal: 20,
-  },
-  meetingListText: {
-    fontSize: 16,
-    color: '#000000',
+  title: {
+    fontSize: 20,
     fontWeight: 'bold',
     textAlign: 'left',
+    marginBottom: 20,
+  },
+  input: {
+    height: 40,
+    borderColor: '#ADAFBD',
+    borderBottomWidth: 1,
+    paddingHorizontal: 5,
+    textAlign: 'left',
+  },
+  nextButton: {
+    position: 'absolute',
+    alignSelf: 'center',
+    width: '80%',
+    bottom: 50,
+    padding: 13,
+    backgroundColor: '#5DAF6A',
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  nextButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '700',
   },
 });
 
