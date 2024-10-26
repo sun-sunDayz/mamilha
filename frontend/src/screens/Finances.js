@@ -9,15 +9,27 @@ import React, {useState, useEffect} from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Spending from '../components/Spending';
 import Split from '../components/Split';
+import apiClient from '../services/apiClient';
 
 const Finances = ({navigation, route}) => {
   const [selectedTab, setSelectedTab] = useState('지출'); // 초기값은 '지출'
   const group_pk = route.params.group_pk;
   const group_title = route.params.title;
+  const [initialData, setInitialData] = useState()
 
   const handleTabPress = tab => {
     setSelectedTab(tab);
   };
+
+  useEffect(() => {
+    apiClient.get(`/api/groups/${group_pk}/`)
+        .then(response => {
+            setInitialData(response.data)
+        })
+        .catch(error => {
+            console.error('데이터를 불러오는데 실패했습니다', error);
+        });
+}, []);
 
   return (
     <SafeAreaView SafeAreaView style={styles.container}>
@@ -30,7 +42,7 @@ const Finances = ({navigation, route}) => {
         </View>
         <TouchableOpacity
           onPress={() =>
-            navigation.navigate('UpdateGroup', {group_pk: group_pk})
+            navigation.navigate('UpdateGroup', {group_pk: group_pk, initialData: initialData })
           }>
           <Ionicons name="settings-outline" size={30} color="#616161" />
         </TouchableOpacity>

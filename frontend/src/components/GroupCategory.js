@@ -28,19 +28,12 @@ const GroupCategory = ({onChangeCategory, selectedCategory}) => {
       .catch(error => {
         console.error('데이터를 불러오는데 실패했습니다', error);
       });
-  }, [selectedCategory]);
-
-  useEffect(() => {
-    setSelectedItem(selectedCategory);
-  }, [selectedCategory]);
-
-  useEffect(() => {
-    onChangeCategory(selectedItem);
-  }, [selectedItem, onChangeCategory]);
+  }, []);
 
   const handleItemPress = item => {
     setSelectedItem(item.category_id);
     setDropdownOpen(false);
+    onChangeCategory(item.category_id);
   };
 
   const getSelectedCategoryName = () => {
@@ -62,7 +55,9 @@ const GroupCategory = ({onChangeCategory, selectedCategory}) => {
         <Text
           style={[
             styles.dropdownButtonText,
-            {color: selectedItem ? '#434343' : '#ADAFBD'},
+            {color: Data.find(
+              item => item.category_id === selectedItem,
+            ) ? '#434343' : '#ADAFBD'},
           ]}>
           {getSelectedCategoryName()}
         </Text>
