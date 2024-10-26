@@ -12,7 +12,7 @@ def validate_group_data(name, category_id):
         return Response({'error': "그룹 이름이 없습니다"},
                         status=status.HTTP_400_BAD_REQUEST)
     #카테고리가 빈 값일 경우 Error처리
-    if not category_id:
+    if category_id is '':
         return Response({'error': "그룹 카테고리를 선택해 주세요"},
                         status=status.HTTP_400_BAD_REQUEST)
     #없는 카테고리, 통화 선택시 error처리
@@ -62,7 +62,6 @@ class GroupAPIView(APIView):
         name = data.get('name')
         category_id = data.get('category')
         members = data.get('members')
-        nick_name = data.get('nickName')
 
         #빈 값일 경우 Error 처리
         validated_data = validate_group_data(name, category_id)
@@ -73,7 +72,6 @@ class GroupAPIView(APIView):
         group_name = user.Member_user.filter(group__name=name).exists()
         if group_name:
             return Response({'error': "같은 이름의 그룹이 이미 존재합니다"}, status=status.HTTP_400_BAD_REQUEST)
-        
         
         #member name이 공백일 경유 제외, 같은 이름 존제시 오류, 멤머가 한명도 없는 경우 error 처리
         member_validated = []
@@ -86,7 +84,6 @@ class GroupAPIView(APIView):
             else:
                 return Response({'error': "멤버는 한명 이상 있어야 합니다"}, status=status.HTTP_400_BAD_REQUEST)
         
-        
         group = Group.objects.create(
         name = validated_data['name'],
         category = validated_data['category'],
@@ -94,17 +91,21 @@ class GroupAPIView(APIView):
         )
 
         #그룹 생성자 admin Member로 추가
-        Member.objects.create(
-            name=nick_name,
-            user = user,
-            grades = Grades.objects.get(admin=1),
-            group=group)
-
         for member in member_validated:
+            if member['id'] == 0:
+                user=user
+                grades = Grades.objects.get(admin=1)
+            else:
+                user=None
+                grades=Grades.objects.get(admin=0, edit=0, view=1)
+            
             Member.objects.create(
             name=member['name'],
-            grades=Grades.objects.get(admin=0, edit=0, view=1),
+            user=user,
+            grades=grades,
             group=group)
+
+
 
 
         return Response({'message': "그릅은 만들었습니다.",
@@ -161,6 +162,7 @@ class GroupDetailAPIView(APIView):
             num +=1
 
         return Response({
+                "id": group.id,
                 "name": group.name,
                 "category" : group.category.id,
                 "currency": group.currency.currency,
@@ -171,12 +173,12 @@ class GroupDetailAPIView(APIView):
     def put(self, request, group_pk):
         user = request.user
         data = request.data
-        print(data)
+
         group = get_object_or_404(Group, pk=group_pk)
-        old_members= get_list_or_404(Member, group = group)[1:]
+        old_members= get_list_or_404(Member, group = group)
         
         name = data.get('name', group.name)
-        category_id = data.get('category_id',group.category.id)
+        category_id = data.get('category',group.category.id)
         update_members = data.get('update_members', old_members)
         new_members = data.get('new_members')
 
