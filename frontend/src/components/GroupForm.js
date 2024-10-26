@@ -19,10 +19,10 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [modalWidth, setModalWidth] = useState(0);
     const [actives, setActives] = useState(initialData.members);
+    const [nickName, setNickName] = useState('')
     const [formData, setFormData] = useState({
         name: '',
         category: '',
-        nickName: '',
         members: [{ id: 1, name: '', active: 1 }],
         new_members: [{ id: 1, name: '', active: 1 }],
         update_members: actives,
@@ -57,21 +57,21 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
                 // Create인 경우 POST 요청
                 await apiClient.post('/api/groups/', {
                     ...formData,
+                    members: [{ id: 0, name: nickName, active: 1 }, ...formData.members ]
                 });
             } else if (screenName === 'UpdateGroup') {
                 // Update인 경우 PUT 요청
                 await apiClient.put(`/api/groups/${group_pk}/`, {
                     ...formData,
                 });
-                setIsUpdateModalOpen(false)
+                setIsUpdateModalOpen(false);
             }
-            navigation.goBack()
+            navigation.goBack();
         } catch (error) {
             alert(error.response?.data?.error || "요청 실패");
+            setIsUpdateModalOpen(false);
         }
     };
-
-    console.log(formData)
 
     return (
         <View >
@@ -137,8 +137,8 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
                                     placeholder="내 별명 입력"
                                     placeholderTextColor="#ADAFBD"
                                     keyboardType="default"
-                                    value={formData.nickName}
-                                    onChangeText={text => handleChange('nickName', text)}
+                                    value={nickName}
+                                    onChangeText={setNickName}
                                 />
                                 <Text style={styles.MemberUserMe}>(나)</Text>
                             </View>
