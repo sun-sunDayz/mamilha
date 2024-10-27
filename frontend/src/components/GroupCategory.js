@@ -38,8 +38,8 @@ const GroupCategory = ({onChangeCategory, selectedCategory}) => {
 
   const getSelectedCategoryName = () => {
     const selectedCategory = Data.find(
-      item => item.category_id === selectedItem,
-    );
+      item => item.category_id === selectedItem
+      );
     return selectedCategory ? selectedCategory.category_name : '카테고리 선택';
   };
 
@@ -94,8 +94,7 @@ const GroupCategory = ({onChangeCategory, selectedCategory}) => {
                         {
                           color:
                             item.category_id === selectedItem
-                              ? '#ffffff'
-                              : '#434343',
+                              ? '#ffffff': '#434343',
                         },
                       ]}>
                       {item.category_name}

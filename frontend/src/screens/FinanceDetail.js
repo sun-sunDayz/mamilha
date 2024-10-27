@@ -56,11 +56,12 @@ const FinanceDetail = ({ route }) => {
             });
     }, []);
 
-
+    // 이전화면으로 이동
     const handleGoBack = () => {
         navigation.goBack();
-    }; // 이전화면으로 이동
+    }; 
 
+    //finance 삭제
     const handleDelete = async () => {
         try {
             await apiClient.delete(`/api/finances/${group_pk}/${finance_pk}/`);
@@ -68,16 +69,23 @@ const FinanceDetail = ({ route }) => {
         } catch (error) {
             alert(error.response.data.error);
         }
-    }; //finance 삭제
+    }; 
 
+    // finance update screen으로 이동 
     const handleUpdate = () => {
-        navigation.navigate('UpdateFinance', {'data':data, 'group_pk':group_pk});
-    }; // finance update screen으로 이동 
+        navigation.navigate('UpdateFinance', 
+        {
+        'data':data, 
+        'group_pk':group_pk,
+        'finance_pk':finance_pk 
+        });
+    }; 
 
+    //가격에 쉼표를 넣어서 가져오기
     const comma = (amount) => {
         if (!amount && amount !== 0) return "0";
         return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }; //가격에 쉼표를 넣어서 가져오기
+    }; 
 
     return (
         <SafeAreaView style={styles.Container}>
