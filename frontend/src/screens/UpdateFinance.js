@@ -9,11 +9,7 @@ const UpdateFinance = ({route}) => {
   const navigation = useNavigation(); // 네비게이션 객체 가져오기
   const data = route.params.data;
   const group_pk = route.params.group_pk;
-
-  // 지출 편집
-  const handleUpdate = formData => {
-    navigation.goBack(); // 생성 후 뒤로가기
-  };
+  const finance_pk = route.params.finance_pk;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -29,9 +25,10 @@ const UpdateFinance = ({route}) => {
       <View>
         <FinanceForm
           initialData={data}
-          onSubmit={handleUpdate}
+          onSubmit="update"
           buttonLabel="Save"
           group_pk={group_pk}
+          finance_pk={finance_pk}
         />
       </View>
     </SafeAreaView>
