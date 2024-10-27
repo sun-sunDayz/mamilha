@@ -247,7 +247,7 @@ class GroupDetailAPIView(APIView):
         return Response({"message: 그룹을 삭제 했습니다."},status=status.HTTP_200_OK)
     
 class GroupSplitAPIView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
     
     def get(self, request, group_pk):
         try:
@@ -265,6 +265,7 @@ class GroupSplitAPIView(APIView):
             for split in splits:
                 data.append({
                     "finance_id": split.finance.id,
+                    "finance_type": split.finance.finance_type.name,
                     "finance_description": split.finance.description,  # 추가 정보 포함
                     "payer": split.finance.payer.name,
                     "member": split.member.name,
