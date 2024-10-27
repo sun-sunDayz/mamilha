@@ -23,7 +23,6 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
     finance_type: '지출',
     finance_category: null,
     payer: null,
-    payer_id: null,
     pay_method: '카드',
     amount: '',
     description: '',
@@ -56,7 +55,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
 
   // 카테고리 (Category)
   const [financeCategory, setFinanceCategory] = useState(
-    formData.finance_category ? formData.finance_category.category_id : null,
+    formData.finance_category ? formData.finance_category : null,
   );
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState([]);
@@ -354,8 +353,8 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
           <View style={styles.formRow}>
             <Text style={styles.label}>카테고리</Text>
             <FinanceCategory
-              selectedCategory={financeCategory}
-              onChangeCategory={setFinanceCategory} // ID를 업데이트
+              selectedCategory={formData.finance_category}
+              onChangeCategory={text => handleChange('finance_category', text)} // ID를 업데이트
             />
           </View>
 
@@ -363,7 +362,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
             <Text style={styles.label}>결제자</Text>
             <Payer
               groupId={group_pk}
-              selectedPayer={formData.payer_id}
+              selectedPayer={formData.payer}
               onChangePayer={setPayer}
             />
           </View>
