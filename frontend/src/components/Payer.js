@@ -21,7 +21,6 @@ const Payer = ({groupId, onChangePayer, selectedPayer}) => {
       .get(`/api/groups/${groupId}/members/`)
       .then(response => {
         setData(response.data);
-        console.log(selectedPayer);
         if (selectedPayer) {
           setSelectedItem(selectedPayer);
         }
@@ -29,19 +28,12 @@ const Payer = ({groupId, onChangePayer, selectedPayer}) => {
       .catch(error => {
         console.error('멤버 데이터를 불러오는데 실패했습니다', error);
       });
-  }, [groupId, selectedPayer]);
-
-  useEffect(() => {
-    setSelectedItem(selectedPayer);
-  }, [selectedPayer]);
-
-  useEffect(() => {
-    onChangePayer(selectedItem);
-  }, [selectedItem, onChangePayer]);
+  }, []);
 
   const handleItemPress = item => {
     setSelectedItem(item.id);
     setDropdownOpen(false);
+    onChangePayer(item.id)
   };
 
   const getSelectedPayerName = () => {

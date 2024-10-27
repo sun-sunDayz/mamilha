@@ -98,15 +98,12 @@ class GroupAPIView(APIView):
             else:
                 user=None
                 grades=Grades.objects.get(admin=0, edit=0, view=1)
-            
+                
             Member.objects.create(
             name=member['name'],
             user=user,
             grades=grades,
             group=group)
-
-
-
 
         return Response({'message': "그릅은 만들었습니다.",
                         'group_pk': group.pk,
