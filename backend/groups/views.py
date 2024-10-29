@@ -428,6 +428,40 @@ class MemberDetailAPIView(APIView):
 class MemberAccountAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
+    def post(self, request, group_pk):
+        group = get_object_or_404(Group, pk=group_pk)
+
+        data = request.data
+        name = data.get('name')
+        grades = Grades.objects.get(admin=0, edit=0, view=1)
+        active = True
+        user = request.user
+
+        # 이름이 빈값일 경우 Error 처리
+        if not name:
+            return Response({'error': "이름을 입력해주세요."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 등급 없으면 Error 처리
+        if not grades:
+            return Response({'error': "등급을 선택해주세요."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # 같은 이름 멤버 Error 처리
+        if Member.objects.filter(group=group, name=name).exists():
+            return Response({'error': "같은 이름의 멤버가 이미 존재합니다."}, status=status.HTTP_400_BAD_REQUEST)
+
+        new_member = Member.objects.create(
+            name=name,
+            grades=grades,
+            group=group,
+            active=active,
+            user=user,
+        )
+
+        return Response({
+            "message": "멤버 추가가 완료되었습니다.",
+            "name": new_member.name,
+        }, status=status.HTTP_201_CREATED)
+
     def put(self, request, group_pk):
         data = request.data
         member_pk = data.get('member_pk')
