@@ -15,18 +15,26 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import apiClient from '../services/apiClient';
 import CustomText from '../../CustomText';
 
-const InviteGroupDetail = ({navigation, members}) => {
-  // const [members, setMembers] = useState([]);
+const InviteGroupDetail = ({navigation, route}) => {
+  const [members, setMembers] = useState([{member: 'name1'}, {member: 'name'}]);
+  const inviteCode = route.params.inviteCode;
 
   const handleSelectMember = () => {
     console.log('select');
   };
 
+  useEffect(() => {
+    console.log('code:', inviteCode)
+    
+  }, []);
+
   return (
-    <SafeAreaView style={styles.Container}>
+    <SafeAreaView style={styles.container}>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
       <View style={styles.header}>
-        <TouchableOpacity style={styles.CloseIcon}>
+        <TouchableOpacity
+          style={styles.closeIcon}
+          onPress={() => navigation.goBack()}>
           <Ionicons name="chevron-back-outline" size={30} color="#616161" />
         </TouchableOpacity>
         <View>
@@ -34,8 +42,8 @@ const InviteGroupDetail = ({navigation, members}) => {
         </View>
       </View>
       <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.ContentTop}>
-          <Text style={styles.contentTitle}>모임 정보</Text>
+        <View style={styles.groupInfo}>
+          <Text style={styles.mainTitle}>모임 정보</Text>
         </View>
         <View style={styles.contentMiddle}>
           <View style={styles.contentMiddleView}>
@@ -48,7 +56,7 @@ const InviteGroupDetail = ({navigation, members}) => {
           </View>
         </View>
         <View style={[styles.ContentBottom, {paddingTop: 10}]}>
-          <Text style={styles.contentTitle}>본인을 선택해주세요</Text>
+          <Text style={styles.memberTitle}>본인을 선택해주세요</Text>
           <View style={styles.memberContent}>
             {members &&
               members.map((member, index) => (
@@ -72,6 +80,7 @@ const InviteGroupDetail = ({navigation, members}) => {
             <TouchableOpacity style={styles.newMemberButton}>
               <Text style={styles.newMemberButtonText}>클릭</Text>
             </TouchableOpacity>
+            <Text>코드 {inviteCode}</Text>
           </View>
         </View>
       </ScrollView>
@@ -95,51 +104,35 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'black',
   },
-  Container: {
+  container: {
     flex: 1,
     paddingTop: 10,
     backgroundColor: '#f1f1f9',
   },
-  TopContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    paddingBottom: 20,
-  },
-  CloseIcon: {
+  closeIcon: {
     padding: 0,
-  },
-  DeleteText: {
-    fontSize: 16,
-    right: 10,
-    color: '#616161',
   },
   content: {
     paddingHorizontal: 20,
     paddingBottom: 120,
+  },
+  mainTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#000000',
+    marginBottom: 10,
+  },
+  memberTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#000000',
+    marginTop: 10,
   },
   contentTitle: {
     fontSize: 16,
     fontWeight: '700',
     color: '#000000',
     marginRight: 10,
-  },
-  ContentTop: {},
-  ContentTopView: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  ContentTopNum: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#434343',
-  },
-  ContentTopText: {
-    fontSize: 20,
-    top: 5,
-    paddingLeft: 5,
-    color: '#000000',
   },
   contentMiddle: {
     flex: 1,
@@ -174,6 +167,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    marginTop: 20,
   },
 
   newMemberButton: {
