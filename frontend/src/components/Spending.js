@@ -4,6 +4,7 @@ import {
   View,
   TouchableOpacity,
   ScrollView,
+  RefreshControl,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import React, { useState, useEffect, useCallback } from 'react';
@@ -29,6 +30,14 @@ const truncateAmount = amount => {
 const Spending = ({ group_pk }) => {
   const [Data, setData] = useState([]);
   const navigation = useNavigation();
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+      setRefreshing(true);
+      setTimeout(() => {
+          setRefreshing(false);
+      }, 2000);
+  }, []);
 
   const getFinances = async () => {
     try {
@@ -76,7 +85,8 @@ const Spending = ({ group_pk }) => {
         </View>
       ) : (
         <>
-          <ScrollView contentContainerStyle={styles.scrollView}>
+          <ScrollView contentContainerStyle={styles.scrollView}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
             {Data.map(item => {
               const currentDate = moment(item.date).format('YYYY.MM.DD'); // 현재 아이템의 날짜
               const showDate = currentDate !== lastDate; // 현재 날짜와 마지막 날짜가 다르면 표시

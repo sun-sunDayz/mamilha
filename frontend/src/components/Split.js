@@ -1,7 +1,9 @@
-import { StyleSheet, Text, View, FlatList, Image, ScrollView } from 'react-native';
-import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, FlatList, Image, ScrollView, RefreshControl } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import apiClient from '../services/apiClient';
+
+
 
 const truncateText = (text, limit) => {
     if (text!='' & text.length > limit) {
@@ -17,7 +19,7 @@ const truncateAmount = (amount) => {
     return amount.toLocaleString() + '원';
 };
 
-const addTransaction = (transactions, giver, receiver, amount) => {
+const addTransaction = (transactions, giver, receiver, amount, finance_type) => {
     if (!transactions[giver]) {
         transactions[giver] = {};
     }
@@ -48,7 +50,6 @@ const calculateBalances = (transactions) => {
     return balances;
 }
 
-// 정산을 간소화하는 함수
 const simplifyBalances = (balances) => {
     const creditors = {};
     const debtors = {};
@@ -68,8 +69,17 @@ const simplifyBalances = (balances) => {
         const creditor = Object.keys(creditors).reduce((a, b) => creditors[a] > creditors[b] ? a : b);
         const debtor = Object.keys(debtors).reduce((a, b) => debtors[a] > debtors[b] ? a : b);
 
-        const amount = Math.min(creditors[creditor], debtors[debtor]);
-        transactions.push({'debtor': debtor, 'creditor' : creditor, 'amount': amount});
+        let amount = Math.min(creditors[creditor], debtors[debtor]);
+
+        // debtor가 creditor에게 주어야 하는 돈이 음수인 경우 위치를 바꿈
+        if (amount < 0) {
+            [debtor, creditor] = [creditor, debtor];
+            amount = Math.abs(amount);
+        }
+
+        if (amount > 0) {
+            transactions.push({'debtor': debtor, 'creditor' : creditor, 'amount': amount});
+        }
 
         creditors[creditor] -= amount;
         debtors[debtor] -= amount;
@@ -84,9 +94,18 @@ const simplifyBalances = (balances) => {
     return transactions;
 }
 
+
 const Split = ({group_pk}) => {
     const [data, setData] = useState([]);
     const [finalSettlements, setFinalSettlements] = useState([]);
+    const [refreshing, setRefreshing] = useState(false);
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 2000);
+    }, []);
 
     // 주고받은 금액 초기화
     
@@ -95,10 +114,11 @@ const Split = ({group_pk}) => {
             try {
                 const response = await apiClient.get(`/api/groups/${group_pk}/splits/`);
                 const splits = response.data;
+                console.log(splits)
                 setData(splits);
                 const transactions = {};
                 for(const split of splits) {
-                    addTransaction(transactions, split.member, split.payer, split.amount);
+                    addTransaction(transactions, split.member, split.payer, split.amount, split.finance_type);
                 }
                 // 잔액 계산 및 출력
                 const balances = calculateBalances(transactions);
@@ -113,13 +133,15 @@ const Split = ({group_pk}) => {
 
     return (
         <View style={styles.container}>
-            {data.length === 0 ? (
+            {finalSettlements.length === 0 ? (
                 <View style={styles.emptySpendView}>
                     <Ionicons style={styles.emptyIcon} name="checkmark-done-circle" size={150} color="#79C7E8" />
                     <Text style={styles.emptyText}>정산이 모두 완료되었어요!</Text>
                 </View>
             ) : (
-                <ScrollView>
+                <ScrollView
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                    >
                     {finalSettlements.map((item, index) => (
                         <View key={index} style={styles.listItem}>
                         <View style={styles.memberContainer}>
