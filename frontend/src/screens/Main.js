@@ -64,8 +64,7 @@ const Main = ({navigation, route}) => {
         </TouchableOpacity>
       </View>
       <ButtonGroup
-        onPressFirstButton="CreateGroup"
-        onPressSecondButton={() => alert('Button 2 pressed')}
+        onPressButton="CreateGroup"
       />
       <View style={styles.meetingListContainer}>
         <Text style={styles.meetingListText}>모임 목록</Text>
