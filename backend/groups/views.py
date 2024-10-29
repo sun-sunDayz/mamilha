@@ -9,35 +9,24 @@ import random
 import string
 
 
-def validate_group_data(name, category_id, currency_name):
-    # 이름이 빈 값일 경우 Error처리
+def validate_group_data(name, category_id):
+    #이름이 빈 값일 경우 Error처리
     if not name:
         return Response({'error': "그룹 이름이 없습니다"},
                         status=status.HTTP_400_BAD_REQUEST)
-    # 카테고리가 빈 값일 경우 Error처리
-    if not category_id:
+    #카테고리가 빈 값일 경우 Error처리
+    if category_id is '':
         return Response({'error': "그룹 카테고리를 선택해 주세요"},
                         status=status.HTTP_400_BAD_REQUEST)
-    # 통화가 빈 값일 경우 Error처리
-    if not currency_name:
-        return Response({'error': "그룹 통화를 선택해 주세요"},
-                        status=status.HTTP_400_BAD_REQUEST)
-    # 없는 카테고리, 통화 선택시 error처리
+    #없는 카테고리, 통화 선택시 error처리
     try:
         category = Group_category.objects.get(id=category_id)
     except Group_category.DoesNotExist:
         return Response({'error': "없는 카테고리입니다"},
                         status=status.HTTP_400_BAD_REQUEST)
-    try:
-        currency = Currency.objects.get(currency=currency_name)
-    except Currency.DoesNotExist:
-        return Response({'error': "없는 통화입니다"},
-                        status=status.HTTP_400_BAD_REQUEST)
-
-    return {
-        "name": name,
-        "category": category,  # 여기 확인
-        "currency": currency
+    return{
+        "name" : name,
+        "category" : category, # 여기 확인
     }
 
 
@@ -81,12 +70,11 @@ class GroupAPIView(APIView):
         data = request.data
 
         name = data.get('name')
-        category_id = data.get('category_id')
-        currency_name = data.get('currency')
+        category_id = data.get('category')
         members = data.get('members')
 
-        # 빈 값일 경우 Error 처리
-        validated_data = validate_group_data(name, category_id, currency_name)
+        #빈 값일 경우 Error 처리
+        validated_data = validate_group_data(name, category_id)
         if isinstance(validated_data, Response):
             return validated_data
 
@@ -94,8 +82,8 @@ class GroupAPIView(APIView):
         group_name = user.Member_user.filter(group__name=name).exists()
         if group_name:
             return Response({'error': "같은 이름의 그룹이 이미 존재합니다"}, status=status.HTTP_400_BAD_REQUEST)
-
-        # member name이 공백일 경유 제외, 같은 이름 존제시 오류, 멤머가 한명도 없는 경우 error 처리
+        
+        #member name이 공백일 경유 제외, 같은 이름 존제시 오류, 멤머가 한명도 없는 경우 error 처리
         member_validated = []
         for member in members:
             if member['name'].strip():
@@ -105,27 +93,27 @@ class GroupAPIView(APIView):
                     member_validated.append(member)
             else:
                 return Response({'error': "멤버는 한명 이상 있어야 합니다"}, status=status.HTTP_400_BAD_REQUEST)
-
+        
         group = Group.objects.create(
-            name=validated_data['name'],
-            category=validated_data['category'],
-            currency=validated_data['currency']
+        name = validated_data['name'],
+        category = validated_data['category'],
+        currency = Currency.objects.get(id=0)
         )
 
         # 그룹 생성자 admin Member로 추가
         for member in member_validated:
             if member['id'] == 0:
-                user_instance = user
+                user=user
                 grades = Grades.objects.get(admin=1)
             else:
-                grades = Grades.objects.get(admin=0, edit=0, view=1)
-                user_instance = None
-
+                user=None
+                grades=Grades.objects.get(admin=0, edit=0, view=1)
+                
             Member.objects.create(
-                name=member['name'],
-                user=user_instance,
-                grades=grades,
-                group=group)
+            name=member['name'],
+            user=user,
+            grades=grades,
+            group=group)
 
         return Response({'message': "그릅은 만들었습니다.",
                         'group_pk': group.pk,
@@ -173,37 +161,37 @@ class GroupDetailAPIView(APIView):
 
         member = []
         num = 0
-        for i in members[1::]:
-            num += 1
+        for i in members:
             member.append({
                 "id": num,
                 "name": i.name,
                 "active": i.active
             })
+            num +=1
 
         invite_code = get_group_invite_code(group.id)
         return Response({
-            "name": group.name,
-            "category_id": group.category.id,
-            "currency": group.currency.currency,
-            "member": member,
-            "invite_code": invite_code,
-        }, status=status.HTTP_200_OK)
+                "id": group.id,
+                "name": group.name,
+                "category" : group.category.id,
+                "currency": group.currency.currency,
+                "members" : member
+                }, status=status.HTTP_200_OK)
 
     def put(self, request, group_pk):
         user = request.user
         data = request.data
-        group = get_object_or_404(Group, pk=group_pk)
-        old_members = get_list_or_404(Member, group=group)[1:]
 
+        group = get_object_or_404(Group, pk=group_pk)
+        old_members= get_list_or_404(Member, group = group)
+        
         name = data.get('name', group.name)
-        category_id = data.get('category_id', group.category.id)
-        currency = data.get('currency', group.currency.currency)
+        category_id = data.get('category',group.category.id)
         update_members = data.get('update_members', old_members)
         new_members = data.get('new_members')
 
-        # 빈 값일 경우 Error처리
-        validated_data = validate_group_data(name, category_id, currency)
+        #빈 값일 경우 Error처리
+        validated_data = validate_group_data(name, category_id)
         if isinstance(validated_data, Response):
             return validated_data
 
@@ -232,7 +220,7 @@ class GroupDetailAPIView(APIView):
 
         group.name = validated_data["name"]
         group.category = validated_data["category"]
-        group.currency.currency = validated_data["currency"]
+        group.currency.currency = Currency.objects.get(id=0)
         group.save()
 
         # 기존의 멤버 업데이트
@@ -267,8 +255,8 @@ class GroupDetailAPIView(APIView):
 
 
 class GroupSplitAPIView(APIView):
-    # permission_classes = [IsAuthenticated]
-
+    permission_classes = [IsAuthenticated]
+    
     def get(self, request, group_pk):
         try:
             group = Group.objects.get(pk=group_pk)
@@ -285,6 +273,7 @@ class GroupSplitAPIView(APIView):
             for split in splits:
                 data.append({
                     "finance_id": split.finance.id,
+                    "finance_type": split.finance.finance_type.name,
                     "finance_description": split.finance.description,  # 추가 정보 포함
                     "payer": split.finance.payer.name,
                     "member": split.member.name,

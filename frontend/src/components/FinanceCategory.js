@@ -28,19 +28,12 @@ const FinanceCategory = ({onChangeCategory, selectedCategory}) => {
       .catch(error => {
         console.error('지출 카테고리 데이터를 불러오는데 실패했습니다', error);
       });
-  }, [selectedCategory]);
-
-  useEffect(() => {
-    setSelectedItem(selectedCategory);
-  }, [selectedCategory]);
-
-  useEffect(() => {
-    onChangeCategory(selectedItem);
-  }, [selectedItem, onChangeCategory]);
+  }, []);
 
   const handleItemPress = item => {
     setSelectedItem(item.id);
     setDropdownOpen(false);
+    onChangeCategory(item.id);
   };
 
   const getSelectedCategoryName = () => {

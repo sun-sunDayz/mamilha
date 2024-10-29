@@ -33,7 +33,7 @@ class FinancesAPIView(APIView):
         data = request.data
         group = Group.objects.get(pk=group_pk)
         amount = data.get('amount', None)
-        amount = int(amount.replace(",", ""))
+        amount = int(str(amount).replace(",", ""))
         description = data.get('description', None)
         select_members = data.get('members', [])
 
@@ -71,15 +71,14 @@ class FinancesAPIView(APIView):
         members = Member.objects.filter(group=group, id__in=select_members_id)
         member_count = members.count()
         if member_count > 0:
-            # split_amount = round(amount / member_count, 2)
             for member in members:
                 select_member_data = next((item for item in select_members if item['id'] == member.id), None)
-
                 if select_member_data:
                     Split.objects.create(
                         finance=finance,
                         member=member,
                         amount=select_member_data['amount'])
+        
         return Response(status=status.HTTP_201_CREATED)
     
 class FinancesDetailAPIView(APIView):
@@ -93,9 +92,9 @@ class FinancesDetailAPIView(APIView):
             "id": finance.id,
             "amount": finance.amount,
             "description": finance.description,
-            "payer": finance.payer.name,
+            "payer": {"id": finance.payer.id, "name": finance.payer.name},
             "finance_type": finance.finance_type.name,
-            "finance_category": finance.finance_category.id,
+            "finance_category": {"id": finance.finance_category.id, "name": finance.finance_category.name},
             "pay_method": finance.pay_method.name,
             "split_method": finance.split_method.name,
             "date" : finance.date
@@ -109,7 +108,8 @@ class FinancesDetailAPIView(APIView):
         data = request.data
         amount = data.get('amount', finance.amount)
         description = data.get('description', finance.description)
-
+        select_members = data.get('members', [])
+        
         # 하단의 정보들은 테이블에서 레코드 탐색을 해야함
         payer = data.get('payer', finance.payer.id)
         finance_type = data.get('finance_type', finance.finance_type.name)
@@ -136,6 +136,22 @@ class FinancesDetailAPIView(APIView):
         finance.edited_at = timezone.now()
         finance.save()
 
+        #기존의 split 값 삭제
+        Split.objects.filter(finance_id=finance_pk).delete()
+
+        #새로운 split 값 생성 
+        select_members_id = [i['id'] for i in select_members]
+        members = Member.objects.filter(group_id=finance.group_id, id__in=select_members_id)
+        member_count = members.count()
+        if member_count > 0:
+            for member in members:
+                select_member_data = next((item for item in select_members if item['id'] == member.id), None)
+                if select_member_data:
+                    Split.objects.create(
+                        finance=finance,
+                        member=member,
+                        amount=select_member_data['amount'])
+        
         return Response({"message":"결제 내역이 수정되었습니다."},status=status.HTTP_200_OK)
     
     def delete(self, request, group_pk, finance_pk):
