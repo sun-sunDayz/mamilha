@@ -16,7 +16,7 @@ import {useNavigation} from '@react-navigation/native';
 import FinanceCategory from './FinanceCategory';
 import Payer from './Payer';
 
-const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
+const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance_pk}) => {
   const navigation = useNavigation(); // 네비게이션 객체 가져오기
   const [formData, setFormData] = useState({
     date: '',
@@ -55,7 +55,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
 
   // 카테고리 (Category)
   const [financeCategory, setFinanceCategory] = useState(
-    formData.finance_category ? formData.finance_category.category_id : null,
+    formData.finance_category ? formData.finance_category : null,
   );
   const [categories, setCategories] = useState([]);
   const [category, setCategory] = useState([]);
@@ -230,26 +230,35 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
         id: member.value,
         amount: member.amount,
       }));
+    
+    const data = {
+      ...formData,
+      type: selectedType,
+      method: selectedMethod,
+      members: selectedMembers,
+    };
+    const headers = {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    };
 
+    let message = '' //등록와 수정에 따라 메시지값 저장 
     try {
-      const response = await apiClient.post(
-        // 'http://localhost:8000/api/finances/1/',
-        `/api/finances/${group_pk}/`,
-        {
-          ...formData,
-          type: selectedType,
-          method: selectedMethod,
-          members: selectedMembers,
-        },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        },
-      );
-
-      if (response.status === 201) {
-        alert('지출 등록에 성공했습니다');
+      let response 
+      if (onSubmit == 'create'){
+        // 지출 등록 API post
+        response = await apiClient.post(`/api/finances/${group_pk}/`, data, headers);
+        message = '지출 등록에 성공했습니다'
+      } else if (onSubmit == 'update'){
+        // 지출 수정 API put 
+        response = await apiClient.put(`/api/finances/${group_pk}/${finance_pk}/`, data, headers);
+        message = '지출 수정에 성공했습니다'
+      }
+      
+      // 등록, 수정의 상태코드에 따라 판단
+      if (response.status === 201 || response.status === 200) {
+        alert(message);
         navigation.navigate('Finances', {group_pk: group_pk});
         // Form reset or navigation can be handled here
       } else {
@@ -269,7 +278,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
   };
 
   const comma = amount => {
-    const noCamma = amount.replace(/,/g, '');
+    const noCamma = String(amount).replace(/,/g, '');
     return noCamma.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
@@ -344,8 +353,8 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
           <View style={styles.formRow}>
             <Text style={styles.label}>카테고리</Text>
             <FinanceCategory
-              selectedCategory={financeCategory}
-              onChangeCategory={setFinanceCategory} // ID를 업데이트
+              selectedCategory={formData.finance_category}
+              onChangeCategory={text => handleChange('finance_category', text)} // ID를 업데이트
             />
           </View>
 
@@ -353,7 +362,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
             <Text style={styles.label}>결제자</Text>
             <Payer
               groupId={group_pk}
-              selectedPayer={payer}
+              selectedPayer={formData.payer}
               onChangePayer={setPayer}
             />
           </View>
