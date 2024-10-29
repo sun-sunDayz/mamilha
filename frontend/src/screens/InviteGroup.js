@@ -18,8 +18,24 @@ import apiClient from '../services/apiClient';
 const InviteGroup = ({navigation, members}) => {
   const currentUser = useContext(UserContext);
   const [inviteCode, setInviteCode] = useState('');
-  const handleNext = () => {
-    navigation.navigate('InviteGroupDetail', {inviteCode: inviteCode});
+
+  const getMembers = async () => {
+    try {
+      const response = await apiClient.get(`/api/groups/invite/`);
+      console.log(response.data)
+    } catch (error) {
+      console.error('데이터를 불러오는데 실패했습니다', error);
+    }
+  };
+
+  const handleNext = async () => {
+    try {
+      const response = await apiClient.get(`/api/groups/invite/`);
+      console.log(response.data)
+      // navigation.navigate('InviteGroupDetail', {inviteCode: inviteCode});
+    } catch (error) {
+      console.error('데이터를 불러오는데 실패했습니다', error);
+    }
   };
 
   return (

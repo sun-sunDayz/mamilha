@@ -5,21 +5,24 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from .models import *
 from finances.models import Finance, Split
+import random
+import string
+
 
 def validate_group_data(name, category_id, currency_name):
-    #이름이 빈 값일 경우 Error처리
+    # 이름이 빈 값일 경우 Error처리
     if not name:
         return Response({'error': "그룹 이름이 없습니다"},
                         status=status.HTTP_400_BAD_REQUEST)
-    #카테고리가 빈 값일 경우 Error처리
+    # 카테고리가 빈 값일 경우 Error처리
     if not category_id:
         return Response({'error': "그룹 카테고리를 선택해 주세요"},
                         status=status.HTTP_400_BAD_REQUEST)
-    #통화가 빈 값일 경우 Error처리
+    # 통화가 빈 값일 경우 Error처리
     if not currency_name:
         return Response({'error': "그룹 통화를 선택해 주세요"},
                         status=status.HTTP_400_BAD_REQUEST)
-    #없는 카테고리, 통화 선택시 error처리
+    # 없는 카테고리, 통화 선택시 error처리
     try:
         category = Group_category.objects.get(id=category_id)
     except Group_category.DoesNotExist:
@@ -30,67 +33,69 @@ def validate_group_data(name, category_id, currency_name):
     except Currency.DoesNotExist:
         return Response({'error': "없는 통화입니다"},
                         status=status.HTTP_400_BAD_REQUEST)
-    
-    return{
-        "name" : name,
-        "category" : category, # 여기 확인
+
+    return {
+        "name": name,
+        "category": category,  # 여기 확인
         "currency": currency
     }
 
 
+def get_group_invite_code(group_id):
+    active_invite_code = GroupInviteCode.objects.filter(
+        group_id=group_id, active=True).first()
+    return active_invite_code.invite_code if active_invite_code else None
+
+
 class GroupAPIView(APIView):
     permission_classes = [IsAuthenticated]
-    
-    def get(self,request):
+
+    def get(self, request):
         user = request.user
         # deleted가 False인 그룹만 가져오기
         groups_list = user.Member_user.filter(group__deleted=False)
 
-        groups =[]
+        groups = []
         for i in groups_list:
-            active_invite_code = GroupInviteCode.objects.filter(group_id=i.group_id, active=True).first()
-            invite_code = active_invite_code.invite_code if active_invite_code else None
-            members = Member.objects.filter(group_id = i.group_id)
+            invite_code = get_group_invite_code(i.group_id)
+            members = Member.objects.filter(group_id=i.group_id)
             # members[0]은 언제나 관리자
             groups.append({
-                "id" :  i.group_id,
+                "id":  i.group_id,
                 "name": i.group.name,
                 "category_id": i.group.category.id,
-                "category" : i.group.category.name,
-                "category_icon" : i.group.category.icon,
-                "category_icon_color" : i.group.category.icon_color,
+                "category": i.group.category.name,
+                "category_icon": i.group.category.icon,
+                "category_icon_color": i.group.category.icon_color,
                 "currency": i.group.currency.currency,
-                "leader" : members[0].name,
+                "leader": members[0].name,
                 "members": len(members),
                 "invite_code": invite_code,
-                })
+            })
 
         return Response(groups,
                         status=status.HTTP_200_OK)
-    
 
     def post(self, request):
         user = request.user
         data = request.data
-        
+
         name = data.get('name')
         category_id = data.get('category_id')
         currency_name = data.get('currency')
         members = data.get('members')
-            
 
-        #빈 값일 경우 Error 처리
+        # 빈 값일 경우 Error 처리
         validated_data = validate_group_data(name, category_id, currency_name)
         if isinstance(validated_data, Response):
             return validated_data
 
-        #같은 이름의 그룹이 존제시 error 처리
+        # 같은 이름의 그룹이 존제시 error 처리
         group_name = user.Member_user.filter(group__name=name).exists()
         if group_name:
             return Response({'error': "같은 이름의 그룹이 이미 존재합니다"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        
-        #member name이 공백일 경유 제외, 같은 이름 존제시 오류, 멤머가 한명도 없는 경우 error 처리
+
+        # member name이 공백일 경유 제외, 같은 이름 존제시 오류, 멤머가 한명도 없는 경우 error 처리
         member_validated = []
         for member in members:
             if member['name'].strip():
@@ -100,34 +105,32 @@ class GroupAPIView(APIView):
                     member_validated.append(member)
             else:
                 return Response({'error': "멤버는 한명 이상 있어야 합니다"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        
+
         group = Group.objects.create(
-        name = validated_data['name'],
-        category = validated_data['category'],
-        currency = validated_data['currency']
+            name=validated_data['name'],
+            category=validated_data['category'],
+            currency=validated_data['currency']
         )
 
-        #그룹 생성자 admin Member로 추가
+        # 그룹 생성자 admin Member로 추가
         for member in member_validated:
-            if member['id'] == 0 :
+            if member['id'] == 0:
                 user_instance = user
                 grades = Grades.objects.get(admin=1)
             else:
-                grades=Grades.objects.get(admin=0, edit=0, view=1)
-                user_instance=None
+                grades = Grades.objects.get(admin=0, edit=0, view=1)
+                user_instance = None
 
             Member.objects.create(
-            name=member['name'],
-            user=user_instance,
-            grades=grades,
-            group=group)
-
+                name=member['name'],
+                user=user_instance,
+                grades=grades,
+                group=group)
 
         return Response({'message': "그릅은 만들었습니다.",
                         'group_pk': group.pk,
-                        'group_name': group.name,
-                        'member': members},
+                         'group_name': group.name,
+                         'member': members},
                         status=status.HTTP_201_CREATED)
 
 
@@ -136,92 +139,94 @@ class GroupCategoryAPIView(APIView):
 
     def get(self, request):
         categorys = get_list_or_404(Group_category)
-        
+
         category = []
         for i in categorys:
-            category.append({ 
+            category.append({
                 "category_id": i.pk,
                 "category_name": i.name
-                })
-        return Response(category,status=status.HTTP_200_OK)
+            })
+        return Response(category, status=status.HTTP_200_OK)
+
 
 class GroupCurrencyAPIView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
         currencys = get_list_or_404(Currency)
-        
+
         currency = []
         for i in currencys:
-            currency.append({ 
+            currency.append({
                 "currency_id": i.pk,
                 "currency_name": i.currency
-                })
-        return Response(currency,status=status.HTTP_200_OK)
+            })
+        return Response(currency, status=status.HTTP_200_OK)
 
 
 class GroupDetailAPIView(APIView):
     permission_classes = [IsAuthenticatedOrReadOnly]
 
-    def get(self,request, group_pk):
-        group = get_object_or_404(Group, pk = group_pk)
-        members = get_list_or_404(Member, group = group)
-        
+    def get(self, request, group_pk):
+        group = get_object_or_404(Group, pk=group_pk)
+        members = get_list_or_404(Member, group=group)
+
         member = []
         num = 0
         for i in members[1::]:
-            num +=1
+            num += 1
             member.append({
                 "id": num,
                 "name": i.name,
                 "active": i.active
             })
 
+        invite_code = get_group_invite_code(group.id)
         return Response({
-                "name": group.name,
-                "category_id" : group.category.id,
-                "currency": group.currency.currency,
-                "member" : member
-                }, status=status.HTTP_200_OK)
-
+            "name": group.name,
+            "category_id": group.category.id,
+            "currency": group.currency.currency,
+            "member": member,
+            "invite_code": invite_code,
+        }, status=status.HTTP_200_OK)
 
     def put(self, request, group_pk):
         user = request.user
         data = request.data
         group = get_object_or_404(Group, pk=group_pk)
-        old_members= get_list_or_404(Member, group = group)[1:]
-        
+        old_members = get_list_or_404(Member, group=group)[1:]
+
         name = data.get('name', group.name)
-        category_id = data.get('category_id',group.category.id)
-        currency = data.get('currency',group.currency.currency)
+        category_id = data.get('category_id', group.category.id)
+        currency = data.get('currency', group.currency.currency)
         update_members = data.get('update_members', old_members)
         new_members = data.get('new_members')
 
-        #빈 값일 경우 Error처리
+        # 빈 값일 경우 Error처리
         validated_data = validate_group_data(name, category_id, currency)
         if isinstance(validated_data, Response):
             return validated_data
-        
-        #같은 이름의 그룹이 존제시 Error 처리, 단 기존의 이름과 같은 경우는 제외
+
+        # 같은 이름의 그룹이 존제시 Error 처리, 단 기존의 이름과 같은 경우는 제외
         group_name = user.Member_user.filter(group__name=name).exists()
         if name != group.name and group_name:
             return Response({'error': "같은 이름의 그룹이 이미 존재합니다"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        #update_members의 이름이 공백일 경우 Error처리
-        val_up_members=[]
+
+        # update_members의 이름이 공백일 경우 Error처리
+        val_up_members = []
         for member in update_members:
             if member['name'].strip():
                 val_up_members.append(member['name'])
             else:
                 return Response({'error': "기존 멤버의 이름이 공백입니다"}, status=status.HTTP_400_BAD_REQUEST)
 
-        #new_members이 이름이 공백일 경유 제외
-        val_new_members=[]
+        # new_members이 이름이 공백일 경유 제외
+        val_new_members = []
         for member in new_members:
             if member['name'].strip():
                 val_new_members.append(member['name'])
 
-        #그룹에 별명이 같은 멤버있을 경우 Error처리
+        # 그룹에 별명이 같은 멤버있을 경우 Error처리
         if len(val_new_members + val_up_members) != len(set(val_new_members + val_up_members)):
             return Response({'error': "그룹에 별명이 같은 멤버가 존제 합니다"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -230,13 +235,13 @@ class GroupDetailAPIView(APIView):
         group.currency.currency = validated_data["currency"]
         group.save()
 
-        #기존의 멤버 업데이트
+        # 기존의 멤버 업데이트
         for i in range(len(old_members)):
             old_members[i].name = update_members[i]['name']
             old_members[i].active = update_members[i]['active']
             old_members[i].save()
-        
-        #새로운 멤버는 추가, 없으면 추가 안함
+
+        # 새로운 멤버는 추가, 없으면 추가 안함
         if val_new_members:
             for i in val_new_members:
                 Member.objects.create(
@@ -244,26 +249,26 @@ class GroupDetailAPIView(APIView):
                     user=None,
                     grades=Grades.objects.get(admin=0, edit=0, view=1),
                     group=group)
-        
+
         return Response({
-                "name": group.name,
-                "category_id" : str(group.category.id),
-                "currency": str(group.currency.currency),
-                "members" : new_members,
-                "created_at" :group.created_at,
-                "edited_at" : group.edited_at
-                }, status=status.HTTP_200_OK)
-        
+            "name": group.name,
+            "category_id": str(group.category.id),
+            "currency": str(group.currency.currency),
+            "members": new_members,
+            "created_at": group.created_at,
+            "edited_at": group.edited_at
+        }, status=status.HTTP_200_OK)
 
     def delete(self, request, group_pk):
-        group = get_object_or_404(Group, pk = group_pk)
+        group = get_object_or_404(Group, pk=group_pk)
 
         group.delete()
-        return Response({"message: 그룹을 삭제 했습니다."},status=status.HTTP_200_OK)
-    
+        return Response({"message: 그룹을 삭제 했습니다."}, status=status.HTTP_200_OK)
+
+
 class GroupSplitAPIView(APIView):
     # permission_classes = [IsAuthenticated]
-    
+
     def get(self, request, group_pk):
         try:
             group = Group.objects.get(pk=group_pk)
@@ -272,7 +277,7 @@ class GroupSplitAPIView(APIView):
 
         # 해당 그룹의 모든 Finance 객체를 가져옴
         finances = Finance.objects.filter(group=group)
-        
+
         data = []
         for finance in finances:
             # 각 Finance 객체에 대한 모든 Split 객체를 가져옴
@@ -287,6 +292,7 @@ class GroupSplitAPIView(APIView):
                 })
 
         return Response(data, status=status.HTTP_200_OK)
+
 
 class MemberAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -381,7 +387,7 @@ class MemberDetailAPIView(APIView):
             return Response({'error': "멤버 수정 권한이 없습니다."}, status=status.HTTP_403_FORBIDDEN)
 
         data = request.data
-        
+
         new_id = data.get('id', member.pk)
         new_name = data.get('name', member.name)
         new_grades = Grades.objects.get(
@@ -446,3 +452,60 @@ class MemberGradesAPIView(APIView):
             })
 
         return Response(grades, status=status.HTTP_200_OK)
+
+
+class GroupInviteCodeAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        data = request.data
+        invite_code = data.get('invite_code')
+        result = {}
+
+        try:
+            invite = GroupInviteCode.objects.get(
+                invite_code=invite_code, active=True)
+            members = Member.objects.filter(group_id=invite.group.id)
+            member_list = [{"id": member.id, "name": member.name,
+                            "user": {member.user}} for member in members]
+
+            result = {
+                "exists": True,
+                "group_id": invite.group.id,
+                "members": member_list
+            }
+        except GroupInviteCode.DoesNotExist:
+            result = {
+                "exists": False,
+                "group_id": None,
+                "members": []
+            }
+
+        return Response(result, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        data = request.data
+
+        group_id = data.get('group_id')
+
+        # 그룹 객체 가져오기
+        group = Group.objects.get(id=group_id)
+
+        # 새로운 초대 코드 생성
+        invite_code = GroupInviteCode.objects.create(
+            group=group,
+            invite_code=self.generate_unique_invite_code()
+        )
+
+        return Response({'message': "그릅은 만들었습니다.",
+                        'group_pk': group.id,
+                         'invite_code': invite_code.invite_code
+                         },
+                        status=status.HTTP_201_CREATED)
+
+    def generate_unique_invite_code(self):
+        characters = string.ascii_uppercase + string.digits  # 'A-Z'와 '0-9'를 포함
+        code = ''.join(random.choices(characters, k=6))
+        while GroupInviteCode.objects.filter(invite_code=code).exists():
+            code = ''.join(random.choices(characters, k=6))
+        return code
