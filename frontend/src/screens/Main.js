@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useContext} from 'react';
+import React, {useEffect, useState, useContext, useCallback } from 'react';
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   SafeAreaView,
   ScrollView,
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import GroupListItem from '../components/GroupListItem';
 import ButtonGroup from '../components/ButtonGroup';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -44,6 +45,20 @@ const Main = ({navigation}) => {
   const onHandleProfile = async () => {
     navigation.navigate('Profile');
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      apiClient
+      .get(`/api/groups/`)
+      .then(response => {
+        console.log(response.data)
+        setGroups(response.data);
+      })
+      .catch(error => {
+        console.error('데이터를 불러오는데 실패했습니다', error);
+      });
+    }, []),
+  );
 
   return (
     <SafeAreaView SafeAreaView style={styles.container}>

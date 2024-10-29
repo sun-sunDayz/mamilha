@@ -236,7 +236,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk}) => {
         `/api/finances/${group_pk}/`,
         {
           ...formData,
-          type: selectedType,
+          finance_type: selectedType,
           method: selectedMethod,
           members: selectedMembers,
         },
