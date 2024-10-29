@@ -103,6 +103,8 @@ class FinancesFinance(models.Model):
 
 class FinancesFinancecategory(models.Model):
     name = models.CharField(max_length=100)
+    icon = models.CharField(max_length=100)
+    icon_color = models.CharField(max_length=100)
 
     class Meta:
         managed = False
@@ -182,6 +184,8 @@ class GroupsGroup(models.Model):
 
 class GroupsGroupCategory(models.Model):
     name = models.CharField(unique=True, max_length=20)
+    icon = models.CharField(max_length=30)
+    icon_color = models.CharField(max_length=10)
 
     class Meta:
         managed = False

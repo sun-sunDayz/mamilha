@@ -10,7 +10,7 @@ import {
 import apiClient from '../services/apiClient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const GroupCategory = ({onChangeCategory, selectedCategory}) => {
+const FinanceCategory = ({onChangeCategory, selectedCategory}) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(selectedCategory);
   const [dropdownWidth, setDropdownWidth] = useState(0);
@@ -18,7 +18,7 @@ const GroupCategory = ({onChangeCategory, selectedCategory}) => {
 
   useEffect(() => {
     apiClient
-      .get('/api/groups/category/')
+      .get('/api/finances/categorys/')
       .then(response => {
         setData(response.data);
         if (selectedCategory) {
@@ -26,21 +26,19 @@ const GroupCategory = ({onChangeCategory, selectedCategory}) => {
         }
       })
       .catch(error => {
-        console.error('데이터를 불러오는데 실패했습니다', error);
+        console.error('지출 카테고리 데이터를 불러오는데 실패했습니다', error);
       });
   }, []);
 
   const handleItemPress = item => {
-    setSelectedItem(item.category_id);
+    setSelectedItem(item.id);
     setDropdownOpen(false);
-    onChangeCategory(item.category_id);
+    onChangeCategory(item.id);
   };
 
   const getSelectedCategoryName = () => {
-    const selectedCategory = Data.find(
-      item => item.category_id === selectedItem
-      );
-    return selectedCategory ? selectedCategory.category_name : '카테고리 선택';
+    const selectedCategory = Data.find(item => item.id === selectedItem);
+    return selectedCategory ? selectedCategory.name : '카테고리 선택';
   };
 
   return (
@@ -55,9 +53,7 @@ const GroupCategory = ({onChangeCategory, selectedCategory}) => {
         <Text
           style={[
             styles.dropdownButtonText,
-            {color: Data.find(
-              item => item.category_id === selectedItem,
-            ) ? '#434343' : '#ADAFBD'},
+            {color: selectedItem ? '#434343' : '#ADAFBD'},
           ]}>
           {getSelectedCategoryName()}
         </Text>
@@ -79,11 +75,11 @@ const GroupCategory = ({onChangeCategory, selectedCategory}) => {
             <View style={[styles.dropdown, {width: dropdownWidth}]}>
               <FlatList
                 data={Data}
-                keyExtractor={item => item.category_id.toString()}
+                keyExtractor={item => item.id.toString()}
                 renderItem={({item}) => (
                   <TouchableOpacity
                     style={
-                      item.category_id === selectedItem
+                      item.id === selectedItem
                         ? styles.selectedDropdownItem
                         : styles.dropdownItem
                     }
@@ -93,11 +89,10 @@ const GroupCategory = ({onChangeCategory, selectedCategory}) => {
                         styles.dropdownItemText,
                         {
                           color:
-                            item.category_id === selectedItem
-                              ? '#ffffff': '#434343',
+                            item.id === selectedItem ? '#ffffff' : '#434343',
                         },
                       ]}>
-                      {item.category_name}
+                      {item.name}
                     </Text>
                   </TouchableOpacity>
                 )}
@@ -111,9 +106,6 @@ const GroupCategory = ({onChangeCategory, selectedCategory}) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    // 기본 스타일 추가 가능
-  },
   dropdownButton: {
     height: 40,
     borderRadius: 8,
@@ -160,4 +152,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GroupCategory;
+export default FinanceCategory;
