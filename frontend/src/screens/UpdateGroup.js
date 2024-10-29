@@ -102,9 +102,7 @@ const UpdateGroup = ({route, navigation}) => {
 
   const generateInviteCode = async () => {
     try {
-      const response = await apiClient.post(`/api/groups/invite/`, {
-        group_id: group_pk
-      });
+      const response = await apiClient.post(`/api/groups/invite/generate/${group_pk}/`); 
       const newCode = response.data.invite_code
       setInviteCode(newCode);
     } catch (error) {

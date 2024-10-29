@@ -435,6 +435,26 @@ class MemberDetailAPIView(APIView):
             return False
 
 
+class MemberAccountAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, group_pk):
+        data = request.data
+        member_pk = data.get('member_pk')
+        member = get_object_or_404(Member, pk=member_pk, group__pk=group_pk)
+        user = request.user
+        member.user = user
+
+        member.save()
+
+        return Response({
+            "name": member.name,
+            "grades": member.grades.name,
+            "active": member.active,
+            "user": member.user.username,
+        }, status=status.HTTP_200_OK)
+
+
 class MemberGradesAPIView(APIView):
     permission_classes = [AllowAny]
 
@@ -454,20 +474,23 @@ class MemberGradesAPIView(APIView):
         return Response(grades, status=status.HTTP_200_OK)
 
 
-class GroupInviteCodeAPIView(APIView):
+class GroupGetInviteCodeAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
-        data = request.data
-        invite_code = data.get('invite_code')
+    def get(self, request, invite_code):
         result = {}
 
         try:
             invite = GroupInviteCode.objects.get(
                 invite_code=invite_code, active=True)
             members = Member.objects.filter(group_id=invite.group.id)
-            member_list = [{"id": member.id, "name": member.name,
-                            "user": {member.user}} for member in members]
+            member_list = []
+            for member in members:
+                member_list.append({
+                    "id": member.id,
+                    "name": member.name,
+                    "username": member.user.username if member.user else None
+                })
 
             result = {
                 "exists": True,
@@ -483,13 +506,13 @@ class GroupInviteCodeAPIView(APIView):
 
         return Response(result, status=status.HTTP_200_OK)
 
-    def post(self, request):
-        data = request.data
 
-        group_id = data.get('group_id')
+class GroupGenerateInviteCodeAPIView(APIView):
+    # permission_classes = [IsAuthenticated]
 
+    def post(self, request, group_pk):
         # 그룹 객체 가져오기
-        group = Group.objects.get(id=group_id)
+        group = Group.objects.get(id=group_pk)
 
         # 새로운 초대 코드 생성
         invite_code = GroupInviteCode.objects.create(

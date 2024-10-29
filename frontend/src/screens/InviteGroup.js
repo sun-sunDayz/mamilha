@@ -15,24 +15,29 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {UserContext} from '../userContext';
 import apiClient from '../services/apiClient';
 
-const InviteGroup = ({navigation, members}) => {
+const InviteGroup = ({navigation, route}) => {
   const currentUser = useContext(UserContext);
   const [inviteCode, setInviteCode] = useState('');
+  const [errorCode, setErrorCode] = useState('');
 
-  const getMembers = async () => {
-    try {
-      const response = await apiClient.get(`/api/groups/invite/`);
-      console.log(response.data)
-    } catch (error) {
-      console.error('데이터를 불러오는데 실패했습니다', error);
-    }
+  const handleInputChange = (text) => {
+    // 입력값에서 소문자를 대문자로 변환하고, A-Z와 0-9만 남기도록 필터링
+    const formattedText = text.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    // 6자리까지만 입력하도록 제한
+    setInviteCode(formattedText.slice(0, 6));
   };
 
   const handleNext = async () => {
     try {
-      const response = await apiClient.get(`/api/groups/invite/`);
-      console.log(response.data)
-      // navigation.navigate('InviteGroupDetail', {inviteCode: inviteCode});
+      const response = await apiClient.get(`/api/groups/invite/${inviteCode}/`);
+      result = response.data
+      console.log(result)
+      if(!result.exists) {
+        setErrorCode("초대코드가 존재하지 않습니다")
+        return
+      }
+      setErrorCode("")
+      navigation.navigate('InviteGroupDetail', {members: result.members, group_pk: result.group_id});
     } catch (error) {
       console.error('데이터를 불러오는데 실패했습니다', error);
     }
@@ -52,8 +57,11 @@ const InviteGroup = ({navigation, members}) => {
           style={styles.input}
           placeholder="초대 코드 입력"
           value={inviteCode}
-          onChangeText={setInviteCode}
+          onChangeText={handleInputChange}
+          autoCapitalize="characters"
+          maxLength={6} 
         />
+        {errorCode ? <Text style={styles.errorText}>{errorCode}</Text> : null}
       </View>
       <TouchableOpacity
           onPress={handleNext}
@@ -111,6 +119,11 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: '700',
+  },
+  errorText: {
+    color: 'red',
+    fontSize: 14,
+    marginTop: 8,
   },
 });
 
