@@ -8,6 +8,7 @@ import {
   StatusBar,
   TouchableWithoutFeedback,
   Keyboard,
+  Button,
   TouchableOpacity,
   SafeAreaView,
   Modal,
@@ -29,6 +30,7 @@ const UpdateGroup = ({route, navigation}) => {
   const [modalWidth, setModalWidth] = useState(0);
   const scrollViewRef = useRef(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [inviteCode, setInviteCode] = useState(null);
 
   const group_pk = route.params.group_pk;
 
@@ -36,10 +38,12 @@ const UpdateGroup = ({route, navigation}) => {
     apiClient
       .get(`/api/groups/${group_pk}/`)
       .then(response => {
+        console.log(response.data)
         setCurrency(response.data.currency);
         setGroupCategory(response.data.category_id); // 기존 카테고리 설정
         setGroupName(response.data.name);
         setUpdateMembers(response.data.member);
+        setInviteCode(response.data.invite_code);
       })
       .catch(error => {
         console.error('데이터를 불러오는데 실패했습니다', error);
@@ -96,6 +100,18 @@ const UpdateGroup = ({route, navigation}) => {
     setIsDeleteModalOpen(false);
   };
 
+  const generateInviteCode = async () => {
+    try {
+      const response = await apiClient.post(`/api/groups/invite/`, {
+        group_id: group_pk
+      });
+      const newCode = response.data.invite_code
+      setInviteCode(newCode);
+    } catch (error) {
+      alert('초대코드 생성에 실패했습니다: ' + error.response.data.error);
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -130,6 +146,29 @@ const UpdateGroup = ({route, navigation}) => {
               selectedCategory={groupCategory} // 기존에 선택된 카테고리 정보 전달
               onChangeCategory={setGroupCategory}
             />
+          </View>
+          <View style={styles.formRow}>
+            <Text style={styles.label}>초대코드</Text>
+            <View style={styles.inviteCodeRow}>
+              {inviteCode ? (
+                <View style={styles.codeContainer}>
+                  <View style={styles.inviteCodeBox}>
+                    <Text style={styles.inviteCodeText}>{inviteCode}</Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={() => generateInviteCode()}
+                    style={styles.inviteCodeButton}>
+                    <Text style={styles.inviteCodeButtonText}>재발급</Text>
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <TouchableOpacity
+                  onPress={() => generateInviteCode()}
+                  style={styles.inviteCodeButton}>
+                  <Text style={styles.inviteCodeButtonText}>초대코드 생성</Text>
+                </TouchableOpacity>
+              )}
+            </View>
           </View>
           <View style={styles.formRow}>
             <Text style={styles.label}>멤버</Text>
@@ -374,6 +413,37 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#5DAF6A',
     marginLeft: 5,
+  },
+  inviteCodeRow: {
+    alignItems: 'flex-start',
+    marginLeft: 5,
+  },
+  codeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  inviteCodeBox: {
+    backgroundColor: '#D9D9D9',
+    borderRadius: 5, 
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginRight: 10,
+  },
+  inviteCodeText: {
+    fontSize: 16,
+    color: '#434343',
+  },
+  inviteCodeButton: {
+    backgroundColor: '#EDEDED',
+    borderColor: '#AEAEAE',
+    borderWidth: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 5,
+  },
+  inviteCodeButtonText: {
+    color: '#6C6C6C',
+    fontSize: 16,
   },
 });
 

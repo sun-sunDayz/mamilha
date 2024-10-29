@@ -10,4 +10,5 @@ urlpatterns = [
     path("<int:group_pk>/members/", views.MemberAPIView.as_view()),
     path("<int:group_pk>/members/<int:member_pk>/", views.MemberDetailAPIView.as_view()),
     path("members/grades/", views.MemberGradesAPIView.as_view()),
+    path("invite/", views.GroupInviteCodeAPIView.as_view()),
 ]
