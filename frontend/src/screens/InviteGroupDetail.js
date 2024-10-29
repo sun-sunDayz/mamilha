@@ -19,8 +19,10 @@ import {UserContext} from '../userContext';
 const InviteGroupDetail = ({navigation, route}) => {
   const currentUser = useContext(UserContext);
   const group_pk = route.params.group_pk;
+  const groupName = route.params.group_name;
+  const groupAdminName = route.params.group_admin_name;
   const [members, setMembers] = useState([]);
-  const handleSelectMember = async member_id => {
+  const handleSelectMember = async (member_id) => {
     try {
       const response = await apiClient.put(
         `/api/groups/${group_pk}/members/account/`,
@@ -33,13 +35,14 @@ const InviteGroupDetail = ({navigation, route}) => {
   };
 
   const handleNewMember = async () => {
-    navigation.navigate('InviteGroupDetailNew', {group_pk: result.group_id});
+    navigation.navigate('InviteGroupDetailNew', {
+      group_pk: result.group_id,
+      group_name: groupName,
+      group_admin_name: groupAdminName
+    });
   };
 
   useEffect(() => {
-    console.log('user', currentUser);
-    console.log('group_pk', group_pk);
-    console.log('members', members);
     setMembers(route.params.members);
   }, []);
 
@@ -62,12 +65,12 @@ const InviteGroupDetail = ({navigation, route}) => {
         </View>
         <View style={styles.contentMiddle}>
           <View style={styles.contentMiddleView}>
-            <Text style={styles.contentTitle}>일시</Text>
-            <Text style={styles.contentText}>가상의모임</Text>
+            <Text style={styles.contentTitle}>모임명</Text>
+            <Text style={styles.contentText}>{groupName}</Text>
           </View>
           <View style={styles.contentMiddleView}>
             <Text style={styles.contentTitle}>모임장</Text>
-            <Text style={styles.contentText}>모임장닉네임</Text>
+            <Text style={styles.contentText}>{groupAdminName}</Text>
           </View>
         </View>
         <View style={[styles.ContentBottom, {paddingTop: 10}]}>
