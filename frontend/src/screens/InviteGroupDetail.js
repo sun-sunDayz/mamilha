@@ -35,7 +35,11 @@ const InviteGroupDetail = ({navigation, route}) => {
   };
 
   const handleNewMember = async () => {
-    navigation.navigate('InviteGroupDetailNew', {group_pk: result.group_id});
+    navigation.navigate('InviteGroupDetailNew', {
+      group_pk: result.group_id,
+      group_name: groupName,
+      group_admin_name: groupAdminName
+    });
   };
 
   useEffect(() => {

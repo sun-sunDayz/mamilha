@@ -1,4 +1,4 @@
-import React, {useEffect, useContext} from 'react';
+import React, {useEffect, useContext, useState} from 'react';
 import {
   View,
   Text,
@@ -20,16 +20,18 @@ import {UserContext} from '../userContext';
 const InviteGroupDetailNew = ({navigation, route}) => {
   const currentUser = useContext(UserContext);
   const group_pk = route.params.group_pk;
-  const members = route.params.members;
-  const [nickname, setNickname] = useContext('')
+  const groupName = route.params.group_name;
+  const groupAdminName = route.params.group_admin_name;
+  const [nickname, setNickname] = useState('')
 
   const handleEnter = async () => {
     try {
       const response = await apiClient.post(
         `/api/groups/${group_pk}/members/account/`, {
-          member_id: 'member_id'
+          name: nickname
         },
       );
+      console.log(response.data)
     } catch (error) {
       console.error('데이터를 불러오는데 실패했습니다', error);
     }
@@ -40,9 +42,6 @@ const InviteGroupDetailNew = ({navigation, route}) => {
   }
 
   useEffect(() => {
-    console.log('user', currentUser);
-    console.log('group_pk', group_pk);
-    console.log('members', members);
   }, []);
 
   return (
@@ -64,19 +63,19 @@ const InviteGroupDetailNew = ({navigation, route}) => {
         </View>
         <View style={styles.contentMiddle}>
           <View style={styles.contentMiddleView}>
-            <Text style={styles.contentTitle}>일시</Text>
-            <Text style={styles.contentText}>가상의모임</Text>
+            <Text style={styles.contentTitle}>모임명</Text>
+            <Text style={styles.contentText}>{groupName}</Text>
           </View>
           <View style={styles.contentMiddleView}>
             <Text style={styles.contentTitle}>모임장</Text>
-            <Text style={styles.contentText}>모임장닉네임</Text>
+            <Text style={styles.contentText}>{groupAdminName}</Text>
           </View>
         </View>
         <View style={[styles.ContentBottom, {paddingTop: 10}]}>
           <Text style={styles.memberTitle}>새로운 닉네임을 입력해주세요</Text>
           <View style={styles.memberContent}>
             <TextInput
-              style={styles.input}
+              style={styles.inputNicknameText}
               placeholder="새닉네임"
               value={nickname}
               onChangeText={handleInputChange}
@@ -204,6 +203,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#888888',
     fontWeight: 'bold',
+  },
+  inputNicknameText: {
+    height: 40,
+    borderColor: '#ADAFBD',
+    borderBottomWidth: 1,
+    paddingHorizontal: 5,
+    textAlign: 'left',
   },
 });
 
