@@ -15,7 +15,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {UserContext} from '../userContext';
 import apiClient from '../services/apiClient';
 
-const Main = ({navigation}) => {
+const Main = ({navigation, route}) => {
   const currentUser = useContext(UserContext);
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -30,17 +30,22 @@ const Main = ({navigation}) => {
     }
   }, [currentUser]);
 
+  const fetchData = async () => {
+    try {
+      const response = await apiClient.get(`/api/groups/`);
+      setGroups(response.data);
+    } catch (error) {
+      console.error('데이터를 불러오는데 실패했습니다', error);
+    }
+  };
+
   useEffect(() => {
-    apiClient
-      .get(`/api/groups/`)
-      .then(response => {
-        console.log(response.data)
-        setGroups(response.data);
-      })
-      .catch(error => {
-        console.error('데이터를 불러오는데 실패했습니다', error);
-      });
+    fetchData(); // 컴포넌트 마운트 시 데이터 fetch
   }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [route.params]); // route.params가 변경될 때마다 fetchData 실행
 
   const onHandleProfile = async () => {
     navigation.navigate('Profile');
@@ -74,8 +79,7 @@ const Main = ({navigation}) => {
         </TouchableOpacity>
       </View>
       <ButtonGroup
-        onPressFirstButton="CreateGroup"
-        onPressSecondButton={() => alert('Button 2 pressed')}
+        onPressButton="CreateGroup"
       />
       <View style={styles.meetingListContainer}>
         <Text style={styles.meetingListText}>모임 목록</Text>

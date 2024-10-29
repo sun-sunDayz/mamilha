@@ -2,7 +2,7 @@ import axios from 'axios';
 import {REACT_APP_API_BASE_URL} from '@env';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const baseURL = REACT_APP_API_BASE_URL;
+const baseURL = process.env.REACT_APP_API_BASE_URL;
 // const baseURL = 'http://localhost:8000/';
 
 // Axios 인스턴스 생성

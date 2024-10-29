@@ -3,16 +3,22 @@ import {View, TouchableOpacity, Text, StyleSheet} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const ButtonGroup = ({onPressFirstButton}) => {
+const ButtonGroup = () => {
   const navigation = useNavigation();
 
   return (
     <View style={styles.buttonContainer}>
       <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate(onPressFirstButton)}>
+        style={styles.buttonCreateGroup}
+        onPress={() => navigation.navigate("CreateGroup")}>
         <Ionicons name="add-outline" size={20} color="#FFFFFF" />
-        <Text style={styles.buttonText}>모임 만들기</Text>
+        <Text style={styles.buttonCreateGroupText}>모임 만들기</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.buttonInviteGroup}
+        onPress={() => navigation.navigate("InviteGroup")}>
+        <Ionicons name="people" size={20} color="#5DAF6A" />
+        <Text style={styles.buttonInviteGroupText}>모임 초대하기</Text>
       </TouchableOpacity>
     </View>
   );
@@ -26,7 +32,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginVertical: 10,
   },
-  button: {
+  buttonCreateGroup: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -35,9 +41,26 @@ const styles = StyleSheet.create({
     backgroundColor: '#5DAF6A',
     borderRadius: 10,
     flex: 1,
+    marginRight: 15,
   },
-  buttonText: {
+  buttonInviteGroup: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    flex: 1,
+  },
+  buttonCreateGroupText: {
     color: '#FFFFFF',
+    fontWeight: '800',
+    fontSize: 16,
+    marginLeft: 10,
+  },
+  buttonInviteGroupText: {
+    color: '#000000',
     fontWeight: '800',
     fontSize: 16,
     marginLeft: 10,

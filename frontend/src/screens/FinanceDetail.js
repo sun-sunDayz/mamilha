@@ -31,11 +31,12 @@ const FinanceDetail = ({ route }) => {
         apiClient.get(`/api/finances/${group_pk}/${finance_pk}/`)  
             .then(response => {
                 const data = response.data
+                console.log(response.data)
                 setAmount(data.amount) 
                 setDescription(data.description)
-                setPayar(data.payer)
+                setPayar(data.payer["name"])
                 setFinancesType(data.finance_type)
-                setFinancesCategory(data.finance_category)
+                setFinancesCategory(data.finance_category["name"])
                 setPayMethod(data.pay_method)
                 setSplitMethod(data.split_method)
                 setDate(data.date)
@@ -56,11 +57,12 @@ const FinanceDetail = ({ route }) => {
             });
     }, []);
 
-
+    // 이전화면으로 이동
     const handleGoBack = () => {
         navigation.goBack();
-    }; // 이전화면으로 이동
+    }; 
 
+    //finance 삭제
     const handleDelete = async () => {
         try {
             await apiClient.delete(`/api/finances/${group_pk}/${finance_pk}/`);
@@ -68,16 +70,23 @@ const FinanceDetail = ({ route }) => {
         } catch (error) {
             alert(error.response.data.error);
         }
-    }; //finance 삭제
+    }; 
 
+    // finance update screen으로 이동 
     const handleUpdate = () => {
-        navigation.navigate('UpdateFinance', {'data':data, 'group_pk':group_pk});
-    }; // finance update screen으로 이동 
+        navigation.navigate('UpdateFinance', 
+        {
+        'data':data, 
+        'group_pk':group_pk,
+        'finance_pk':finance_pk 
+        });
+    }; 
 
+    //가격에 쉼표를 넣어서 가져오기
     const comma = (amount) => {
         if (!amount && amount !== 0) return "0";
         return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-    }; //가격에 쉼표를 넣어서 가져오기
+    }; 
 
     return (
         <SafeAreaView style={styles.Container}>
