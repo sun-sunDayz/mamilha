@@ -28,7 +28,8 @@ import GroupForm from '../components/GroupForm';
       }
       setIsDeleteModalOpen(false);
     };
-    console.log(initialData)
+
+
     return (
       <SafeAreaView style={styles.Container}>
         <View style={styles.header}>

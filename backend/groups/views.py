@@ -97,7 +97,7 @@ class GroupAPIView(APIView):
         group = Group.objects.create(
         name = validated_data['name'],
         category = validated_data['category'],
-        currency = Currency.objects.get(id=0)
+        currency = Currency.objects.filter().first()
         )
 
         # 그룹 생성자 admin Member로 추가
@@ -473,6 +473,10 @@ class GroupGetInviteCodeAPIView(APIView):
         try:
             invite = GroupInviteCode.objects.get(
                 invite_code=invite_code, active=True)
+
+            admin_member = Member.objects.get_admin_member(invite.group.id)
+            group_name = invite.group.name
+            group_admin_name = admin_member.name
             members = Member.objects.filter(group_id=invite.group.id)
             member_list = []
             for member in members:
@@ -485,12 +489,16 @@ class GroupGetInviteCodeAPIView(APIView):
             result = {
                 "exists": True,
                 "group_id": invite.group.id,
+                "group_name": group_name,
+                "group_admin_name": group_admin_name,
                 "members": member_list
             }
         except GroupInviteCode.DoesNotExist:
             result = {
                 "exists": False,
                 "group_id": None,
+                "group_name": group_name,
+                "group_admin_name": group_admin_name,
                 "members": []
             }
 
@@ -498,7 +506,7 @@ class GroupGetInviteCodeAPIView(APIView):
 
 
 class GroupGenerateInviteCodeAPIView(APIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def post(self, request, group_pk):
         # 그룹 객체 가져오기

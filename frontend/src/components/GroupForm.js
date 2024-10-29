@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
     View,
     Text,
@@ -28,6 +28,17 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
         update_members: actives,
         ...initialData, // 기존데이터 존제시 자동 추가
     });
+    const [inviteCode, setInviteCode] = useState(initialData.invite_code);
+
+    const updateInviteCode = async () => {
+        try {
+            const response = await apiClient.get(`/api/groups/invite/${group_pk}/`);
+            const newCode = response.data.invite_code
+            setInviteCode(newCode);
+            } catch (error) {
+            alert('초대코드 생성에 실패했습니다: ' + error.response.data.error);
+        }
+    }
 
     const handleChange = (name, value) => {
         setFormData({ ...formData, [name]: value });
@@ -73,6 +84,17 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
         }
     };
 
+    const generateInviteCode = async () => {
+        try {
+            const response = await apiClient.post(`/api/groups/invite/generate/${group_pk}/`);
+            const newCode = response.data.invite_code
+            setInviteCode(newCode);
+            } catch (error) {
+            alert('초대코드 생성에 실패했습니다: ' + error.response.data.error);
+            }
+    };
+
+
     return (
         <View >
             <View style={styles.content}>
@@ -92,6 +114,32 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
                         <Text style={styles.label}>모임 카테고리</Text>
                         <GroupCategory selectedCategory={formData.category} onChangeCategory={text => handleChange('category', text)} />
                     </View>
+
+                    {screenName === 'UpdateGroup' &&
+                        <View style={styles.formRow}>
+                            <Text style={styles.label}>초대코드</Text>
+                            <View style={styles.inviteCodeRow}>
+                                {inviteCode ? (
+                                <View style={styles.codeContainer}>
+                                    <View style={styles.inviteCodeBox}>
+                                    <Text style={styles.inviteCodeText}>{inviteCode}</Text>
+                                    </View>
+                                    <TouchableOpacity
+                                    onPress={() => generateInviteCode()}
+                                    style={styles.inviteCodeButton}>
+                                    <Text style={styles.inviteCodeButtonText}>재발급</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                ) : (
+                                <TouchableOpacity
+                                    onPress={() => generateInviteCode()}
+                                    style={styles.inviteCodeButton}>
+                                    <Text style={styles.inviteCodeButtonText}>초대코드 생성</Text>
+                                </TouchableOpacity>
+                                )}
+                            </View>
+                        </View>
+                    }
                     <View style={styles.formRow}>
                         <Text style={styles.label}>멤버</Text>
                         {screenName === 'UpdateGroup' &&
@@ -407,6 +455,38 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: '700',
         color: '#ffffff',
+    },
+
+    inviteCodeRow: {
+        alignItems: 'flex-start',
+        marginLeft: 5,
+    },
+    codeContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    inviteCodeBox: {
+        backgroundColor: '#D9D9D9',
+        borderRadius: 5, 
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        marginRight: 10,
+    },
+    inviteCodeText: {
+        fontSize: 16,
+        color: '#434343',
+    },
+    inviteCodeButton: {
+        backgroundColor: '#EDEDED',
+        borderColor: '#AEAEAE',
+        borderWidth: 1,
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        borderRadius: 5,
+    },
+    inviteCodeButtonText: {
+        color: '#6C6C6C',
+        fontSize: 16,
     },
 });
 

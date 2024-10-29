@@ -64,6 +64,9 @@ class MemberManager(models.Manager):
     def deleted_groups(self):
         return super().get_queryset().filter(deleted=1)
 
+    def get_admin_member(self, group_id):
+        return self.get_queryset().filter(group_id=group_id, grades__admin=True).first()
+
 
 class Member(models.Model):
     name = models.CharField(max_length=20)

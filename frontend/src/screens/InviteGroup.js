@@ -31,13 +31,18 @@ const InviteGroup = ({navigation, route}) => {
     try {
       const response = await apiClient.get(`/api/groups/invite/${inviteCode}/`);
       result = response.data
-      console.log(result)
       if(!result.exists) {
         setErrorCode("초대코드가 존재하지 않습니다")
         return
       }
       setErrorCode("")
-      navigation.navigate('InviteGroupDetail', {members: result.members, group_pk: result.group_id});
+      // console.log(result)
+      navigation.navigate('InviteGroupDetail', {
+        members: result.members, 
+        group_pk: result.group_id,
+        group_name: result.group_name,
+        group_admin_name: result.group_admin_name,
+      });
     } catch (error) {
       console.error('데이터를 불러오는데 실패했습니다', error);
     }
