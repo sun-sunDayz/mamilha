@@ -82,3 +82,17 @@ class Member(models.Model):
     
     def __str__(self):
         return f'{self.group} - {self.name}'
+
+class GroupInviteCode(models.Model):
+    group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='invite_codes')
+    invite_code = models.CharField(max_length=6, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    active = models.BooleanField(default=True)
+
+    def save(self, *args, **kwargs):
+        if self.active:
+            GroupInviteCode.objects.filter(group=self.group, active=True).update(active=False)
+        super().save(*args, **kwargs)
+        
+    def __str__(self):
+        return f'[{self.group.nae}] {self.invite_code} {self.active}'

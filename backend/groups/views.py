@@ -45,9 +45,11 @@ class GroupAPIView(APIView):
         user = request.user
         # deleted가 False인 그룹만 가져오기
         groups_list = user.Member_user.filter(group__deleted=False)
-        
+
         groups =[]
         for i in groups_list:
+            active_invite_code = GroupInviteCode.objects.filter(group_id=i.group_id, active=True).first()
+            invite_code = active_invite_code.invite_code if active_invite_code else None
             members = Member.objects.filter(group_id = i.group_id)
             # members[0]은 언제나 관리자
             groups.append({
@@ -59,7 +61,8 @@ class GroupAPIView(APIView):
                 "category_icon_color" : i.group.category.icon_color,
                 "currency": i.group.currency.currency,
                 "leader" : members[0].name,
-                "members": len(members)
+                "members": len(members),
+                "invite_code": invite_code,
                 })
 
         return Response(groups,
