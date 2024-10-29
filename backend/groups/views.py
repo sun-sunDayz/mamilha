@@ -175,7 +175,8 @@ class GroupDetailAPIView(APIView):
                 "name": group.name,
                 "category" : group.category.id,
                 "currency": group.currency.currency,
-                "members" : member
+                "members" : member,
+                "invite_code": invite_code,
                 }, status=status.HTTP_200_OK)
 
     def put(self, request, group_pk):
