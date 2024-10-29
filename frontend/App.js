@@ -10,6 +10,7 @@ import CreateGroup from './src/screens/CreateGroup';
 import UpdateGroup from './src/screens/UpdateGroup';
 import InviteGroup from './src/screens/InviteGroup';
 import InviteGroupDetail from './src/screens/InviteGroupDetail';
+import InviteGroupDetailNew from './src/screens/InviteGroupDetailNew';
 import Finances from './src/screens/Finances';
 import Profile from './src/screens/Profile';
 import PasswordChange from './src/screens/PasswordChange';
@@ -47,6 +48,7 @@ const App = () => {
           <Stack.Screen name="CreateGroup" component={CreateGroup} />
           <Stack.Screen name="InviteGroup" component={InviteGroup} />
           <Stack.Screen name="InviteGroupDetail" component={InviteGroupDetail} />
+          <Stack.Screen name="InviteGroupDetailNew" component={InviteGroupDetailNew} />
           <Stack.Screen name="Profile" component={Profile} />
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="PasswordChange" component={PasswordChange} />

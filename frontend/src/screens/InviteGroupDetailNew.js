@@ -1,4 +1,4 @@
-import React, {useEffect, useContext, useState} from 'react';
+import React, {useEffect, useContext} from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   StatusBar,
   TouchableOpacity,
   SafeAreaView,
+  TextInput,
   Modal,
 } from 'react-native';
 import {useNavigation} from '@react-navigation/native';
@@ -16,31 +17,32 @@ import apiClient from '../services/apiClient';
 import CustomText from '../../CustomText';
 import {UserContext} from '../userContext';
 
-const InviteGroupDetail = ({navigation, route}) => {
+const InviteGroupDetailNew = ({navigation, route}) => {
   const currentUser = useContext(UserContext);
   const group_pk = route.params.group_pk;
-  const [members, setMembers] = useState([]);
-  const handleSelectMember = async member_id => {
+  const members = route.params.members;
+  const [nickname, setNickname] = useContext('')
+
+  const handleEnter = async () => {
     try {
-      const response = await apiClient.put(
-        `/api/groups/${group_pk}/members/account/`,
-        {member_pk: member_id},
+      const response = await apiClient.post(
+        `/api/groups/${group_pk}/members/account/`, {
+          member_id: 'member_id'
+        },
       );
-      console.log('멤버 연동이 완료되었습니다', response);
     } catch (error) {
       console.error('데이터를 불러오는데 실패했습니다', error);
     }
   };
 
-  const handleNewMember = async () => {
-    navigation.navigate('InviteGroupDetailNew', {group_pk: result.group_id});
-  };
+  const handleInputChange = (text) => {
+    setNickname(text)
+  }
 
   useEffect(() => {
     console.log('user', currentUser);
     console.log('group_pk', group_pk);
     console.log('members', members);
-    setMembers(route.params.members);
   }, []);
 
   return (
@@ -71,37 +73,18 @@ const InviteGroupDetail = ({navigation, route}) => {
           </View>
         </View>
         <View style={[styles.ContentBottom, {paddingTop: 10}]}>
-          <Text style={styles.memberTitle}>본인을 선택해주세요</Text>
+          <Text style={styles.memberTitle}>새로운 닉네임을 입력해주세요</Text>
           <View style={styles.memberContent}>
-            {members &&
-              members.map((member, index) => (
-                <View key={index}>
-                  <TouchableOpacity
-                    onPress={() => handleSelectMember(member.id)}>
-                    <View style={styles.memberViewContent}>
-                      <Icon name="person-circle" size={30} color="#5DAF6A" />
-                      <Text style={styles.memberText}> {member.name}</Text>
-                      <Text style={styles.statusLabel}>
-                        {member.username ? '활성' : '비활성'}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              ))}
-          </View>
-        </View>
-        <View>
-          <View style={styles.newMemberView}>
-            <Text style={styles.contentTitle}>해당하는 멤버가 없다면?</Text>
-            <TouchableOpacity
-              style={styles.newMemberButton}
-              onPress={() => handleNewMember()}>
-              <Text style={styles.newMemberButtonText}>클릭</Text>
-            </TouchableOpacity>
+            <TextInput
+              style={styles.input}
+              placeholder="새닉네임"
+              value={nickname}
+              onChangeText={handleInputChange}
+            />
           </View>
         </View>
       </ScrollView>
-      <TouchableOpacity style={styles.enterButton}>
+      <TouchableOpacity style={styles.enterButton} onPress={handleEnter}>
         <Text style={styles.enterButtonText}>입장하기</Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -224,4 +207,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default InviteGroupDetail;
+export default InviteGroupDetailNew;
