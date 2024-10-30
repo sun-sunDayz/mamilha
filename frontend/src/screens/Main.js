@@ -7,6 +7,7 @@ import {
   StyleSheet,
   SafeAreaView,
   ScrollView,
+  RefreshControl,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import GroupListItem from '../components/GroupListItem';
@@ -21,6 +22,14 @@ const Main = ({navigation, route}) => {
   const [loading, setLoading] = useState(true);
   const [nickname, setNickname] = useState('방문자');
   const [groups, setGroups] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = useCallback(() => {
+      setRefreshing(true);
+      setTimeout(() => {
+          setRefreshing(false);
+      }, 2000);
+  }, []);
 
   useEffect(() => {
     if (currentUser) {
@@ -39,8 +48,21 @@ const Main = ({navigation, route}) => {
     }
   };
 
+  const getGroups = async () => {
+    try {
+      apiClient
+      .get(`/api/groups/`)
+      .then(response => {
+        console.log(response.data)
+        setGroups(response.data);
+      })
+    } catch (error) {
+      console.error('데이터를 불러오는데 실패했습니다', error);
+    }
+};
+
   useEffect(() => {
-    fetchData(); // 컴포넌트 마운트 시 데이터 fetch
+    getGroups();
   }, []);
 
   useEffect(() => {
@@ -53,15 +75,7 @@ const Main = ({navigation, route}) => {
 
   useFocusEffect(
     useCallback(() => {
-      apiClient
-      .get(`/api/groups/`)
-      .then(response => {
-        console.log(response.data)
-        setGroups(response.data);
-      })
-      .catch(error => {
-        console.error('데이터를 불러오는데 실패했습니다', error);
-      });
+      getGroups();
     }, []),
   );
 
@@ -84,7 +98,8 @@ const Main = ({navigation, route}) => {
       <View style={styles.meetingListContainer}>
         <Text style={styles.meetingListText}>모임 목록</Text>
       </View>
-      <ScrollView>
+      <ScrollView
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         {groups.map(group => (
           <GroupListItem
             key={group.id}
