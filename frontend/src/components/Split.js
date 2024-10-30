@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, FlatList, Image, ScrollView, RefreshControl } from 'react-native';
 import React, { useState, useEffect, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import apiClient from '../services/apiClient';
 
@@ -107,29 +108,36 @@ const Split = ({group_pk}) => {
         }, 2000);
     }, []);
 
+    const getSplits = async () => {
+        try {
+            const response = await apiClient.get(`/api/groups/${group_pk}/splits/`);
+            const splits = response.data;
+            console.log(splits)
+            setData(splits);
+            const transactions = {};
+            for(const split of splits) {
+                addTransaction(transactions, split.member, split.payer, split.amount, split.finance_type);
+            }
+            // 잔액 계산 및 출력
+            const balances = calculateBalances(transactions);
+            const finalTransactions = simplifyBalances(balances);
+            setFinalSettlements(finalTransactions);
+        } catch (error) {
+            console.error('Error fetching data: ', error);
+        }
+    };
+
     // 주고받은 금액 초기화
     
     useEffect(() => {
-        const getSplits = async () => {
-            try {
-                const response = await apiClient.get(`/api/groups/${group_pk}/splits/`);
-                const splits = response.data;
-                console.log(splits)
-                setData(splits);
-                const transactions = {};
-                for(const split of splits) {
-                    addTransaction(transactions, split.member, split.payer, split.amount, split.finance_type);
-                }
-                // 잔액 계산 및 출력
-                const balances = calculateBalances(transactions);
-                const finalTransactions = simplifyBalances(balances);
-                setFinalSettlements(finalTransactions);
-            } catch (error) {
-                console.error('Error fetching data: ', error);
-            }
-        };
         getSplits();
     }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            getSplits();
+        }, []),
+    );
 
     return (
         <View style={styles.container}>
