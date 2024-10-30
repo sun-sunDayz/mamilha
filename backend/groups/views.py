@@ -265,7 +265,7 @@ class GroupSplitAPIView(APIView):
             return Response({"message": "해당 그룹이 존재하지 않습니다."}, status=status.HTTP_404_NOT_FOUND)
 
         # 해당 그룹의 모든 Finance 객체를 가져옴
-        finances = Finance.objects.filter(group=group)
+        finances = Finance.objects.filter(group=group, deleted = 0)
 
         data = []
         for finance in finances:
