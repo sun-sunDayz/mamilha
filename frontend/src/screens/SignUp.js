@@ -1,4 +1,5 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import {
   View,
   TextInput,
@@ -44,6 +45,29 @@ const SignUpScreen = ({navigation}) => {
   });
 
   const [capslock, setCapslock] = useState(false);
+
+  const clearInput = () => {
+    setName('')
+    setNickname('');
+  
+    setIdError('');
+    setPasswordError('');
+    setConfirmPasswordError('');
+    setEmailError('');
+    setNameError('');
+    setNicknameError('');
+  
+    setIdUp('');
+    setPasswordUp('');
+    setPasswordConfirmUp('');
+    setEmailUp('');
+  }
+
+  useFocusEffect(
+    useCallback(() => {
+      clearInput();
+    }, []),
+  );
 
   useEffect(() => {
     if (debounceUsernameUp === idUp) {
