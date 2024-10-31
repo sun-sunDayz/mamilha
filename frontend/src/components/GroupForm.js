@@ -29,6 +29,7 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
         ...initialData, // 기존데이터 존제시 자동 추가
     });
     const [inviteCode, setInviteCode] = useState(initialData.invite_code);
+    const [inviteCodeErrorMessage, setInviteCodeErrorMessage] = useState('');
 
     const updateInviteCode = async () => {
         try {
@@ -87,11 +88,17 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
     const generateInviteCode = async () => {
         try {
             const response = await apiClient.post(`/api/groups/invite/generate/${group_pk}/`);
-            const newCode = response.data.invite_code
-            setInviteCode(newCode);
-            } catch (error) {
-            alert('초대코드 생성에 실패했습니다: ' + error.response.data.error);
+            const result = response.data
+            if(result.success === true) {
+                const newCode = result.invite_code
+                setInviteCode(newCode);
+                setInviteCodeErrorMessage('')
+            } else {
+                setInviteCodeErrorMessage(result.message)
             }
+        } catch (error) {
+            alert('초대코드 생성에 실패했습니다: ' + error.response.data.error);
+        }
     };
 
     const isMemberConnected = member => {
@@ -140,6 +147,7 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
                                     <Text style={styles.inviteCodeButtonText}>초대코드 생성</Text>
                                 </TouchableOpacity>
                                 )}
+                                {inviteCodeErrorMessage ? <Text style={styles.errorText}>{inviteCodeErrorMessage}</Text> : null}
                             </View>
                         </View>
                     }
@@ -512,6 +520,11 @@ const styles = StyleSheet.create({
     inviteCodeButtonText: {
         color: '#6C6C6C',
         fontSize: 16,
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 14,
+        marginTop: 8,
     },
 });
 
