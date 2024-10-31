@@ -43,9 +43,9 @@ const InviteGroupDetail = ({navigation, route}) => {
       try {
         const response = await apiClient.put(
           `/api/groups/${group_pk}/members/account/`,
-          {member_pk: member_id},
+          {member_pk: selectedMemberId},
         );
-        console.log('멤버 연동이 완료되었습니다', response);
+        console.log('멤버 연동이 완료되었습니다', response.data);
       } catch (error) {
         console.error('데이터를 불러오는데 실패했습니다', error);
       }
@@ -53,12 +53,19 @@ const InviteGroupDetail = ({navigation, route}) => {
     navigation.navigate('Finances', {
       group_pk: group_pk,
       title: groupName,
-    })
+    });
   };
 
   const canSelect = member => {
     return member.username === null;
   };
+
+  const isDisabledEnter = () => {
+    if(isMemberConnected) {
+      return false;
+    }
+    return selectedMemberId === null;
+  }
 
   const updateAccountConnected = async () => {
     try {
@@ -127,7 +134,7 @@ const InviteGroupDetail = ({navigation, route}) => {
                         />
                         <Text style={styles.memberText}>{member.name}</Text>
                         <Text style={styles.statusLabel}>
-                          {member.username ? '활성' : '비활성'}
+                          {member.username ? '연동 중' : ''}
                         </Text>
                       </View>
                     </TouchableOpacity>
@@ -155,7 +162,13 @@ const InviteGroupDetail = ({navigation, route}) => {
           )}
         </View>
       </ScrollView>
-      <TouchableOpacity style={styles.enterButton} onPress={handleEnterGroup}>
+      <TouchableOpacity
+        style={[
+          styles.enterButton,
+          isDisabledEnter() && styles.disabledEnterButton,
+        ]}
+        onPress={handleEnterGroup}
+        disabled={isDisabledEnter()}>
         <Text style={styles.enterButtonText}>입장하기</Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -226,6 +239,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#5DAF6A',
     borderRadius: 10,
     alignItems: 'center',
+  },
+  disabledEnterButton: {
+    backgroundColor: '#CCCCCC',
   },
   enterButtonText: {
     color: '#ffffff',
