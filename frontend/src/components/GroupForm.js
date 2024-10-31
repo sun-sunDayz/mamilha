@@ -94,6 +94,9 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
             }
     };
 
+    const isMemberConnected = member => {
+        return member.username !== null;
+    };
 
     return (
         <View >
@@ -144,36 +147,45 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
                         <Text style={styles.label}>멤버</Text>
                         {screenName === 'UpdateGroup' &&
                             <View>
-                                {formData.update_members.map((active, index) => (
-                                    <View key={active['id']} style={styles.MemberUserContainer}>
+                                {formData.update_members.map((member, index) => (
+                                    <View key={member['id']} style={styles.MemberUserContainer}>
                                         <TextInput
                                             style={styles.MemberUserName}
                                             placeholder="멤버 별명 입력"
                                             placeholderTextColor="#ADAFBD"
                                             keyboardType="default"
-                                            value={active['name']}
+                                            value={member['name']}
                                             onChangeText={text => {
                                                 const newInputs = formData.update_members.map(item =>
-                                                    item.id === active['id'] ? { ...item, name: text } : item);
+                                                    item.id === member['id'] ? { ...item, name: text } : item);
                                                 handleChange('update_members', newInputs);
                                             }}
                                         />
-                                        {active['id'] === 0 && (
+                                        {member['id'] === 0 && (
                                             <Text style={styles.MemberUserMe}>(나)</Text>
                                         )}
-                                        <TouchableOpacity
-                                            onPress={() => {
-                                                const newInputs = formData.update_members.map(item =>
-                                                    item.id === active.id ? { ...item, active: item.active ? 0 : 1 } : item
-                                                );
-                                                handleChange('update_members', newInputs);
-                                            }}
-                                            style={active.active ? styles.activeButton : styles.inActiveButton}
-                                        >
-                                            <Text style={active.active ? styles.activeText : styles.inActiveText}>
-                                                {active.active ? '활성' : '비활성'}
-                                            </Text>
-                                        </TouchableOpacity>
+                                        <View style={styles.memberRightContainer}>
+                                            {isMemberConnected(member) && 
+                                                <View style={[styles.accountLabel]}>
+                                                    <Text style={styles.activeAccountLabelText}>
+                                                        계정연결
+                                                    </Text>
+                                                </View>
+                                            }
+                                            <TouchableOpacity
+                                                onPress={() => {
+                                                    const newInputs = formData.update_members.map(item =>
+                                                        item.id === member.id ? { ...item, active: item.active ? 0 : 1 } : item
+                                                    );
+                                                    handleChange('update_members', newInputs);
+                                                }}
+                                                style={member.active ? styles.activeButton : styles.inActiveButton}
+                                            >
+                                                <Text style={member.active ? styles.activeText : styles.inActiveText}>
+                                                    {member.active ? '활성' : '비활성'}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </View>
 
                                     </View>
                                 ))}
@@ -363,11 +375,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '700',
     },
+    memberRightContainer: {
+        flexDirection: 'row',
+        marginLeft: 'auto',
+    },
     // 활성화버튼
     activeButton: {
-        position: 'absolute',
-        right: 12,
-        top: 8,
         height: 25,
         width: 60,
         borderRadius: 5,
@@ -382,9 +395,6 @@ const styles = StyleSheet.create({
         color: '#5DAF6A'
     },
     inActiveButton: {
-        position: 'absolute',
-        right: 12,
-        top: 8,
         height: 25,
         width: 60,
         borderRadius: 5,
@@ -397,6 +407,21 @@ const styles = StyleSheet.create({
     inActiveText: {
         fontSize: 14,
         color: '#6C6C6C'
+    },
+    accountLabel: {
+        marginRight: 10,
+        height: 25,
+        width: 60,
+        borderRadius: 5,
+        borderWidth: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderColor: '#79C7E8',
+        backgroundColor: 'rgba(121,199,232,0.2)',
+    },
+    activeAccountLabelText: {
+        fontSize: 14,
+        color: '#79C7E8'
     },
     //모달창
     UpdateModalOverlay: {

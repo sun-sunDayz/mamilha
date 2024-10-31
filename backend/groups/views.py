@@ -162,10 +162,12 @@ class GroupDetailAPIView(APIView):
         member = []
         num = 0
         for i in members:
+            username = i.user.username if i.user is not None else None
             member.append({
                 "id": num,
                 "name": i.name,
-                "active": i.active
+                "active": i.active,
+                "username": username,
             })
             num +=1
 

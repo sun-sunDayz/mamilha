@@ -56,7 +56,7 @@ const InviteGroupDetail = ({navigation, route}) => {
     });
   };
 
-  const canSelect = member => {
+  const canSelectMember = member => {
     return member.username === null;
   };
 
@@ -121,7 +121,7 @@ const InviteGroupDetail = ({navigation, route}) => {
                   <View key={index}>
                     <TouchableOpacity
                       onPress={() => handleSelectMember(member.id)}
-                      disabled={!canSelect(member)}>
+                      disabled={!canSelectMember(member)}>
                       <View style={styles.memberViewContent}>
                         <Ionicons
                           name={
@@ -130,7 +130,7 @@ const InviteGroupDetail = ({navigation, route}) => {
                               : 'checkmark-circle-outline'
                           }
                           size={30}
-                          color={canSelect(member) ? '#5DAF6A' : '#CCCCCC'} // 선택 가능 여부에 따라 색상 변경
+                          color={canSelectMember(member) ? '#5DAF6A' : '#CCCCCC'} // 선택 가능 여부에 따라 색상 변경
                         />
                         <Text style={styles.memberText}>{member.name}</Text>
                         <Text style={styles.statusLabel}>
