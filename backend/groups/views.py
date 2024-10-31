@@ -92,8 +92,10 @@ class GroupAPIView(APIView):
                     return Response({'error': "그룹에 별명이 같은 멤버가 존제 합니다"}, status=status.HTTP_400_BAD_REQUEST)
                 else:
                     member_validated.append(member)
-            else:
-                return Response({'error': "멤버는 한명 이상 있어야 합니다"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        #모임 생성자 이외에 멤버 한명 이상 필요
+        if len(member_validated) < 2:
+            return Response({'error': "멤버는 한명 이상 있어야 합니다"}, status=status.HTTP_400_BAD_REQUEST)
         
         group = Group.objects.create(
         name = validated_data['name'],
