@@ -1,7 +1,15 @@
 Django==4.2.12
-django-cors-headers==4.3.1
+django-cors-headers==4.6.0
 django-seed==0.3.1
 djangorestframework==3.15.1
 djangorestframework-simplejwt==5.3.1
 psycopg2-binary==2.9.9
 django-seed==0.3.1
+Faker==30.8.1
+psycopg2-binary==2.9.10
+PyJWT==2.9.0
+python-dateutil==2.9.0.post0
+six==1.16.0
+sqlparse==0.5.1
+toposort==1.10
+typing_extensions==4.12.2

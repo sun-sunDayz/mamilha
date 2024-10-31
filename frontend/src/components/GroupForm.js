@@ -13,7 +13,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import apiClient from '../services/apiClient';
 import { useNavigation } from '@react-navigation/native';
 
-const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
+const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
     const scrollViewRef = useRef(null);
     const navigation = useNavigation();
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -69,7 +69,8 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
                 // Create인 경우 POST 요청
                 await apiClient.post('/api/groups/', {
                     ...formData,
-                    members: [{ id: 0, name: nickName, active: 1 }, ...formData.members ]
+                    // nickName빈 값일 경울 로그인 유저 닉네임 추가
+                    members: [{ id: 0, name: nickName || userName, active: 1 }, ...formData.members ]
                 });
             } else if (screenName === 'UpdateGroup') {
                 // Update인 경우 PUT 요청
@@ -202,7 +203,7 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
                             <View style={styles.MemberUserContainer}>
                                 <TextInput
                                     style={styles.MemberUserName}
-                                    placeholder="내 별명 입력"
+                                    placeholder={userName}
                                     placeholderTextColor="#ADAFBD"
                                     keyboardType="default"
                                     value={nickName}
