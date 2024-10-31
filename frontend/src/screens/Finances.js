@@ -24,7 +24,7 @@ const Finances = ({navigation, route}) => {
   useEffect(() => {
     apiClient.get(`/api/groups/${group_pk}/`)
         .then(response => {
-            setInitialData(response.data)
+          setInitialData(response.data)
         })
         .catch(error => {
             console.error('데이터를 불러오는데 실패했습니다', error);
