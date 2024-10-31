@@ -136,8 +136,12 @@ class FinancesDetailAPIView(APIView):
         finance.edited_at = timezone.now()
         finance.save()
 
-        #기존의 split 값 삭제
-        Split.objects.filter(finance_id=finance_pk).delete()
+        #기존 split 값 삭제
+        splits = Split.objects.filter(finance=finance)
+        for split in splits:
+            split.deleted = True
+            split.deleted_at = timezone.now()  # deleted_at을 현재 시간으로 설정
+            split.save()
 
         #새로운 split 값 생성 
         select_members_id = [i['id'] for i in select_members]
@@ -158,9 +162,15 @@ class FinancesDetailAPIView(APIView):
         finance = Finance.objects.get(pk=finance_pk)
         if finance.group.pk != group_pk:
             return Response({"message": "해당 그룹에 속한 결제 내역이 아닙니다."}, status=status.HTTP_400_BAD_REQUEST)
+        splits = Split.objects.filter(finance=finance)
+        for split in splits:
+            split.deleted = True
+            split.deleted_at = timezone.now()  # deleted_at을 현재 시간으로 설정
+            split.save()
         finance.deleted = True
         finance.deleted_at = timezone.now()
         finance.save()
+
         return Response(status=status.HTTP_204_NO_CONTENT)
     
 class FinancesSplitAPIView(APIView):
@@ -169,7 +179,8 @@ class FinancesSplitAPIView(APIView):
     def get(self, request, finance_pk):
         user = request.user.username
         finance = Finance.objects.get(pk=finance_pk)
-        splits = finance.split_set.all()
+        # splits = finance.split_set.all()
+        splits = Split.objects.filter(finance = finance, deleted=0)
         data = []
         for split in splits:
             split_data = {
@@ -202,6 +213,8 @@ class FinancesSplitAPIView(APIView):
                 amount=amount
             )
             return Response(status=status.HTTP_201_CREATED)
+        
+
         
 class FinanceCategorysAPIView(APIView):
     permission_classes = [AllowAny]
