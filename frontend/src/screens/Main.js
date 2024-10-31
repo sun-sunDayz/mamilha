@@ -53,7 +53,6 @@ const Main = ({navigation, route}) => {
       apiClient
       .get(`/api/groups/`)
       .then(response => {
-        console.log(response.data);
         setGroups(response.data);
       })
     } catch (error) {
@@ -110,7 +109,8 @@ const Main = ({navigation, route}) => {
               })
             }
             title={group.name}
-            leader={group.leader}
+            leader={group.user}
+            currentUserID={currentUser.user_id}
             members={group.members}
             icon={group.category_icon}
             icon_color={group.category_icon_color}
