@@ -18,7 +18,7 @@ const ButtonGroup = () => {
         style={styles.buttonInviteGroup}
         onPress={() => navigation.navigate("InviteGroup")}>
         <Ionicons name="people" size={20} color="#5DAF6A" />
-        <Text style={styles.buttonInviteGroupText}>모임 초대하기</Text>
+        <Text style={styles.buttonInviteGroupText}>모임 초대받기</Text>
       </TouchableOpacity>
     </View>
   );
