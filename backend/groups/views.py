@@ -57,8 +57,8 @@ class GroupAPIView(APIView):
                 "category": i.group.category.name,
                 "category_icon": i.group.category.icon,
                 "category_icon_color": i.group.category.icon_color,
-                "currency": i.group.currency.currency,
-                "leader": members[0].name,
+                "currency": i.group.currency.currency, 
+                "user": {"userName": members[0].name, "userID":members[0].user_id},
                 "members": len(members),
                 "invite_code": invite_code,
             })

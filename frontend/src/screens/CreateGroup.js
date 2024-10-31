@@ -11,7 +11,8 @@ import {
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import GroupForm from '../components/GroupForm';
 
-const CreateGroup = ({ navigation }) => {
+const CreateGroup = ({ navigation, route }) => {
+  const userName = route.params.nickname;
 
   return (
       <SafeAreaView SafeAreaView style={styles.Container}>
@@ -25,7 +26,7 @@ const CreateGroup = ({ navigation }) => {
           <Ionicons name="settings-outline" size={30} color="transparent" />
         </View>
 
-        <GroupForm screenName={'CreateGroup'} />
+        <GroupForm screenName={'CreateGroup'} userName={userName}/>
 
       </SafeAreaView>
   );
