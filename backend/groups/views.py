@@ -428,6 +428,16 @@ class MemberDetailAPIView(APIView):
 class MemberAccountAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
+    def get(self, request, group_pk):
+        user = request.user
+
+        member = Member.objects.filter(group_id=group_pk, user=user, deleted=False).first()
+        exists = 1 if member is not None else 0
+
+        return Response({
+            "exists":exists
+        }, status=status.HTTP_200_OK)
+
     def post(self, request, group_pk):
         group = get_object_or_404(Group, pk=group_pk)
 
