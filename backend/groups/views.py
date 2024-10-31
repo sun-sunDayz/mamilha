@@ -561,23 +561,24 @@ class GroupGenerateInviteCodeAPIView(APIView):
         # 해당 그룹의 가장 최근 초대 코드 가져오기
         latest_invite_code = GroupInviteCode.objects.filter(group=group).order_by('-created_at').first()
         
-        # 24시간 비교 로직 추가
-        max_wait_hour = 24
-        delta = timedelta(hours=max_wait_hour)
+        if latest_invite_code:
+            # 24시간 비교 로직 추가
+            max_wait_hour = 24
+            delta = timedelta(hours=max_wait_hour)
 
-        #디버그용 - 1초
-        # delta = timedelta(seconds=1)
-        not_expired = timezone.now() - latest_invite_code.created_at < delta
-        if latest_invite_code and not_expired:
-            return Response(
-                {
-                    'message': "최근에 생성된 초대 코드가 이미 존재합니다. 24시간 이후에 다시 시도해주세요.",
-                    'group_pk': group.id,
-                    'invite_code': latest_invite_code.invite_code,
-                    'success': False
-                }, 
-                status=status.HTTP_200_OK
-            )
+            #디버그용 - 1초
+            # delta = timedelta(seconds=1)
+            not_expired = timezone.now() - latest_invite_code.created_at < delta
+            if not_expired:
+                return Response(
+                    {
+                        'message': "최근에 생성된 초대 코드가 이미 존재합니다. 24시간 이후에 다시 시도해주세요.",
+                        'group_pk': group.id,
+                        'invite_code': latest_invite_code.invite_code,
+                        'success': False
+                    }, 
+                    status=status.HTTP_200_OK
+                )
 
         invite_code = GroupInviteCode.objects.create(
             group=group,
