@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import Ionicon from 'react-native-vector-icons/Ionicons';
 
-const GroupListItem = ({ onPress, title, leader, members, icon, icon_color }) => {
+const GroupListItem = ({ onPress, title, leader, members, icon, icon_color, currentUserID }) => {
   useEffect(() => {
     console.log(icon)
   }, []);
@@ -17,7 +17,10 @@ const GroupListItem = ({ onPress, title, leader, members, icon, icon_color }) =>
             <Text style={styles.listTextSubTitle}>모임장</Text>
           </View>
           <View style={styles.flexLeader}>
-            <Text style={styles.listTextSub}>{leader}</Text>
+            <Text style={styles.listTextSub}>{leader["userName"]}</Text>
+            {currentUserID === leader.userID && (
+              <Text style={styles.listTextMe}>(나)</Text>
+            )}
           </View>
           <View style={styles.flexTitle}>
             <Text style={styles.listTextSubTitle}>멤버</Text>
@@ -65,6 +68,7 @@ const styles = StyleSheet.create({
   },
   flexLeader: {
     flex: 5,
+    flexDirection: 'row',
   },
   flexMember: {
     flex: 2,
@@ -79,6 +83,12 @@ const styles = StyleSheet.create({
     textAlign: 'left',
     fontSize: 14,
     color: '#616161',
+  },
+  listTextMe:{
+    color: '#5DAF6A',
+    fontSize: 14,
+    marginLeft: 2,
+    fontWeight: '700',
   },
   buttonImage: {
     width: 20,
