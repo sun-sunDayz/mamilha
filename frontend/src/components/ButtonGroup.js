@@ -3,14 +3,14 @@ import {View, TouchableOpacity, Text, StyleSheet} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const ButtonGroup = () => {
+const ButtonGroup = ({nickname}) => {
   const navigation = useNavigation();
 
   return (
     <View style={styles.buttonContainer}>
       <TouchableOpacity
         style={styles.buttonCreateGroup}
-        onPress={() => navigation.navigate("CreateGroup")}>
+        onPress={() => navigation.navigate("CreateGroup",{nickname: nickname})}>
         <Ionicons name="add-outline" size={20} color="#FFFFFF" />
         <Text style={styles.buttonCreateGroupText}>모임 만들기</Text>
       </TouchableOpacity>
