@@ -226,7 +226,7 @@ class GroupDetailAPIView(APIView):
 
         group.name = validated_data["name"]
         group.category = validated_data["category"]
-        group.currency.currency = Currency.objects.get(id=0)
+        group.currency.currency = Currency.objects.all().first()
         group.save()
 
         # 기존의 멤버 업데이트
