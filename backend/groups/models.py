@@ -79,6 +79,11 @@ class Member(models.Model):
 
     objects = MemberManager()
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['user', 'group'], name='unique_user_group', condition=models.Q(user__isnull=False))
+        ]
+
     def delete(self,*args, **kwargs):
         self.deleted = 1
         self.save()

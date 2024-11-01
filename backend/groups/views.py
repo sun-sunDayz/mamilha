@@ -16,7 +16,7 @@ def validate_group_data(name, category_id):
         return Response({'error': "그룹 이름이 없습니다"},
                         status=status.HTTP_400_BAD_REQUEST)
     #카테고리가 빈 값일 경우 Error처리
-    if category_id is '':
+    if category_id == '':
         return Response({'error': "그룹 카테고리를 선택해 주세요"},
                         status=status.HTTP_400_BAD_REQUEST)
     #없는 카테고리, 통화 선택시 error처리
@@ -43,25 +43,30 @@ class GroupAPIView(APIView):
     def get(self, request):
         user = request.user
         # deleted가 False인 그룹만 가져오기
-        groups_list = user.Member_user.filter(group__deleted=False)
+        groups_list = Group.objects.filter(Member_group__user=user, Member_group__deleted=False)  # 삭제되지 않은 그룹만 가져옴
+        # groups_list = user.Member_user.filter(group__deleted=False)
 
         groups = []
         for i in groups_list:
-            invite_code = get_group_invite_code(i.group_id)
-            members = Member.objects.filter(group_id=i.group_id)
+            invite_code = get_group_invite_code(i.id)
+            members = Member.objects.filter(group_id=i.id)
+
+            # members = i.Member_group
             # members[0]은 언제나 관리자
-            groups.append({
-                "id":  i.group_id,
-                "name": i.group.name,
-                "category_id": i.group.category.id,
-                "category": i.group.category.name,
-                "category_icon": i.group.category.icon,
-                "category_icon_color": i.group.category.icon_color,
-                "currency": i.group.currency.currency, 
+            group = {
+                "id":  i.id,
+                "name": i.name,
+                "category_id": i.category.id,
+                "category": i.category.name,
+                "category_icon": i.category.icon,
+                "category_icon_color": i.category.icon_color,
+                "currency": i.currency.currency, 
                 "user": {"userName": members[0].name, "userID":members[0].user_id},
                 "members": len(members),
                 "invite_code": invite_code,
-            })
+            }
+            print(group)
+            groups.append(group)
 
         return Response(groups,
                         status=status.HTTP_200_OK)
