@@ -233,7 +233,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
     
     const data = {
       ...formData,
-      type: selectedType,
+      finance_type: selectedType,
       method: selectedMethod,
       members: selectedMembers,
     };
@@ -267,14 +267,6 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
     } catch (error) {
       alert('저장 중 오류 발생: ' + error.message);
     }
-  };
-
-  const handleTypePress = tab => {
-    setSelectedType(tab);
-  };
-
-  const handleMethodPress = tab => {
-    setSelectedMethod(tab);
   };
 
   const comma = amount => {
