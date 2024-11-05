@@ -4,7 +4,6 @@ import Ionicon from 'react-native-vector-icons/Ionicons';
 
 const GroupListItem = ({ onPress, title, leader, members, icon, icon_color, currentUserID }) => {
   useEffect(() => {
-    console.log(icon)
   }, []);
 
   return (

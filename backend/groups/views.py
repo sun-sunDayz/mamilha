@@ -65,7 +65,6 @@ class GroupAPIView(APIView):
                 "members": len(members),
                 "invite_code": invite_code,
             }
-            print(group)
             groups.append(group)
 
         return Response(groups,
@@ -170,12 +169,21 @@ class GroupDetailAPIView(APIView):
         member = []
         num = 0
         for i in members:
-            username = i.user.username if i.user is not None else None
+            username = None
+            if i.user is not None:
+                username = i.user.username
+                
             member.append({
                 "id": num,
                 "name": i.name,
                 "active": i.active,
                 "username": username,
+                "grade": {
+                    "name": i.grades.name,
+                    "admin": i.grades.admin,
+                    "edit": i.grades.edit,
+                    "view": i.grades.view,
+                }
             })
             num +=1
 
@@ -238,6 +246,10 @@ class GroupDetailAPIView(APIView):
         for i in range(len(old_members)):
             old_members[i].name = update_members[i]['name']
             old_members[i].active = update_members[i]['active']
+            admin = update_members[i]['grade']['admin']
+            edit = update_members[i]['grade']['edit']
+            view = update_members[i]['grade']['view']
+            old_members[i].grades = Grades.objects.get(admin=admin, edit=edit, view=view)
             old_members[i].save()
 
         # 새로운 멤버는 추가, 없으면 추가 안함
