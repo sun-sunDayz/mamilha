@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useContext} from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {Dropdown} from 'react-native-element-dropdown';
 import DatePicker from 'react-native-date-picker';
@@ -15,9 +15,11 @@ import moment from 'moment';
 import {useNavigation} from '@react-navigation/native';
 import FinanceCategory from './FinanceCategory';
 import Payer from './Payer';
+import {UserContext} from '../userContext'
 
 const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance_pk}) => {
   const navigation = useNavigation(); // 네비게이션 객체 가져오기
+  const currentUser = useContext(UserContext);
   const [formData, setFormData] = useState({
     date: '',
     finance_type: '지출',
@@ -94,11 +96,13 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
           //   'http://localhost:8000/api/groups/${groupPk}/members/',
         );
         // API 응답 데이터를 state에 저장
+        
         const membersData = response.data.map(item => ({
           label: item.name, // 'labelField'에 해당하는 필드
           value: item.id, // 'valueField'에 해당하는 필드
-          checked: true,
+          checked: false,
           amount: 0,
+          user_id: item.user_id
         }));
 
         setMembers(membersData);
@@ -140,16 +144,18 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
     setMembers(updatedMembers);
   };
 
-  const toggleCheck = index => {
-    // checked 값 토글
-    setMembers(prevMember => {
-      const members = prevMember.map((member, i) =>
-        i === index ? {...member, checked: !member.checked} : member,
-      );
-
-      // 토글 후 바로 금액 재분배
-      return distributeAmount(members);
-    });
+  const toggleCheck = index => {{
+      // selectedType이 '정산'인 경우 단일 선택 
+      // '지출'인 경우 다중선택
+      setMembers(prevMember => {
+        const members = prevMember.map((member, i) =>
+        (selectedType !== '정산' ? i === index : i === index || member.checked ) ? 
+        {...member, checked: !member.checked} : member
+        );
+        // 토글 후 바로 금액 재분배
+        return distributeAmount(members);
+      });
+    }
   };
 
   // checked된 멤버들에게만 amount를 분배하는 함수
@@ -233,7 +239,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
     
     const data = {
       ...formData,
-      type: selectedType,
+      finance_type: selectedType,
       method: selectedMethod,
       members: selectedMembers,
     };
@@ -269,19 +275,11 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
     }
   };
 
-  const handleTypePress = tab => {
-    setSelectedType(tab);
-  };
-
-  const handleMethodPress = tab => {
-    setSelectedMethod(tab);
-  };
-
   const comma = amount => {
     const noCamma = String(amount).replace(/,/g, '');
     return noCamma.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
-
+  
   return (
     <View style={styles.formContainer}>
       <View style={styles.content}>
@@ -450,14 +448,19 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
             <Text style={styles.label}>참여 멤버</Text>
             <View style={styles.table}>
               {members.map((member, index) => (
-                <View key={member.value} style={styles.tableRow}>
+                (selectedType !== '정산' || currentUser.user_id !== member.user_id) && (
+                <View key={member.value} style={[
+                  styles.tableRow,
+                  // 마지막 멤버인 경우 밑줄 삭제
+                  (index === members.length - 1) && { borderBottomWidth: 0 }
+                ]}>
                   <TouchableOpacity onPress={() => toggleCheck(index)}>
                     <Icon
                       name={
                         member.checked ? 'checkmark-circle' : 'ellipse-outline'
                       }
                       size={24}
-                      color={member.checked ? '#5DAF6A' : '#ADAFBD'}
+                      color={member.checked ?  '#5DAF6A' : '#ADAFBD'}
                     />
                   </TouchableOpacity>
                   <View style={styles.tableCell}>
@@ -469,6 +472,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
                     </Text>
                   </View>
                 </View>
+              )
               ))}
             </View>
           </View>
