@@ -304,6 +304,7 @@ class MemberAPIView(APIView):
                 "name": i.name,
                 "grades": i.grades.name,
                 "active": i.active,
+                "user_id" : i.user_id
             })
 
         return Response(members,
