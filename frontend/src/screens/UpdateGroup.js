@@ -7,15 +7,25 @@ import {
   SafeAreaView, 
   Modal,
 } from 'react-native';
-
+import apiClient from '../services/apiClient';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import GroupForm from '../components/GroupForm';
 
   const UpdateGroup = ({ route, navigation }) => {
     const group_pk = route.params.group_pk;
-    const initialData = route.params.initialData;
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [modalWidth, setModalWidth] = useState(0);
+    const [initialData, setInitialData] = useState(null)
+
+    useEffect(() => {
+      apiClient.get(`/api/groups/${group_pk}/`)
+      .then(response => {
+        setInitialData(response.data)
+      })
+      .catch(error => {
+          console.error('데이터를 불러오는데 실패했습니다', error);
+      });
+    }, []);
 
     const handleDeleteGroup = async () => {
       try {
@@ -28,6 +38,10 @@ import GroupForm from '../components/GroupForm';
       }
       setIsDeleteModalOpen(false);
     };
+
+    if(!initialData) {
+      return <View></View>
+    }
 
 
     return (

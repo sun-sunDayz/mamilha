@@ -13,6 +13,12 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import apiClient from '../services/apiClient';
 import { useNavigation } from '@react-navigation/native';
 
+const GRADE = {
+    ADMIN: 'admin',
+    EDIT: 'edit',
+    VIEW: 'view',
+};
+
 const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
     const scrollViewRef = useRef(null);
     const navigation = useNavigation();
@@ -23,13 +29,88 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
     const [formData, setFormData] = useState({
         name: '',
         category: '',
-        members: [{ id: 1, name: '', active: 1 }],
-        new_members: [{ id: 1, name: '', active: 1 }],
+        members: [{ id: 1, name: '', active: 1, grade: {name:'', admin: true, edit: false, view: false }}],
+        new_members: [{ id: 1, name: '', active: 1, grade: {name:'', admin: true, edit: false, view: false } }],
         update_members: actives,
         ...initialData, // 기존데이터 존제시 자동 추가
     });
     const [inviteCode, setInviteCode] = useState(initialData.invite_code);
     const [inviteCodeErrorMessage, setInviteCodeErrorMessage] = useState('');
+
+    useEffect(() => {
+        // console.log('init111', initialData);
+        console.log('init111', initialData.members);
+    }, []);
+
+    const updateMemberGradeFormData = (memberId, newGrade) => {
+        setFormData((prevFormData) => {
+            const updatedMembers = prevFormData.update_members.map((member) =>
+            member.id === memberId
+                ? { ...member, grade: getMemberGrade(member, newGrade) }
+                : member
+            );
+
+            return { ...prevFormData, update_members: updatedMembers };
+        });
+    };
+
+    const toggleGrade = (member) => {
+        //관리자는 skip
+        if(member.grade.admin) {
+            return
+        }
+
+        if(member.grade.edit) {
+            updateMemberGradeFormData(member.id, GRADE.VIEW);
+        }
+        else if(member.grade.view) {
+            updateMemberGradeFormData(member.id, GRADE.EDIT);
+        }
+    };
+
+    const getMemberGrade = (member, grade) => {
+        let memberGrade = {
+            name: member.grade.name,
+            admin: false,
+            edit: false,
+            view: false,
+        }
+
+        if(grade === GRADE.ADMIN) {
+            memberGrade.admin = true;
+            memberGrade.edit = true;
+            memberGrade.view = true;
+        } else if(grade === GRADE.EDIT) {
+            memberGrade.admin = false;
+            memberGrade.edit = true;
+            memberGrade.view = true;
+        } else if(grade === GRADE.VIEW) {
+            memberGrade.admin = false;
+            memberGrade.edit = false;
+            memberGrade.view = true;
+        }
+        return memberGrade;
+    }
+
+    const getMemberGradeStyle = (member) => {
+        if(member.grade.admin) {
+            return GRADE.ADMIN;
+        }
+        if(member.grade.edit) {
+            return GRADE.EDIT;
+        }
+        return GRADE.VIEW;
+    }
+
+    const getMemberGradeText = (member) => {
+        if(member.grade.admin) {
+            return "관리자";
+        }
+        if(member.grade.edit) {
+            return "편집자";
+        }
+        return "뷰어";
+    }
 
     const updateInviteCode = async () => {
         try {
@@ -106,6 +187,10 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
         return member.username !== null;
     };
 
+    const getButtonColor = () => {
+        return "FFDDAA";
+    }
+
     return (
         <View >
             <View style={styles.content}>
@@ -175,11 +260,13 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
                                         )}
                                         <View style={styles.memberRightContainer}>
                                             {isMemberConnected(member) && 
-                                                <View style={[styles.accountLabel]}>
-                                                    <Text style={styles.activeAccountLabelText}>
-                                                        계정연결
+                                                <TouchableOpacity 
+                                                    onPress={()=> toggleGrade(member)}
+                                                    style={[styles.accountLabel, styles[`${getMemberGradeStyle(member)}AccountBackground`]]}>
+                                                    <Text style={[styles.accountLabelText, styles[`${getMemberGradeStyle(member)}AccountText`]]}>
+                                                        {getMemberGradeText(member)}
                                                     </Text>
-                                                </View>
+                                                </TouchableOpacity>
                                             }
                                             <TouchableOpacity
                                                 onPress={() => {
@@ -428,9 +515,31 @@ const styles = StyleSheet.create({
         borderColor: '#79C7E8',
         backgroundColor: 'rgba(121,199,232,0.2)',
     },
-    activeAccountLabelText: {
+    accountLabelText: {
         fontSize: 14,
-        color: '#79C7E8'
+    },
+    adminAccountBackground: {
+        backgroundColor: 'rgba(232, 121, 121, 0.2)',
+        borderColor: 'rgba(232, 121, 121, 1.0)',
+    },
+    adminAccountText: {
+        color: 'rgba(232, 121, 121, 1.0)',
+    },
+
+    editAccountBackground: {
+        backgroundColor: 'rgba(232, 174, 121, 0.2)',
+        borderColor: 'rgba(232, 174, 121, 1.0)',
+    },
+    editAccountText: {
+        color: 'rgba(232, 174, 121, 1.0)',
+    },
+
+    viewAccountBackground: {
+        backgroundColor: 'rgba(121,199,232,0.2)',
+        borderColor: 'rgba(121,199,232,1.0)',
+    },
+    viewAccountText: {
+        color: 'rgba(121,199,232,1.0)',
     },
     //모달창
     UpdateModalOverlay: {
@@ -526,6 +635,11 @@ const styles = StyleSheet.create({
         color: 'red',
         fontSize: 14,
         marginTop: 8,
+    },
+    gradeText: {
+        backgroundColor: '#EEEEEE',
+        color: 'red',
+        fontSize: 10,
     },
 });
 
