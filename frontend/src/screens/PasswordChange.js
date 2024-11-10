@@ -72,15 +72,16 @@ const PasswordChangeScreen = ({navigation}) => {
         {newPasswordError ? (
           <Text style={styles.errorText}>{newPasswordError}</Text>
         ) : null}
-
-        <Text style={styles.label}>새 비밀번호 확인</Text>
-        <TextInput
-          placeholder="새 비밀번호를 다시 입력하세요"
-          value={confirmNewPassword}
-          onChangeText={setConfirmNewPassword}
-          secureTextEntry
-          style={styles.input}
-        />
+        <View style={styles.formRow}>
+          <Text style={styles.label}>새 비밀번호 확인</Text>
+          <TextInput
+            placeholder="새 비밀번호를 다시 입력하세요"
+            value={confirmNewPassword}
+            onChangeText={setConfirmNewPassword}
+            secureTextEntry
+            style={styles.input}
+          />
+        </View>
         {confirmNewPasswordError ? (
           <Text style={styles.errorText}>{confirmNewPasswordError}</Text>
         ) : null}
