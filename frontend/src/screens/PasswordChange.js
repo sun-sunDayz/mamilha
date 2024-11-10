@@ -59,14 +59,16 @@ const PasswordChangeScreen = ({navigation}) => {
         <View style={styles.emptyIcon}></View>
       </View>
       <View style={styles.content}>
-        <Text style={styles.label}>새 비밀번호</Text>
-        <TextInput
-          placeholder="새 비밀번호를 입력하세요"
-          value={newPassword}
-          onChangeText={setNewPassword}
-          secureTextEntry
-          style={styles.input}
-        />
+        <View style={styles.formRow}>
+          <Text style={styles.label}>새 비밀번호</Text>
+          <TextInput
+            placeholder="새 비밀번호를 입력하세요"
+            value={newPassword}
+            onChangeText={setNewPassword}
+            secureTextEntry
+            style={styles.input}
+          />
+        </View>
         {newPasswordError ? (
           <Text style={styles.errorText}>{newPasswordError}</Text>
         ) : null}
@@ -83,12 +85,13 @@ const PasswordChangeScreen = ({navigation}) => {
           <Text style={styles.errorText}>{confirmNewPasswordError}</Text>
         ) : null}
       </View>
-
-      <TouchableOpacity
-        style={styles.saveButton}
-        onPress={handleChangePassword}>
-        <Text style={styles.buttonText}>변경하기</Text>
-      </TouchableOpacity>
+      <View style={styles.bottomContainer}>
+        <TouchableOpacity
+          style={styles.saveButton}
+          onPress={handleChangePassword}>
+          <Text style={styles.buttonText}>변경하기</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 };
@@ -96,8 +99,6 @@ const PasswordChangeScreen = ({navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    justifyContent: 'space-between', // 컨텐츠와 버튼 사이에 공간 분배
     backgroundColor: '#F1F1F9',
   },
   header: {
@@ -117,23 +118,27 @@ const styles = StyleSheet.create({
     width: 30,
   },
   content: {
-    flex: 1,
-    padding: 20,
-    paddingBottom: 100, // 버튼 위치 고려하여 패딩 추가
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  formRow: {
+    flexDirection: 'column',
+    marginBottom: 16,
   },
   label: {
-    marginBottom: 8,
-    fontSize: 12,
+    color: '#000000',
+    fontSize: 14,
     fontWeight: 'bold',
+    margin: 8,
   },
   input: {
     height: 40,
-    borderColor: 'transparent', // 테두리 투명하게 설정
-    borderWidth: 1,
-    borderRadius: 8, // 모서리를 둥글게 설정
-    marginBottom: 16,
-    paddingLeft: 8,
-    backgroundColor: '#f9f9f9', // 배경색을 살짝 넣어줘서 입력창이 구분되도록 설정
+    borderRadius: 8,
+    padding: 10,
+    backgroundColor: '#FFFFFF',
+    width: '95%',
+    marginLeft: 8,
     color: '#434343',
   },
   saveButton: {
@@ -146,6 +151,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#5DAF6A',
     borderRadius: 8,
     margin: 20, // 좌우 여백
+  },
+  bottomContainer: {
+    position: 'absolute',
+    alignSelf: 'center',
+    bottom: 0,
+    width: '95%',
   },
   buttonText: {
     color: '#ffffff',
