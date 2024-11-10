@@ -77,7 +77,8 @@ const FinanceCategory = ({onChangeCategory, selectedCategory}) => {
                 data={Data}
                 keyExtractor={item => item.id.toString()}
                 renderItem={({item}) => (
-                  <TouchableOpacity
+                  // finance_type_id가 1인 경우에만 보여준다.
+                  item.finance_type_id == 1 && (<TouchableOpacity
                     style={
                       item.id === selectedItem
                         ? styles.selectedDropdownItem
@@ -94,7 +95,7 @@ const FinanceCategory = ({onChangeCategory, selectedCategory}) => {
                       ]}>
                       {item.name}
                     </Text>
-                  </TouchableOpacity>
+                  </TouchableOpacity>)
                 )}
               />
             </View>
