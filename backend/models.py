@@ -84,7 +84,7 @@ class DjangoSession(models.Model):
 class FinancesFinance(models.Model):
     amount = models.DecimalField(max_digits=10, decimal_places=5)  # max_digits and decimal_places have been guessed, as this database handles decimal fields as float
     date = models.DateField()
-    description = models.TextField(blank=True, null=True)
+    title = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField()
     edited_at = models.DateTimeField()
     deleted_at = models.DateTimeField(blank=True, null=True)

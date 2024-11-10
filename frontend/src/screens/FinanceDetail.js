@@ -13,7 +13,7 @@ const FinanceDetail = ({ route }) => {
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [modalWidth, setModalWidth] = useState(0);
     const [amount, setAmount] = useState();
-    const [description, setDescription] = useState();
+    const [title, settitle] = useState();
     const [payer, setPayar] = useState();
     const [financeType, setFinancesType] = useState();
     const [financeCategory, setFinancesCategory] = useState();
@@ -33,7 +33,7 @@ const FinanceDetail = ({ route }) => {
                 const data = response.data
                 console.log(response.data)
                 setAmount(data.amount) 
-                setDescription(data.description)
+                settitle(data.title)
                 setPayar(data.payer["name"])
                 setFinancesType(data.finance_type)
                 setFinancesCategory(data.finance_category["name"])
@@ -134,8 +134,8 @@ const FinanceDetail = ({ route }) => {
                     </View>
                 </View>
                 <View style={styles.ContentBottom}>
-                    <Text style={styles.ContentTitle}>설명</Text>
-                    <Text style={styles.ContentBottomText}>{description}</Text>
+                    <Text style={styles.ContentTitle}>제목</Text>
+                    <Text style={styles.ContentBottomText}>{title}</Text>
                 </View>
                 <View style={[styles.ContentBottom, { paddingTop: 10 }]}>
                     <Text style={styles.ContentTitle}>멤버</Text>
