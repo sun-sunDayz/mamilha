@@ -279,72 +279,86 @@ const SignUpScreen = ({navigation}) => {
         </View>
         <View style={styles.emptyIcon}></View>
       </View>
+      <View style={styles.content}>
+        <ScrollView style={styles.scrollContainer}>
+          <View style={styles.formRow}> 
+            <Text style={styles.label}>아이디</Text>
+            <TextInput
+              placeholder="아이디 입력"
+              onChangeText={text => setIdUp(text)}
+              autoCapitalize="none"
+              style={styles.input}
+            />
+            {idError ? <Text style={styles.errorText}>{idError}</Text> : null}
+          </View>
+          <View style={styles.formRow}>
+            <Text style={styles.label}>비밀번호</Text>
+            <TextInput
+              placeholder="비밀번호 입력"
+              onChangeText={text => setPasswordUp(text)}
+              secureTextEntry
+              style={styles.input}
+            />
+            {passwordError ? (
+              <Text style={styles.errorText}>{passwordError}</Text>
+            ) : null}
+          </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Text style={styles.label}>아이디</Text>
-        <TextInput
-          placeholder="아이디 입력"
-          onChangeText={text => setIdUp(text)}
-          autoCapitalize="none"
-          style={styles.input}
-        />
-        {idError ? <Text style={styles.errorText}>{idError}</Text> : null}
+          <View style={styles.formRow}>
+            <Text style={styles.label}>비밀번호 확인</Text>
+            <TextInput
+              placeholder="비밀번호 확인"
+              onChangeText={text => setPasswordConfirmUp(text)}
+              secureTextEntry
+              style={styles.input}
+            />
+            {confirmPasswordError ? (
+              <Text style={styles.errorText}>{confirmPasswordError}</Text>
+            ) : null}
+          </View>
 
-        <Text style={styles.label}>비밀번호</Text>
-        <TextInput
-          placeholder="비밀번호 입력"
-          onChangeText={text => setPasswordUp(text)}
-          secureTextEntry
-          style={styles.input}
-        />
-        {passwordError ? (
-          <Text style={styles.errorText}>{passwordError}</Text>
-        ) : null}
+          <View style={styles.formRow}>
+            <Text style={styles.label}>이메일</Text>
+            <TextInput
+              placeholder="이메일 입력"
+              onChangeText={text => setEmailUp(text)}
+              autoCapitalize="none"
+              style={styles.input}
+            />
+            {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+          </View>
 
-        <Text style={styles.label}>비밀번호 확인</Text>
-        <TextInput
-          placeholder="비밀번호 확인"
-          onChangeText={text => setPasswordConfirmUp(text)}
-          secureTextEntry
-          style={styles.input}
-        />
-        {confirmPasswordError ? (
-          <Text style={styles.errorText}>{confirmPasswordError}</Text>
-        ) : null}
+          <View style={styles.formRow}>
+            <Text style={styles.label}>이름</Text>
+            <TextInput
+              placeholder="이름 입력"
+              value={name}
+              onChangeText={text => setName(text.toLowerCase())}
+              style={styles.input}
+            />
+            {nameError ? <Text style={styles.errorText}>{nameError}</Text> : null}
+          </View>
 
-        <Text style={styles.label}>이메일</Text>
-        <TextInput
-          placeholder="이메일 입력"
-          onChangeText={text => setEmailUp(text)}
-          autoCapitalize="none"
-          style={styles.input}
-        />
-        {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
-
-        <Text style={styles.label}>이름</Text>
-        <TextInput
-          placeholder="이름 입력"
-          value={name}
-          onChangeText={text => setName(text.toLowerCase())}
-          style={styles.input}
-        />
-        {nameError ? <Text style={styles.errorText}>{nameError}</Text> : null}
-
-        <Text style={styles.label}>닉네임</Text>
-        <TextInput
-          placeholder="닉네임 입력"
-          value={nickname}
-          onChangeText={text => setNickname(text.toLowerCase())}
-          style={styles.input}
-        />
-        {nicknameError ? (
-          <Text style={styles.errorText}>{nicknameError}</Text>
-        ) : null}
-      </ScrollView>
-
-      <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-        <Text style={styles.buttonText}>가입하기</Text>
-      </TouchableOpacity>
+          <View style={styles.formRow}>
+            <Text style={styles.label}>닉네임</Text>
+            <TextInput
+              placeholder="닉네임 입력"
+              value={nickname}
+              onChangeText={text => setNickname(text.toLowerCase())}
+              style={styles.input}
+            />
+            {nicknameError ? (
+              <Text style={styles.errorText}>{nicknameError}</Text>
+            ) : null}
+          </View>
+        </ScrollView>
+        
+        <View style={styles.bottomContainer}>
+          <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+            <Text style={styles.buttonText}>가입하기</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </SafeAreaView>
   );
 };
@@ -353,6 +367,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F1F1F9',
+  },
+  content: {
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    marginBottom: 20,
   },
   header: {
     flexDirection: 'row',
@@ -371,34 +390,39 @@ const styles = StyleSheet.create({
     width: 30,
   },
   scrollContainer: {
-    padding: 20,
-    paddingBottom: 100, // 버튼 위치 고려하여 패딩 추가
+    paddingBottom: 200,
+  },
+  formRow: {
+    flexDirection: 'column',
+    marginBottom: 16,
   },
   label: {
-    marginBottom: 5,
-    fontSize: 12,
+    color: '#000000',
+    fontSize: 14,
     fontWeight: 'bold',
+    margin: 8,
   },
   input: {
     height: 40,
-    borderColor: 'transparent', // 테두리 투명하게 설정
-    borderWidth: 1,
-    borderRadius: 8, // 모서리를 둥글게 설정
-    marginBottom: 12,
-    paddingLeft: 8,
-    backgroundColor: '#f9f9f9', // 배경색을 살짝 넣어줘서 입력창이 구분되도록 설정
+    borderRadius: 8,
+    padding: 10,
+    backgroundColor: '#FFFFFF',
+    width: '95%',
+    marginLeft: 8,
     color: '#434343',
   },
-  button: {
+  bottomContainer: {
     position: 'absolute',
+    alignSelf: 'center',
     bottom: 0,
-    left: 0,
-    right: 0,
+    width: '95%',
+  },
+  button: {
+    width: '100%',
     padding: 15,
     alignItems: 'center',
     backgroundColor: '#5DAF6A',
-    borderRadius: 8,
-    margin: 20, // 좌우 여백
+    borderRadius: 10,
   },
   buttonText: {
     color: '#fff',
