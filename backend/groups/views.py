@@ -281,8 +281,8 @@ class GroupSplitAPIView(APIView):
                     "finance_id": split.finance.id,
                     "finance_type": split.finance.finance_type.name,
                     "finance_description": split.finance.description,  # 추가 정보 포함
-                    "payer": split.finance.payer.name,
-                    "member": split.member.name,
+                    "payer": {"name":split.finance.payer.name, "id":split.finance.payer.id},
+                    "member": [{"name": split.member.name, "id": split.member.id}],
                     "amount": split.amount,
                 })
 

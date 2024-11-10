@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import React, {useEffect, useState, useContext} from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {Dropdown} from 'react-native-element-dropdown';
 import DatePicker from 'react-native-date-picker';
 import apiClient from '../services/apiClient';
 import moment from 'moment';
@@ -20,6 +19,11 @@ import {UserContext} from '../userContext'
 const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance_pk}) => {
   const navigation = useNavigation(); // 네비게이션 객체 가져오기
   const currentUser = useContext(UserContext);
+  const processedInitialData = {
+    ...initialData,
+    finance_category: initialData.finance_category ? initialData.finance_category.id : null,
+    payer: initialData.payer ? initialData.payer.id : null,
+  }; // initiaData 값이 존제 하는 경유 변경해서 가져오기
   const [formData, setFormData] = useState({
     date: '',
     finance_type: '지출',
@@ -30,7 +34,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
     description: '',
     member: null,
     split_method: '고정분할',
-    ...initialData, // 초기값 설정 (update 에서 사용)
+    ...processedInitialData, // 초기값 설정 (update 에서 사용)
   });
 
   // 일시 (Date)
@@ -73,11 +77,12 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
         const membersData = response.data.map(item => ({
           label: item.name, // 'labelField'에 해당하는 필드
           value: item.id, // 'valueField'에 해당하는 필드
-          checked: false,
+          // initialData.member 값이 있으면 member_id값을 확인 해당 값이 있으면 체크
+          checked: initialData.member ? (initialData.member.some(member => member.id === item.id)) : false,
           amount: 0,
           user_id: item.user_id
         }));
-
+        
         setMembers(membersData);
 
         if (membersData.length > 0) {
