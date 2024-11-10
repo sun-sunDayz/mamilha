@@ -8,9 +8,15 @@ class FinanceType(models.Model):
         return self.name
     
 class FinanceCategory(models.Model):
+    #finance_type에 1,3만 들어가도록 설정
+    finance_type_choices =[
+        (1, '지출'),
+        (3, '이체')
+    ]
     name = models.CharField(max_length=100)
     icon = models.CharField(max_length=100)
     icon_color = models.CharField(max_length=100)
+    finance_type_id = models.IntegerField(default=1, choices=finance_type_choices)
     def __str__(self):
         return self.name
 
