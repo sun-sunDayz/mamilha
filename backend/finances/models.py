@@ -61,4 +61,4 @@ class Split(models.Model):
     deleted = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.name
+        return f'{self.finance} - {self.member}'
