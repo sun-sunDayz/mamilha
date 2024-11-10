@@ -17,7 +17,7 @@ class FinancesAPIView(APIView):
             data.append({
                 "id": finance.id,
                 "amount": finance.amount,
-                "description": finance.description,
+                "title": finance.title,
                 "payer": finance.payer.name,
                 "finance_type": finance.finance_type.name,
                 "finance_category": finance.finance_category.id,
@@ -33,9 +33,15 @@ class FinancesAPIView(APIView):
         data = request.data
         group = Group.objects.get(pk=group_pk)
         amount = data.get('amount', None)
-        amount = int(str(amount).replace(",", ""))
-        description = data.get('description', None)
         select_members = data.get('members', [])
+        title = data.get('title', None)
+
+        if amount == '' :
+            return Response({"message": "금액을 입력해주세요."}, status=status.HTTP_400_BAD_REQUEST)
+        elif title == '' :
+            return Response({"message": "제목을 입력해주세요."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        amount = int(str(amount).replace(",", ""))
 
         # 하단의 정보들은 테이블에서 레코드 탐색을 해야함
         payer = data.get('payer', None)
@@ -59,7 +65,7 @@ class FinancesAPIView(APIView):
         finance = Finance.objects.create(
             group=group,
             amount=amount,
-            description=description,
+            title=title,
             payer=payer,
             finance_type=finance_type,
             finance_category=finance_category,
@@ -91,7 +97,7 @@ class FinancesDetailAPIView(APIView):
         data = {
             "id": finance.id,
             "amount": finance.amount,
-            "description": finance.description,
+            "title": finance.title,
             "payer": {"id": finance.payer.id, "name": finance.payer.name},
             "finance_type": finance.finance_type.name,
             "finance_category": {"id": finance.finance_category.id, "name": finance.finance_category.name},
@@ -107,7 +113,7 @@ class FinancesDetailAPIView(APIView):
             return Response({"message": "해당 그룹에 속한 결제 내역이 아닙니다."}, status=status.HTTP_400_BAD_REQUEST)
         data = request.data
         amount = data.get('amount', finance.amount)
-        description = data.get('description', finance.description)
+        title = data.get('title', finance.title)
         select_members = data.get('members', [])
         
         # 하단의 정보들은 테이블에서 레코드 탐색을 해야함
@@ -127,7 +133,7 @@ class FinancesDetailAPIView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
         
         finance.amount = amount
-        finance.description = description
+        finance.title = title
         finance.payer = payer
         finance.finance_type = finance_type
         finance.finance_category = finance_category

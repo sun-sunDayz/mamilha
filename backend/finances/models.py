@@ -32,7 +32,7 @@ class Finance(models.Model):
     finance_category = models.ForeignKey(FinanceCategory, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateField(default=timezone.now)
-    description = models.TextField(null=True, blank=True)
+    title = models.TextField()
 
     pay_method = models.ForeignKey(PayMethod, on_delete=models.CASCADE)
     split_method = models.ForeignKey(SplitMethod, on_delete=models.CASCADE)
@@ -43,7 +43,7 @@ class Finance(models.Model):
     deleted = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.description
+        return self.title
     
 class Split(models.Model):
     finance = models.ForeignKey(Finance, on_delete=models.CASCADE)
