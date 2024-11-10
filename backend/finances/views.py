@@ -86,8 +86,19 @@ class FinancesDetailAPIView(APIView):
 
     def get(self, request, group_pk, finance_pk):
         finance = Finance.objects.get(pk=finance_pk)
+        split = Split.objects.filter(finance_id=finance.id)
+        
         if finance.group.pk != group_pk:
             return Response({"message": "해당 그룹에 속한 결제 내역이 아닙니다."}, status=status.HTTP_400_BAD_REQUEST)
+        # 해단 finance에 속한 멤버 가져오기
+        members =[]
+        for member in split:
+            members.append({
+                "id" : member.member.id,
+                "name" : member.member.name,
+                "user_id" : member.member.user_id,
+            })
+
         data = {
             "id": finance.id,
             "amount": finance.amount,
@@ -97,7 +108,8 @@ class FinancesDetailAPIView(APIView):
             "finance_category": {"id": finance.finance_category.id, "name": finance.finance_category.name},
             "pay_method": finance.pay_method.name,
             "split_method": finance.split_method.name,
-            "date" : finance.date
+            "date" : finance.date,
+            "member" : members
         }
         return Response(data)
     
@@ -228,5 +240,6 @@ class FinanceCategorysAPIView(APIView):
                 "name" : category.name,
                 "icon" : category.icon,
                 "icon_color" : category.icon_color,
+                "finance_type_id" : category.finance_type_id,
             })
         return Response(categorys, status=status.HTTP_200_OK)
