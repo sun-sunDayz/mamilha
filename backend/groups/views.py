@@ -111,10 +111,14 @@ class GroupAPIView(APIView):
         for member in member_validated:
             if member['id'] == 0:
                 user=user
-                grades = Grades.objects.get(admin=1)
+                grades = Grades.objects.get_admin()
+                # grades = Grades.objects.get(admin=1)
             else:
                 user=None
-                grades=Grades.objects.get(admin=0, edit=0, view=1)
+                grades = Grades.objects.get_member()
+                # grades=Grades.objects.get(admin=0, edit=0, view=1)
+            
+            print('=======grade========', user, grades)
                 
             Member.objects.create(
             name=member['name'],
