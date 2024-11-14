@@ -247,19 +247,19 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
                 </ScrollView>
             </View>
             {screenName == 'CreateGroup' ?
-                <TouchableOpacity onPress={handleSubmit} style={styles.CreateGroupButton} >
-                    <Text style={styles.CreateGroupButtonText}>생성하기</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity onPress={handleSubmit} style={styles.CreateGroupButton} >
+                        <Text style={styles.CreateGroupButtonText}>생성하기</Text>
+                    </TouchableOpacity>
                 :
-                <TouchableOpacity onPress={() => setIsUpdateModalOpen(true)}
-                    style={styles.CreateGroupButton}
-                    onLayout={(event) => {
-                        const { width } = event.nativeEvent.layout;
-                        setModalWidth(width);
-                    }}>
-                    <Text style={styles.CreateGroupButtonText}>수정하기</Text>
-                </TouchableOpacity>}
-
+                    <TouchableOpacity onPress={() => setIsUpdateModalOpen(true)}
+                        style={styles.CreateGroupButton}
+                        onLayout={(event) => {
+                            const { width } = event.nativeEvent.layout;
+                            setModalWidth(width);
+                        }}>
+                        <Text style={styles.CreateGroupButtonText}>수정하기</Text>
+                    </TouchableOpacity>
+            }
             {isUpdateModalOpen && (
                 <Modal
                     transparent={true}
@@ -308,8 +308,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     ScrollViewContent: {
-        padding: 10,
-        paddingBottom: 150,
+        paddingBottom: 200,
     },
     formRow: {
         flexDirection: 'column',
@@ -372,17 +371,17 @@ const styles = StyleSheet.create({
     CreateGroupButton: {
         position: 'absolute',
         alignSelf: 'center',
-        width: '80%',
         top: 500,
-        padding: 13,
+        width: '85%',
+        padding: 15,
+        alignItems: 'center',
         backgroundColor: '#5DAF6A',
         borderRadius: 10,
-        alignItems: 'center',
     },
     CreateGroupButtonText: {
         color: '#ffffff',
         fontSize: 16,
-        fontWeight: '700',
+        fontWeight: '800',
     },
     memberRightContainer: {
         flexDirection: 'row',
