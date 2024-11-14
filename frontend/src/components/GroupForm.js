@@ -13,7 +13,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import apiClient from '../services/apiClient';
 import { useNavigation } from '@react-navigation/native';
 
-const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
+const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
     const scrollViewRef = useRef(null);
     const navigation = useNavigation();
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
@@ -29,6 +29,7 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
         ...initialData, // 기존데이터 존제시 자동 추가
     });
     const [inviteCode, setInviteCode] = useState(initialData.invite_code);
+    const [inviteCodeErrorMessage, setInviteCodeErrorMessage] = useState('');
 
     const updateInviteCode = async () => {
         try {
@@ -68,7 +69,8 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
                 // Create인 경우 POST 요청
                 await apiClient.post('/api/groups/', {
                     ...formData,
-                    members: [{ id: 0, name: nickName, active: 1 }, ...formData.members ]
+                    // nickName빈 값일 경울 로그인 유저 닉네임 추가
+                    members: [{ id: 0, name: nickName || userName, active: 1 }, ...formData.members ]
                 });
             } else if (screenName === 'UpdateGroup') {
                 // Update인 경우 PUT 요청
@@ -87,13 +89,22 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
     const generateInviteCode = async () => {
         try {
             const response = await apiClient.post(`/api/groups/invite/generate/${group_pk}/`);
-            const newCode = response.data.invite_code
-            setInviteCode(newCode);
-            } catch (error) {
-            alert('초대코드 생성에 실패했습니다: ' + error.response.data.error);
+            const result = response.data
+            if(result.success === true) {
+                const newCode = result.invite_code
+                setInviteCode(newCode);
+                setInviteCodeErrorMessage('')
+            } else {
+                setInviteCodeErrorMessage(result.message)
             }
+        } catch (error) {
+            alert('초대코드 생성에 실패했습니다: ' + error.response.data.error);
+        }
     };
 
+    const isMemberConnected = member => {
+        return member.username !== null;
+    };
 
     return (
         <View >
@@ -137,6 +148,7 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
                                     <Text style={styles.inviteCodeButtonText}>초대코드 생성</Text>
                                 </TouchableOpacity>
                                 )}
+                                {inviteCodeErrorMessage ? <Text style={styles.errorText}>{inviteCodeErrorMessage}</Text> : null}
                             </View>
                         </View>
                     }
@@ -144,36 +156,45 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
                         <Text style={styles.label}>멤버</Text>
                         {screenName === 'UpdateGroup' &&
                             <View>
-                                {formData.update_members.map((active, index) => (
-                                    <View key={active['id']} style={styles.MemberUserContainer}>
+                                {formData.update_members.map((member, index) => (
+                                    <View key={member['id']} style={styles.MemberUserContainer}>
                                         <TextInput
                                             style={styles.MemberUserName}
                                             placeholder="멤버 별명 입력"
                                             placeholderTextColor="#ADAFBD"
                                             keyboardType="default"
-                                            value={active['name']}
+                                            value={member['name']}
                                             onChangeText={text => {
                                                 const newInputs = formData.update_members.map(item =>
-                                                    item.id === active['id'] ? { ...item, name: text } : item);
+                                                    item.id === member['id'] ? { ...item, name: text } : item);
                                                 handleChange('update_members', newInputs);
                                             }}
                                         />
-                                        {active['id'] === 0 && (
+                                        {member['id'] === 0 && (
                                             <Text style={styles.MemberUserMe}>(나)</Text>
                                         )}
-                                        <TouchableOpacity
-                                            onPress={() => {
-                                                const newInputs = formData.update_members.map(item =>
-                                                    item.id === active.id ? { ...item, active: item.active ? 0 : 1 } : item
-                                                );
-                                                handleChange('update_members', newInputs);
-                                            }}
-                                            style={active.active ? styles.activeButton : styles.inActiveButton}
-                                        >
-                                            <Text style={active.active ? styles.activeText : styles.inActiveText}>
-                                                {active.active ? '활성' : '비활성'}
-                                            </Text>
-                                        </TouchableOpacity>
+                                        <View style={styles.memberRightContainer}>
+                                            {isMemberConnected(member) && 
+                                                <View style={[styles.accountLabel]}>
+                                                    <Text style={styles.activeAccountLabelText}>
+                                                        계정연결
+                                                    </Text>
+                                                </View>
+                                            }
+                                            <TouchableOpacity
+                                                onPress={() => {
+                                                    const newInputs = formData.update_members.map(item =>
+                                                        item.id === member.id ? { ...item, active: item.active ? 0 : 1 } : item
+                                                    );
+                                                    handleChange('update_members', newInputs);
+                                                }}
+                                                style={member.active ? styles.activeButton : styles.inActiveButton}
+                                            >
+                                                <Text style={member.active ? styles.activeText : styles.inActiveText}>
+                                                    {member.active ? '활성' : '비활성'}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </View>
 
                                     </View>
                                 ))}
@@ -182,7 +203,7 @@ const GroupForm = ({ group_pk, initialData = {}, screenName }) => {
                             <View style={styles.MemberUserContainer}>
                                 <TextInput
                                     style={styles.MemberUserName}
-                                    placeholder="내 별명 입력"
+                                    placeholder={userName}
                                     placeholderTextColor="#ADAFBD"
                                     keyboardType="default"
                                     value={nickName}
@@ -362,11 +383,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '800',
     },
+    memberRightContainer: {
+        flexDirection: 'row',
+        marginLeft: 'auto',
+    },
     // 활성화버튼
     activeButton: {
-        position: 'absolute',
-        right: 12,
-        top: 8,
         height: 25,
         width: 60,
         borderRadius: 5,
@@ -381,9 +403,6 @@ const styles = StyleSheet.create({
         color: '#5DAF6A'
     },
     inActiveButton: {
-        position: 'absolute',
-        right: 12,
-        top: 8,
         height: 25,
         width: 60,
         borderRadius: 5,
@@ -396,6 +415,21 @@ const styles = StyleSheet.create({
     inActiveText: {
         fontSize: 14,
         color: '#6C6C6C'
+    },
+    accountLabel: {
+        marginRight: 10,
+        height: 25,
+        width: 60,
+        borderRadius: 5,
+        borderWidth: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderColor: '#79C7E8',
+        backgroundColor: 'rgba(121,199,232,0.2)',
+    },
+    activeAccountLabelText: {
+        fontSize: 14,
+        color: '#79C7E8'
     },
     //모달창
     UpdateModalOverlay: {
@@ -486,6 +520,11 @@ const styles = StyleSheet.create({
     inviteCodeButtonText: {
         color: '#6C6C6C',
         fontSize: 16,
+    },
+    errorText: {
+        color: 'red',
+        fontSize: 14,
+        marginTop: 8,
     },
 });
 

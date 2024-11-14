@@ -22,27 +22,66 @@ const InviteGroupDetail = ({navigation, route}) => {
   const groupName = route.params.group_name;
   const groupAdminName = route.params.group_admin_name;
   const [members, setMembers] = useState([]);
-  const handleSelectMember = async (member_id) => {
+  const [selectedMemberId, setSelectedMemberId] = useState(null);
+  const [isMemberConnected, setIsMemberConnected] = useState(false);
+
+  const handleSelectMember = memberId => {
+    setSelectedMemberId(memberId); // 선택된 멤버 ID를 설정
+  };
+
+  const handleNewMember = async () => {
+    navigation.navigate('InviteGroupDetailNew', {
+      group_pk: group_pk,
+      group_name: groupName,
+      group_admin_name: groupAdminName,
+    });
+  };
+
+  const handleEnterGroup = async () => {
+    if (!isMemberConnected) {
+      // 입장하지 않은 경우 - 계정 연동
+      try {
+        const response = await apiClient.put(
+          `/api/groups/${group_pk}/members/account/`,
+          {member_pk: selectedMemberId},
+        );
+        console.log('멤버 연동이 완료되었습니다', response.data);
+      } catch (error) {
+        console.error('데이터를 불러오는데 실패했습니다', error);
+      }
+    }
+    navigation.navigate('Finances', {
+      group_pk: group_pk,
+      title: groupName,
+    });
+  };
+
+  const canSelectMember = member => {
+    return member.username === null;
+  };
+
+  const isDisabledEnter = () => {
+    if(isMemberConnected) {
+      return false;
+    }
+    return selectedMemberId === null;
+  }
+
+  const updateAccountConnected = async () => {
     try {
-      const response = await apiClient.put(
+      const response = await apiClient.get(
         `/api/groups/${group_pk}/members/account/`,
-        {member_pk: member_id},
       );
-      console.log('멤버 연동이 완료되었습니다', response);
+
+      result = response.data;
+      setIsMemberConnected(result.exists === 1);
     } catch (error) {
       console.error('데이터를 불러오는데 실패했습니다', error);
     }
   };
 
-  const handleNewMember = async () => {
-    navigation.navigate('InviteGroupDetailNew', {
-      group_pk: result.group_id,
-      group_name: groupName,
-      group_admin_name: groupAdminName
-    });
-  };
-
   useEffect(() => {
+    updateAccountConnected();
     setMembers(route.params.members);
   }, []);
 
@@ -73,38 +112,63 @@ const InviteGroupDetail = ({navigation, route}) => {
             <Text style={styles.contentText}>{groupAdminName}</Text>
           </View>
         </View>
-        <View style={[styles.ContentBottom, {paddingTop: 10}]}>
-          <Text style={styles.memberTitle}>본인을 선택해주세요</Text>
-          <View style={styles.memberContent}>
-            {members &&
-              members.map((member, index) => (
-                <View key={index}>
-                  <TouchableOpacity
-                    onPress={() => handleSelectMember(member.id)}>
-                    <View style={styles.memberViewContent}>
-                      <Icon name="person-circle" size={30} color="#5DAF6A" />
-                      <Text style={styles.memberText}> {member.name}</Text>
-                      <Text style={styles.statusLabel}>
-                        {member.username ? '활성' : '비활성'}
-                      </Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              ))}
+        {!isMemberConnected && (
+          <View style={[styles.ContentBottom, {paddingTop: 10}]}>
+            <Text style={styles.memberTitle}>본인을 선택해주세요</Text>
+            <View style={styles.memberContent}>
+              {members &&
+                members.map((member, index) => (
+                  <View key={index}>
+                    <TouchableOpacity
+                      onPress={() => handleSelectMember(member.id)}
+                      disabled={!canSelectMember(member)}>
+                      <View style={styles.memberViewContent}>
+                        <Ionicons
+                          name={
+                            selectedMemberId === member.id
+                              ? 'checkmark-circle' // 선택된 경우 체크박스
+                              : 'checkmark-circle-outline'
+                          }
+                          size={30}
+                          color={canSelectMember(member) ? '#5DAF6A' : '#CCCCCC'} // 선택 가능 여부에 따라 색상 변경
+                        />
+                        <Text style={styles.memberText}>{member.name}</Text>
+                        <Text style={styles.statusLabel}>
+                          {member.username ? '연동 중' : ''}
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
+                ))}
+            </View>
           </View>
-        </View>
+        )}
         <View>
-          <View style={styles.newMemberView}>
-            <Text style={styles.contentTitle}>해당하는 멤버가 없다면?</Text>
-            <TouchableOpacity
-              style={styles.newMemberButton}
-              onPress={() => handleNewMember()}>
-              <Text style={styles.newMemberButtonText}>클릭</Text>
-            </TouchableOpacity>
-          </View>
+          {!isMemberConnected && (
+            <View style={styles.newMemberView}>
+              <Text style={styles.contentTitle}>해당하는 멤버가 없다면?</Text>
+              <TouchableOpacity
+                style={styles.newMemberButton}
+                onPress={() => handleNewMember()}>
+                <Text style={styles.newMemberButtonText}>클릭</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {isMemberConnected && (
+            <View style={styles.newMemberView}>
+              <Text style={styles.contentTitle}>이미 입장한 모임입니다</Text>
+            </View>
+          )}
         </View>
       </ScrollView>
-      <TouchableOpacity style={styles.enterButton}>
+      <TouchableOpacity
+        style={[
+          styles.enterButton,
+          isDisabledEnter() && styles.disabledEnterButton,
+        ]}
+        onPress={handleEnterGroup}
+        disabled={isDisabledEnter()}>
         <Text style={styles.enterButtonText}>입장하기</Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -175,6 +239,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#5DAF6A',
     borderRadius: 10,
     alignItems: 'center',
+  },
+  disabledEnterButton: {
+    backgroundColor: '#CCCCCC',
   },
   enterButtonText: {
     color: '#ffffff',
