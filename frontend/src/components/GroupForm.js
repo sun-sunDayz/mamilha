@@ -20,10 +20,9 @@ const GRADE = {
     VIEW: 'view',
 };
 
-const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
+const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMember=null}) => {
     const scrollViewRef = useRef(null);
     const navigation = useNavigation();
-    const currentUser = useContext(UserContext);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [modalWidth, setModalWidth] = useState(0);
     const [actives, setActives] = useState(initialData.members);
@@ -38,16 +37,10 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
     });
     const [inviteCode, setInviteCode] = useState(initialData.invite_code);
     const [inviteCodeErrorMessage, setInviteCodeErrorMessage] = useState('');
-    const [currnetMember, setCurrentMember] = useState(null);
 
     useEffect(() => {
         // console.log('initial data', initialData.members);
-
-        if(initialData.members) {
-            const member = initialData.members.find(member => member.username === currentUser.username);
-            // console.log('member', member);
-            setCurrentMember(member);
-        }
+        // console.log('current', currentMember);
     }, []);
 
     const updateMemberGradeFormData = (memberId, newGrade) => {
@@ -62,9 +55,16 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
         });
     };
 
-    const toggleGrade = (member) => {
-        //기능 skip
-    };
+    const isEditable = () => {
+        if(screenName === 'CreateGroup') {
+            return true;
+        } else if(screenName === 'UpdateGroup') {
+            return currentMember && currentMember.grade.group;
+        } else{
+            //Assert fail
+            return false
+        }
+    }
 
     const getMemberGrade = (member, grade) => {
         let memberGrade = {
@@ -192,7 +192,9 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
 
     return (
         <View >
-            <View style={styles.content}>
+            <View style={styles.content} 
+            pointerEvents={isEditable() ? "auto" : "none"}
+            >
                 <ScrollView ref={scrollViewRef} contentContainerStyle={styles.ScrollViewContent}>
                     <View style={styles.formRow}>
                         <Text style={styles.label}>모임 이름</Text>
@@ -254,7 +256,7 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
                                                 handleChange('update_members', newInputs);
                                             }}
                                         />
-                                        {member['id'] === 0 && (
+                                        {member['id'] === currentMember.id && (
                                             <Text style={styles.MemberUserMe}>(나)</Text>
                                         )}
                                         <View style={styles.memberRightContainer}>
@@ -322,11 +324,14 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
                                     </View>
                                 ))}
                             </View>
+                            {
+                            isEditable() &&
                             <View style={{ alignItems: 'center', marginTop: 10 }}>
                                 <TouchableOpacity onPress={addInput} style={styles.addButton}>
                                     <Ionicons name="add-circle" size={35} color='#5DAF6A' />
                                 </TouchableOpacity>
                             </View>
+                            }
                         </View>
                     </View>
                 </ScrollView>
@@ -335,7 +340,7 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
                 <TouchableOpacity onPress={handleSubmit} style={styles.CreateGroupButton} >
                     <Text style={styles.CreateGroupButtonText}>생성하기</Text>
                 </TouchableOpacity>
-                :
+                : (isEditable() && (
                 <TouchableOpacity onPress={() => setIsUpdateModalOpen(true)}
                     style={styles.CreateGroupButton}
                     onLayout={(event) => {
@@ -343,7 +348,8 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
                         setModalWidth(width);
                     }}>
                     <Text style={styles.CreateGroupButtonText}>수정하기</Text>
-                </TouchableOpacity>}
+                </TouchableOpacity>))
+            }
 
             {isUpdateModalOpen && (
                 <Modal
