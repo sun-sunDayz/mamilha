@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated, AllowAny
 from .models import *
 from finances.models import Finance, Split
+from datetime import timedelta
 import random
 import string
 
@@ -56,8 +57,8 @@ class GroupAPIView(APIView):
                 "category": i.group.category.name,
                 "category_icon": i.group.category.icon,
                 "category_icon_color": i.group.category.icon_color,
-                "currency": i.group.currency.currency,
-                "leader": members[0].name,
+                "currency": i.group.currency.currency, 
+                "user": {"userName": members[0].name, "userID":members[0].user_id},
                 "members": len(members),
                 "invite_code": invite_code,
             })
@@ -91,8 +92,10 @@ class GroupAPIView(APIView):
                     return Response({'error': "그룹에 별명이 같은 멤버가 존제 합니다"}, status=status.HTTP_400_BAD_REQUEST)
                 else:
                     member_validated.append(member)
-            else:
-                return Response({'error': "멤버는 한명 이상 있어야 합니다"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        #모임 생성자 이외에 멤버 한명 이상 필요
+        if len(member_validated) < 2:
+            return Response({'error': "멤버는 한명 이상 있어야 합니다"}, status=status.HTTP_400_BAD_REQUEST)
         
         group = Group.objects.create(
         name = validated_data['name'],
@@ -162,10 +165,12 @@ class GroupDetailAPIView(APIView):
         member = []
         num = 0
         for i in members:
+            username = i.user.username if i.user is not None else None
             member.append({
                 "id": num,
                 "name": i.name,
-                "active": i.active
+                "active": i.active,
+                "username": username,
             })
             num +=1
 
@@ -275,9 +280,9 @@ class GroupSplitAPIView(APIView):
                 data.append({
                     "finance_id": split.finance.id,
                     "finance_type": split.finance.finance_type.name,
+                    "payer": {"name":split.finance.payer.name, "id":split.finance.payer.id},
+                    "member": [{"name": split.member.name, "id": split.member.id}],
                     "finance_title": split.finance.title,  # 추가 정보 포함
-                    "payer": split.finance.payer.name,
-                    "member": split.member.name,
                     "amount": split.amount,
                 })
 
@@ -299,6 +304,7 @@ class MemberAPIView(APIView):
                 "name": i.name,
                 "grades": i.grades.name,
                 "active": i.active,
+                "user_id" : i.user_id
             })
 
         return Response(members,
@@ -428,6 +434,16 @@ class MemberDetailAPIView(APIView):
 class MemberAccountAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
+    def get(self, request, group_pk):
+        user = request.user
+
+        member = Member.objects.filter(group_id=group_pk, user=user, deleted=False).first()
+        exists = 1 if member is not None else 0
+
+        return Response({
+            "exists":exists
+        }, status=status.HTTP_200_OK)
+
     def post(self, request, group_pk):
         group = get_object_or_404(Group, pk=group_pk)
 
@@ -543,20 +559,42 @@ class GroupGenerateInviteCodeAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, group_pk):
-        # 그룹 객체 가져오기
         group = Group.objects.get(id=group_pk)
 
-        # 새로운 초대 코드 생성
+        # 해당 그룹의 가장 최근 초대 코드 가져오기
+        latest_invite_code = GroupInviteCode.objects.filter(group=group).order_by('-created_at').first()
+        
+        if latest_invite_code:
+            # 24시간 비교 로직 추가
+            max_wait_hour = 24
+            delta = timedelta(hours=max_wait_hour)
+
+            #디버그용 - 1초
+            # delta = timedelta(seconds=1)
+            not_expired = timezone.now() - latest_invite_code.created_at < delta
+            if not_expired:
+                return Response(
+                    {
+                        'message': "최근에 생성된 초대 코드가 이미 존재합니다. 24시간 이후에 다시 시도해주세요.",
+                        'group_pk': group.id,
+                        'invite_code': latest_invite_code.invite_code,
+                        'success': False
+                    }, 
+                    status=status.HTTP_200_OK
+                )
+
         invite_code = GroupInviteCode.objects.create(
             group=group,
             invite_code=self.generate_unique_invite_code()
         )
 
-        return Response({'message': "그릅은 만들었습니다.",
-                        'group_pk': group.id,
-                         'invite_code': invite_code.invite_code
-                         },
-                        status=status.HTTP_201_CREATED)
+        return Response(
+            {
+                'message': "그릅을 만들었습니다.",
+                'group_pk': group.id,
+                'invite_code': invite_code.invite_code,
+                'success': True
+            }, status=status.HTTP_201_CREATED)
 
     def generate_unique_invite_code(self):
         characters = string.ascii_uppercase + string.digits  # 'A-Z'와 '0-9'를 포함

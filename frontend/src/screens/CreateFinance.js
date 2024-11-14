@@ -8,6 +8,7 @@ import FinanceForm from '../components/FinanceForm';
 const CreateFinance = ({route}) => {
   const navigation = useNavigation(); // 네비게이션 객체 가져오기
   const group_pk = route.params.group_pk;
+  const data = route.params.data
 
   return (
     <SafeAreaView style={styles.container}>
@@ -25,6 +26,7 @@ const CreateFinance = ({route}) => {
           onSubmit="create"
           buttonLabel="생성하기"
           group_pk={group_pk}
+          initialData={data}
         />
       </View>
     </SafeAreaView>
