@@ -31,7 +31,6 @@ const FinanceDetail = ({ route }) => {
         apiClient.get(`/api/finances/${group_pk}/${finance_pk}/`)  
             .then(response => {
                 const data = response.data
-                console.log(response.data)
                 setAmount(data.amount) 
                 settitle(data.title)
                 setPayar(data.payer["name"])
