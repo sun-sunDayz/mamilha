@@ -40,7 +40,7 @@ def generate_random_finances(total_finances, splits_per_finance):
             'finance_category': random.choice(finance_categories),
             'amount': round(random.uniform(10.00, 1000.00), 2),  # Random amount between 10 and 1000
             'date': faker.date_this_year(),
-            'description': faker.sentence(),
+            'title': faker.sentence(),
             'pay_method': random.choice(pay_methods),
             'split_method': random.choice(split_methods),
             'deleted': False,
