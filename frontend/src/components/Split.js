@@ -1,13 +1,13 @@
-import { StyleSheet, Text, View, FlatList, Image, ScrollView, RefreshControl } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Image, ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
 import React, { useState, useEffect, useCallback } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import apiClient from '../services/apiClient';
 
 
 
 const truncateText = (text, limit) => {
-    if (text!='' & text.length > limit) {
+    if (text != '' & text.length > limit) {
         return text.substring(0, limit) + '...';
     }
     return text;
@@ -79,7 +79,7 @@ const simplifyBalances = (balances) => {
         }
 
         if (amount > 0) {
-            transactions.push({'debtor': debtor, 'creditor' : creditor, 'amount': amount});
+            transactions.push({ 'debtor': debtor, 'creditor': creditor, 'amount': amount });
         }
 
         creditors[creditor] -= amount;
@@ -96,7 +96,8 @@ const simplifyBalances = (balances) => {
 }
 
 
-const Split = ({group_pk}) => {
+const Split = ({ group_pk }) => {
+    const navigation = useNavigation();
     const [data, setData] = useState([]);
     const [finalSettlements, setFinalSettlements] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
@@ -112,11 +113,10 @@ const Split = ({group_pk}) => {
         try {
             const response = await apiClient.get(`/api/groups/${group_pk}/splits/`);
             const splits = response.data;
-            console.log(splits)
             setData(splits);
             const transactions = {};
-            for(const split of splits) {
-                addTransaction(transactions, split.member, split.payer, split.amount, split.finance_type);
+            for (const split of splits) {
+                addTransaction(transactions, split.member.name, split.payer.name, split.amount, split.finance_type);
             }
             // 잔액 계산 및 출력
             const balances = calculateBalances(transactions);
@@ -128,7 +128,7 @@ const Split = ({group_pk}) => {
     };
 
     // 주고받은 금액 초기화
-    
+
     useEffect(() => {
         getSplits();
     }, []);
@@ -138,6 +138,10 @@ const Split = ({group_pk}) => {
             getSplits();
         }, []),
     );
+
+    const handelCreate = (item) => {
+        navigation.navigate('CreateFinance', { group_pk: group_pk, data: item });
+    };
 
     return (
         <View style={styles.container}>
@@ -149,27 +153,30 @@ const Split = ({group_pk}) => {
             ) : (
                 <ScrollView
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-                    >
+                >
                     {finalSettlements.map((item, index) => (
-                        <View key={index} style={styles.listItem}>
-                        <View style={styles.memberContainer}>
-                            <Ionicons name="person-circle-outline" size={36} color="#E87979" />
-                            <Text style={styles.name}>{truncateText(item.debtor, 3)}</Text>
-                        </View>
-                        <Image
-                            source={require('../../assets/line.png')}
-                            style={{ width: 6, height: 6, flex: 3, alignItems: 'center' }}
-                        />
-                        <Text style={styles.price}>{truncateAmount(item.amount)}</Text>
-                        <Image
-                            source={require('../../assets/arrow_right.png')}
-                            style={{ width: 6, height: 6, resizeMode: 'cover', flex: 3, alignItems: 'center' }}
-                        />
-                        <View style={styles.memberContainer}>
-                            <Ionicons name="person-circle-outline" size={36} color="#E8AE79" />
-                            <Text style={styles.name}>{truncateText(item.creditor, 3)}</Text>
-                        </View>
-                        </View>
+                        <TouchableOpacity
+                            key={index}
+                            style={styles.listItem}
+                            onPress={()=>handelCreate(data[index])}>
+                            <View style={styles.memberContainer}>
+                                <Ionicons name="person-circle-outline" size={36} color="#E87979" />
+                                <Text style={styles.name}>{truncateText(item.debtor, 3)}</Text>
+                            </View>
+                            <Image
+                                source={require('../../assets/line.png')}
+                                style={{ width: 6, height: 6, flex: 3, alignItems: 'center' }}
+                            />
+                            <Text style={styles.price}>{truncateAmount(item.amount)}</Text>
+                            <Image
+                                source={require('../../assets/arrow_right.png')}
+                                style={{ width: 6, height: 6, resizeMode: 'cover', flex: 3, alignItems: 'center' }}
+                            />
+                            <View style={styles.memberContainer}>
+                                <Ionicons name="person-circle-outline" size={36} color="#E8AE79" />
+                                <Text style={styles.name}>{truncateText(item.creditor, 3)}</Text>
+                            </View>
+                        </TouchableOpacity>
                     ))}
                 </ScrollView>
 
