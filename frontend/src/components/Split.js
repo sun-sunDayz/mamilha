@@ -145,7 +145,7 @@ const Split = ({ group_pk }) => {
 
     return (
         <View style={styles.container}>
-            {finalSettlements.length === 0 ? (
+            {!finalSettlements ? (
                 <View style={styles.emptySpendView}>
                     <Ionicons style={styles.emptyIcon} name="checkmark-done-circle" size={150} color="#79C7E8" />
                     <Text style={styles.emptyText}>정산이 모두 완료되었어요!</Text>
