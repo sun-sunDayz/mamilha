@@ -44,38 +44,38 @@ import GroupForm from '../components/GroupForm';
           </TouchableOpacity>
         </View>
 
-        <GroupForm group_pk={group_pk} screenName={'UpdateGroup'} initialData={initialData} />
-        {/* 삭제 모달 */}
-      {isDeleteModalOpen && (
-        <Modal
-          transparent={true}
-          animationType="fade"
-          visible={isDeleteModalOpen}
-          onRequestClose={() => setIsDeleteModalOpen(false)}>
-          <TouchableOpacity
-            style={styles.UpdateModalOverlay}
-            activeOpacity={1}
-            onPressOut={() => setIsDeleteModalOpen(false)}>
-            <View style={[styles.updateModal, {width: modalWidth}]}>
-              <Text style={styles.udateModalTitel}>
-                모임을 삭제하시겠습니까?
-              </Text>
-              <View style={styles.udateModalButton}>
-                <TouchableOpacity
-                  onPress={() => setIsDeleteModalOpen(false)}
-                  style={styles.udateModalButtonNo}>
-                  <Text style={styles.udateModalButtonNoText}>아니오</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleDeleteGroup}
-                  style={styles.deleteModalButtonYes}>
-                  <Text style={styles.udateModalButtonYesText}>네</Text>
-                </TouchableOpacity>
+          <GroupForm group_pk={group_pk} screenName={'UpdateGroup'} initialData={initialData} />
+          {/* 삭제 모달 */}
+        {isDeleteModalOpen && (
+          <Modal
+            transparent={true}
+            animationType="fade"
+            visible={isDeleteModalOpen}
+            onRequestClose={() => setIsDeleteModalOpen(false)}>
+            <TouchableOpacity
+              style={styles.UpdateModalOverlay}
+              activeOpacity={1}
+              onPressOut={() => setIsDeleteModalOpen(false)}>
+              <View style={[styles.updateModal, {width: modalWidth}]}>
+                <Text style={styles.udateModalTitel}>
+                  모임을 삭제하시겠습니까?
+                </Text>
+                <View style={styles.udateModalButton}>
+                  <TouchableOpacity
+                    onPress={() => setIsDeleteModalOpen(false)}
+                    style={styles.udateModalButtonNo}>
+                    <Text style={styles.udateModalButtonNoText}>아니오</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={handleDeleteGroup}
+                    style={styles.deleteModalButtonYes}>
+                    <Text style={styles.udateModalButtonYesText}>네</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          </TouchableOpacity>
-        </Modal>
-      )}
+            </TouchableOpacity>
+          </Modal>
+        )}
       </SafeAreaView>
     );
   }
@@ -83,7 +83,6 @@ import GroupForm from '../components/GroupForm';
   const styles = StyleSheet.create({
     Container: {
       flex: 1,
-      paddingTop: 10,
       backgroundColor: '#f1f1f9',
     },
     header: {
