@@ -43,7 +43,6 @@ import GroupForm from '../components/GroupForm';
             <Text style={styles.deleteText}>삭제</Text>
           </TouchableOpacity>
         </View>
-
           <GroupForm group_pk={group_pk} screenName={'UpdateGroup'} initialData={initialData} />
           {/* 삭제 모달 */}
         {isDeleteModalOpen && (
@@ -56,7 +55,7 @@ import GroupForm from '../components/GroupForm';
               style={styles.UpdateModalOverlay}
               activeOpacity={1}
               onPressOut={() => setIsDeleteModalOpen(false)}>
-              <View style={[styles.updateModal, {width: modalWidth}]}>
+              <View style={styles.updateModal}>
                 <Text style={styles.udateModalTitel}>
                   모임을 삭제하시겠습니까?
                 </Text>
@@ -121,6 +120,7 @@ import GroupForm from '../components/GroupForm';
       backgroundColor: 'rgba(0,0,0,0.2)',
     },
     updateModal: {
+      width: '80%',
       borderWidth: 1,
       borderColor: '#cccccc',
       backgroundColor: '#ffffff',
