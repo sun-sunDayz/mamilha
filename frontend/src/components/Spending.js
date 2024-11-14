@@ -68,7 +68,7 @@ const Spending = ({ group_pk }) => {
 
   return (
     <View style={styles.container}>
-      {Data.length === 0 ? (
+      {!Data ? (
         <View style={styles.emptySpendView}>
           <TouchableOpacity onPress={() => handelCreateFinance()}>
             <Ionicons

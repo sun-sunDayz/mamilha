@@ -69,24 +69,24 @@ const Finances = ({navigation, route}) => {
         <TouchableOpacity
           style={[
             styles.tabButton,
-            selectedTab === '정산' ? styles.activeTab : styles.inactiveTab,
+            selectedTab === '이체' ? styles.activeTab : styles.inactiveTab,
           ]}
-          onPress={() => handleTabPress('정산')}>
+          onPress={() => handleTabPress('이체')}>
           <Text
             style={[
               styles.tabText,
-              selectedTab === '정산'
+              selectedTab === '이체'
                 ? styles.activeTabText
                 : styles.inactiveTabText,
             ]}>
-            정산
+            이체
           </Text>
         </TouchableOpacity>
       </View>
 
       <View style={styles.contentContainer}>
         {selectedTab === '지출' && <Spending group_pk={group_pk} />}
-        {selectedTab === '정산' && <Split group_pk={group_pk} />}
+        {selectedTab === '이체' && <Split group_pk={group_pk} />}
       </View>
     </SafeAreaView>
   );
