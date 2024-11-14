@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 import React, {useEffect, useState, useContext} from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
-import {Dropdown} from 'react-native-element-dropdown';
 import DatePicker from 'react-native-date-picker';
 import apiClient from '../services/apiClient';
 import moment from 'moment';
@@ -20,6 +19,11 @@ import {UserContext} from '../userContext'
 const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance_pk}) => {
   const navigation = useNavigation(); // 네비게이션 객체 가져오기
   const currentUser = useContext(UserContext);
+  const processedInitialData = {
+    ...initialData,
+    finance_category: initialData.finance_category ? initialData.finance_category.id : null,
+    payer: initialData.payer ? initialData.payer.id : null,
+  }; // initiaData 값이 존제 하는 경유 변경해서 가져오기
   const [formData, setFormData] = useState({
     date: '',
     finance_type: '지출',
@@ -30,7 +34,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
     description: '',
     member: null,
     split_method: '고정분할',
-    ...initialData, // 초기값 설정 (update 에서 사용)
+    ...processedInitialData, // 초기값 설정 (update 에서 사용)
   });
 
   // 일시 (Date)
@@ -55,39 +59,12 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
     formData.pay_method || '카드',
   ); // 초기값은 '카드'
 
-  // 카테고리 (Category)
-  const [financeCategory, setFinanceCategory] = useState(
-    formData.finance_category ? formData.finance_category : null,
-  );
-  const [categories, setCategories] = useState([]);
-  const [category, setCategory] = useState([]);
-  // const [category, setCategory] = useState(formData.finance_category);
-  const [isCategoryFocus, setIsCategoryFocus] = useState(false);
-  const [isPayerFocus, setIsPayerFocus] = useState(false);
-
   // 결제자(payer) & 참여 멤버(selected members)
   const [members, setMembers] = useState([]); // 멤버 리스트
   const [payer, setPayer] = useState(formData.payer ? formData.payer : null); // 결제자 선택
 
   // useEffect를 사용하여 컴포넌트가 마운트될 때 API 호출
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await apiClient.get('/api/finances/categorys/');
-        // API 응답 데이터를 state에 저장
-        const categories = response.data.map(item => ({
-          label: item.name, // 'labelField'에 해당하는 필드
-          value: item.id, // 'valueField'에 해당하는 필드
-        }));
-        setCategories(categories);
-
-        if (categories.length > 0) {
-          setCategory(categories[0].value); // 일치하는 값이 있으면 설정
-        }
-      } catch (error) {
-        console.error('카테고리 못 가져옴:', error);
-      }
-    };
 
     const fetchMembers = async () => {
       try {
@@ -100,11 +77,12 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
         const membersData = response.data.map(item => ({
           label: item.name, // 'labelField'에 해당하는 필드
           value: item.id, // 'valueField'에 해당하는 필드
-          checked: false,
+          // initialData.member 값이 있으면 member_id값을 확인 해당 값이 있으면 체크
+          checked: initialData.member ? (initialData.member.some(member => member.id === item.id)) : false,
           amount: 0,
           user_id: item.user_id
         }));
-
+        
         setMembers(membersData);
 
         if (membersData.length > 0) {
@@ -116,7 +94,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
     };
 
     fetchMembers();
-    fetchCategories();
+
   }, []);
 
   useEffect(() => {
@@ -126,13 +104,6 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
     }));
     updateMemberDistributeAmount();
   }, [payer]);
-
-  useEffect(() => {
-    setFormData(prevFormData => ({
-      ...prevFormData,
-      finance_category: category,
-    }));
-  }, [category]);
 
   // amount값 변경 시 members정보 업데이트
   useEffect(() => {
@@ -145,11 +116,11 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
   };
 
   const toggleCheck = index => {{
-      // selectedType이 '정산'인 경우 단일 선택 
+      // selectedType이 '이체'인 경우 단일 선택 
       // '지출'인 경우 다중선택
       setMembers(prevMember => {
         const members = prevMember.map((member, i) =>
-        (selectedType !== '정산' ? i === index : i === index || member.checked ) ? 
+        (selectedType !== '이체' ? i === index : i === index || member.checked ) ? 
         {...member, checked: !member.checked} : member
         );
         // 토글 후 바로 금액 재분배
@@ -316,7 +287,8 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
                     ? styles.activeTab
                     : styles.inactiveTab,
                 ]}
-                onPress={() => setSelectedType('지출')}>
+                onPress={() => {setSelectedType('지출');
+                  handleChange('finance_category', null);}}>
                 <Text
                   style={[
                     styles.tabText,
@@ -330,24 +302,25 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
               <TouchableOpacity
                 style={[
                   styles.tabButton,
-                  selectedType === '정산'
+                  selectedType === '이체'
                     ? styles.activeTab
                     : styles.inactiveTab,
                 ]}
-                onPress={() => setSelectedType('정산')}>
+                onPress={() => {setSelectedType('이체');
+                  handleChange('finance_category', 12); }}>
                 <Text
                   style={[
                     styles.tabText,
-                    selectedType === '정산'
+                    selectedType === '이체'
                       ? styles.activeTabText
                       : styles.inactiveTabText,
                   ]}>
-                  정산
+                  이체
                 </Text>
               </TouchableOpacity>
             </View>
           </View>
-
+          { selectedType === '지출' &&
           <View style={styles.formRow}>
             <Text style={styles.label}>카테고리</Text>
             <FinanceCategory
@@ -355,6 +328,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
               onChangeCategory={text => handleChange('finance_category', text)} // ID를 업데이트
             />
           </View>
+          }
 
           <View style={styles.formRow}>
             <Text style={styles.label}>결제자</Text>
@@ -448,7 +422,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
             <Text style={styles.label}>참여 멤버</Text>
             <View style={styles.table}>
               {members.map((member, index) => (
-                (selectedType !== '정산' || currentUser.user_id !== member.user_id) && (
+                (selectedType !== '이체' || currentUser.user_id !== member.user_id) && (
                 <View key={member.value} style={[
                   styles.tableRow,
                   // 마지막 멤버인 경우 밑줄 삭제

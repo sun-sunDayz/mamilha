@@ -10,7 +10,7 @@ import {
 import apiClient from '../services/apiClient';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const FinanceCategory = ({onChangeCategory, selectedCategory}) => {
+const GradeCategory = ({onChangeCategory, selectedCategory}) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(selectedCategory);
   const [dropdownWidth, setDropdownWidth] = useState(0);
@@ -18,7 +18,7 @@ const FinanceCategory = ({onChangeCategory, selectedCategory}) => {
 
   useEffect(() => {
     apiClient
-      .get('/api/finances/categorys/')
+      .get('/api/groups/members/grades/')
       .then(response => {
         setData(response.data);
         if (selectedCategory) {
@@ -26,7 +26,7 @@ const FinanceCategory = ({onChangeCategory, selectedCategory}) => {
         }
       })
       .catch(error => {
-        console.error('지출 카테고리 데이터를 불러오는데 실패했습니다', error);
+        console.error('등급 카테고리 데이터를 불러오는데 실패했습니다', error);
       });
   }, []);
 
@@ -38,7 +38,7 @@ const FinanceCategory = ({onChangeCategory, selectedCategory}) => {
 
   const getSelectedCategoryName = () => {
     const selectedCategory = Data.find(item => item.id === selectedItem);
-    return selectedCategory ? selectedCategory.name : '카테고리 선택';
+    return selectedCategory ? selectedCategory.name : '등급 선택';
   };
 
   return (
@@ -76,27 +76,29 @@ const FinanceCategory = ({onChangeCategory, selectedCategory}) => {
               <FlatList
                 data={Data}
                 keyExtractor={item => item.id.toString()}
-                renderItem={({item}) => (
+                renderItem={({item}) =>
                   // finance_type_id가 1인 경우에만 보여준다.
-                  item.finance_type_id == 1 && (<TouchableOpacity
-                    style={
-                      item.id === selectedItem
-                        ? styles.selectedDropdownItem
-                        : styles.dropdownItem
-                    }
-                    onPress={() => handleItemPress(item)}>
-                    <Text
-                      style={[
-                        styles.dropdownItemText,
-                        {
-                          color:
-                            item.id === selectedItem ? '#ffffff' : '#434343',
-                        },
-                      ]}>
-                      {item.name}
-                    </Text>
-                  </TouchableOpacity>)
-                )}
+                  item.finance_type_id == 1 && (
+                    <TouchableOpacity
+                      style={
+                        item.id === selectedItem
+                          ? styles.selectedDropdownItem
+                          : styles.dropdownItem
+                      }
+                      onPress={() => handleItemPress(item)}>
+                      <Text
+                        style={[
+                          styles.dropdownItemText,
+                          {
+                            color:
+                              item.id === selectedItem ? '#ffffff' : '#434343',
+                          },
+                        ]}>
+                        {item.name}
+                      </Text>
+                    </TouchableOpacity>
+                  )
+                }
               />
             </View>
           </TouchableOpacity>
@@ -153,4 +155,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default FinanceCategory;
+export default GradeCategory;
