@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import {
     View,
     Text,
@@ -12,6 +12,7 @@ import GroupCategory from '../components/GroupCategory';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import apiClient from '../services/apiClient';
 import { useNavigation } from '@react-navigation/native';
+import {UserContext} from '../userContext'
 
 const GRADE = {
     ADMIN: 'admin',
@@ -22,6 +23,7 @@ const GRADE = {
 const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
     const scrollViewRef = useRef(null);
     const navigation = useNavigation();
+    const currentUser = useContext(UserContext);
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [modalWidth, setModalWidth] = useState(0);
     const [actives, setActives] = useState(initialData.members);
@@ -36,10 +38,16 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
     });
     const [inviteCode, setInviteCode] = useState(initialData.invite_code);
     const [inviteCodeErrorMessage, setInviteCodeErrorMessage] = useState('');
+    const [currnetMember, setCurrentMember] = useState(null);
 
     useEffect(() => {
-        // console.log('init111', initialData);
-        console.log('init111', initialData.members);
+        console.log('initial data', initialData.members);
+
+        if(initialData.members) {
+            const member = initialData.members.find(member => member.username === currentUser.username);
+            console.log('member', member);
+            setCurrentMember(member);
+        }
     }, []);
 
     const updateMemberGradeFormData = (memberId, newGrade) => {

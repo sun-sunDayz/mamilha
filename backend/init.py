@@ -1,19 +1,19 @@
-import random
 import django
 import os
-from django.utils import timezone
-from faker import Faker
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 
-from finances.models import FinanceType
-from finances.models import FinanceCategory
-from finances.models import SplitMethod
-from finances.models import PayMethod
-from groups.models import Group_category
-from groups.models import Grades
+import random
 from groups.models import Currency
+from groups.models import Grades
+from groups.models import Group_category
+from finances.models import PayMethod
+from finances.models import SplitMethod
+from finances.models import FinanceCategory
+from finances.models import FinanceType
+from django.utils import timezone
+from faker import Faker
 
 def add_initial_finance_categories():
     initial_data = [
@@ -27,7 +27,8 @@ def add_initial_finance_categories():
         {'id': 8, 'name': '영화/공연/전시회', 'icon': 'ticket', 'icon_color': 'B7E879'},
         {'id': 9, 'name': '운동', 'icon': 'barbell', 'icon_color': 'A379E8'},
         {'id': 10, 'name': '여가/취미', 'icon': 'bowling-ball', 'icon_color': '79C7E8'},
-        {'id': 11, 'name': '기타', 'icon': 'ellipsis-horizontal-circle-sharp', 'icon_color': 'A379E8'},
+        {'id': 11, 'name': '기타', 'icon': 'ellipsis-horizontal-circle-sharp',
+            'icon_color': 'A379E8'},
     ]
 
     FinanceCategory.objects.all().delete()
@@ -37,8 +38,9 @@ def add_initial_finance_categories():
 
     print('register finance category')
     for category in FinanceCategory.objects.all():
-        print(f'{category.id}: {category.name}, {category.icon}, {category.icon_color}')
-    
+        print(f'{category.id}: {category.name}, {
+              category.icon}, {category.icon_color}')
+
 
 def add_initial_group_categories():
     initial_data = [
@@ -55,7 +57,8 @@ def add_initial_group_categories():
         {'id': 11, 'name': '봉사/기부', 'icon': 'fitness', 'icon_color': 'E87979'},
         {'id': 12, 'name': '종교', 'icon': 'earth', 'icon_color': 'B7E879'},
         {'id': 13, 'name': '이벤트/행사', 'icon': 'musical-notes', 'icon_color': 'EBE677'},
-        {'id': 14, 'name': '기타', 'icon': 'ellipsis-horizontal-circle-sharp', 'icon_color': 'A379E8'},
+        {'id': 14, 'name': '기타', 'icon': 'ellipsis-horizontal-circle-sharp',
+            'icon_color': 'A379E8'},
     ]
 
     Group_category.objects.all().delete()
@@ -65,7 +68,8 @@ def add_initial_group_categories():
 
     print('register group category')
     for category in Group_category.objects.all():
-        print(f'{category.id}: {category.name}, {category.icon}, {category.icon_color}')
+        print(f'{category.id}: {category.name}, {
+              category.icon}, {category.icon_color}')
 
 
 def add_initial_currency_categories():
@@ -97,7 +101,8 @@ def add_initial_grades():
 
     print('register grade')
     for g in Grades.objects.all():
-        print(f'{g.id}: {g.name}, admin:{g.admin}, edit:{g.edit}, view:{g.view}')
+        print(f'{g.id}: {g.name}, admin:{
+              g.admin}, edit:{g.edit}, view:{g.view}')
 
 
 def add_initial_split_method():
@@ -149,11 +154,42 @@ def add_initial_finance_type():
         print(f'{g.id}: {g.name}')
 
 
+def add_initial_grade():
+    initial_data = [
+        {'id': 1, 'name': '관리자', 'admin': False, 'edit': False, 'view': False, 'group': True, 'member': True,
+            'expense': True, 'view_setting': True, 'view_expense': True, 'visible': True, 'color': 'E87979'},
+        {'id': 2, 'name': '임원', 'admin': False, 'edit': False, 'view': False, 'group': False, 'member': True,
+            'expense': True, 'view_setting': True, 'view_expense': True, 'visible': True, 'color': 'E8AE79'},
+        {'id': 3, 'name': '총무', 'admin': False, 'edit': False, 'view': False, 'group': False, 'member': False,
+            'expense': True, 'view_setting': True, 'view_expense': True, 'visible': True, 'color': '79C7E8'},
+        {'id': 4, 'name': '회원', 'admin': False, 'edit': False, 'view': False, 'group': False, 'member': False,
+            'expense': False, 'view_setting': True, 'view_expense': True, 'visible': True, 'color': 'A379E8'},
+        {'id': 5, 'name': '게스트', 'admin': False, 'edit': False, 'view': False, 'group': False, 'member': False,
+            'expense': False, 'view_setting': False, 'view_expense': False, 'visible': True, 'color': '6C6C6C'},
+    ]
+
+    Grades.objects.all().delete()
+
+    for g in initial_data:
+        Grades.objects.create(**g)
+
+    # for g in initial_data:
+    #     Grades.objects.update_or_create(
+    #         id=g['id'],
+    #         defaults=g  # id를 제외한 나머지 필드를 업데이트
+    #     )
+
+    print('register grade')
+    for g in Grades.objects.all().order_by('id'):
+        print(f'{g.id}: {g.name}')
+
+
 print('init database')
-add_initial_finance_categories()
-add_initial_group_categories()
-add_initial_currency_categories()
-add_initial_grades()
-add_initial_split_method()
-add_initial_pay_method()
-add_initial_finance_type()
+# add_initial_finance_categories()
+# add_initial_group_categories()
+# add_initial_currency_categories()
+# add_initial_grades()
+# add_initial_split_method()
+# add_initial_pay_method()
+# add_initial_finance_type()
+add_initial_grade()
