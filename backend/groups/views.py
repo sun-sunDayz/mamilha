@@ -117,8 +117,6 @@ class GroupAPIView(APIView):
                 user=None
                 grades = Grades.objects.get_member()
                 # grades=Grades.objects.get(admin=0, edit=0, view=1)
-            
-            print('=======grade========', user, grades)
                 
             Member.objects.create(
             name=member['name'],
@@ -187,6 +185,13 @@ class GroupDetailAPIView(APIView):
                     "admin": i.grades.admin,
                     "edit": i.grades.edit,
                     "view": i.grades.view,
+                    "group": i.grades.group,
+                    "member": i.grades.member,
+                    "expense": i.grades.expense,
+                    "view_setting": i.grades.view_setting,
+                    "view_expense": i.grades.view_expense,
+                    "visible": i.grades.visible,
+                    "color": i.grades.color,
                 }
             })
             num +=1
@@ -250,10 +255,12 @@ class GroupDetailAPIView(APIView):
         for i in range(len(old_members)):
             old_members[i].name = update_members[i]['name']
             old_members[i].active = update_members[i]['active']
-            admin = update_members[i]['grade']['admin']
-            edit = update_members[i]['grade']['edit']
-            view = update_members[i]['grade']['view']
-            old_members[i].grades = Grades.objects.get(admin=admin, edit=edit, view=view)
+
+            # TODO : 권한 적용 block
+            # admin = update_members[i]['grade']['admin']
+            # edit = update_members[i]['grade']['edit']
+            # view = update_members[i]['grade']['view']
+            # old_members[i].grades = Grades.objects.get(admin=admin, edit=edit, view=view)
             old_members[i].save()
 
         # 새로운 멤버는 추가, 없으면 추가 안함
@@ -262,7 +269,7 @@ class GroupDetailAPIView(APIView):
                 Member.objects.create(
                     name=i,
                     user=None,
-                    grades=Grades.objects.get(admin=0, edit=0, view=1),
+                    grades=Grades.objects.get_member(),
                     group=group)
 
         return Response({
@@ -530,6 +537,12 @@ class MemberGradesAPIView(APIView):
                 "admin": grade.admin,
                 "edit": grade.edit,
                 "view": grade.view,
+                "group": grade.group,
+                "member": grade.member,
+                "expense": grade.expense,
+                "view_setting": grade.view_setting,
+                "view_expense": grade.view_expense,
+                "color": grade.color,
             })
 
         return Response(grades, status=status.HTTP_200_OK)

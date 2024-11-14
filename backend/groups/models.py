@@ -104,7 +104,11 @@ class MemberManager(models.Manager):
         return super().get_queryset().filter(deleted=1)
 
     def get_admin_member(self, group_id):
-        return self.get_queryset().filter(group_id=group_id, grades__admin=True).first()
+        admin_grade = Grades.objects.get_admin()  # 관리자 등급 가져오기
+        if admin_grade:
+            # 해당 그룹에서 관리자 등급을 가진 멤버를 필터링
+            return self.get_queryset().filter(group_id=group_id, grades=admin_grade).first()
+        return None
 
 
 class Member(models.Model):
