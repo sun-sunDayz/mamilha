@@ -31,8 +31,8 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
     const [formData, setFormData] = useState({
         name: '',
         category: '',
-        members: [{ id: 1, name: '', active: 1, grade: {name:'', admin: true, edit: false, view: false }}],
-        new_members: [{ id: 1, name: '', active: 1, grade: {name:'', admin: true, edit: false, view: false } }],
+        members: [{ id: 1, name: '', active: 1, grade: {name:'', group: true, member: false, expense: false, view_setting: false, view_expense: false }}],
+        new_members: [{ id: 1, name: '', active: 1, grade: {name:'', group: true, member: false, expense: false, view_setting: false, view_expense: false} }],
         update_members: actives,
         ...initialData, // 기존데이터 존제시 자동 추가
     });
@@ -41,11 +41,11 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
     const [currnetMember, setCurrentMember] = useState(null);
 
     useEffect(() => {
-        console.log('initial data', initialData.members);
+        // console.log('initial data', initialData.members);
 
         if(initialData.members) {
             const member = initialData.members.find(member => member.username === currentUser.username);
-            console.log('member', member);
+            // console.log('member', member);
             setCurrentMember(member);
         }
     }, []);
@@ -63,17 +63,7 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
     };
 
     const toggleGrade = (member) => {
-        //관리자는 skip
-        if(member.grade.admin) {
-            return
-        }
-
-        if(member.grade.edit) {
-            updateMemberGradeFormData(member.id, GRADE.VIEW);
-        }
-        else if(member.grade.view) {
-            updateMemberGradeFormData(member.id, GRADE.EDIT);
-        }
+        //기능 skip
     };
 
     const getMemberGrade = (member, grade) => {
@@ -111,6 +101,7 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
     }
 
     const getMemberGradeText = (member) => {
+        return member.grade.name;
         if(member.grade.admin) {
             return "관리자";
         }
@@ -269,9 +260,8 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
                                         <View style={styles.memberRightContainer}>
                                             {isMemberConnected(member) && 
                                                 <TouchableOpacity 
-                                                    onPress={()=> toggleGrade(member)}
-                                                    style={[styles.accountLabel, styles[`${getMemberGradeStyle(member)}AccountBackground`]]}>
-                                                    <Text style={[styles.accountLabelText, styles[`${getMemberGradeStyle(member)}AccountText`]]}>
+                                                    style={[styles.accountLabel, {backgroundColor:`#${member.grade.color}33`, borderColor:`#${member.grade.color}`} ]}>
+                                                    <Text style={[styles.accountLabelText, {color:`#${member.grade.color}`}]}>
                                                         {getMemberGradeText(member)}
                                                     </Text>
                                                 </TouchableOpacity>
