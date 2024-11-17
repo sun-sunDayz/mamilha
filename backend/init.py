@@ -141,7 +141,7 @@ def add_initial_finance_type():
     initial_data = [
         {'id': 1, 'name': '지출'},
         {'id': 2, 'name': '수입'},
-        {'id': 3, 'name': '정산'},
+        {'id': 3, 'name': '이체'},
     ]
 
     FinanceType.objects.all().delete()
@@ -185,11 +185,11 @@ def add_initial_grade():
 
 
 print('init database')
-# add_initial_finance_categories()
-# add_initial_group_categories()
-# add_initial_currency_categories()
-# add_initial_grades()
-# add_initial_split_method()
-# add_initial_pay_method()
-# add_initial_finance_type()
+add_initial_finance_categories()
+add_initial_group_categories()
+add_initial_currency_categories()
+add_initial_grades()
+add_initial_split_method()
+add_initial_pay_method()
+add_initial_finance_type()
 add_initial_grade()

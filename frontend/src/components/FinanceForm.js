@@ -31,7 +31,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
     payer: null,
     pay_method: '카드',
     amount: '',
-    description: '',
+    title: '',
     member: null,
     split_method: '고정분할',
     ...processedInitialData, // 초기값 설정 (update 에서 사용)
@@ -255,6 +255,16 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
     <View style={styles.formContainer}>
       <View style={styles.content}>
         <ScrollView style={styles.scrollContainer}>
+        <View style={styles.formRow}>
+            <Text style={styles.label}>제목</Text>
+            <TextInput
+              placeholder="제목 입력"
+              style={styles.titleInput}
+              multiline
+              value={formData.title}
+              onChangeText={text => handleChange('title', text)}
+            />
+          </View>
           <View style={styles.formRow}>
             <Text style={styles.label}>일시</Text>
             <TouchableOpacity
@@ -306,6 +316,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
                     ? styles.activeTab
                     : styles.inactiveTab,
                 ]}
+
                 onPress={() => {setSelectedType('이체');
                   handleChange('finance_category', 12); }}>
                 <Text
@@ -407,16 +418,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
             </View>
           </View>
 
-          <View style={styles.formRow}>
-            <Text style={styles.label}>설명</Text>
-            <TextInput
-              placeholder="설명 입력 (선택)"
-              style={styles.descriptionInput}
-              multiline
-              value={formData.description}
-              onChangeText={text => handleChange('description', text)}
-            />
-          </View>
+          
           {/* 참여 멤버 리스트 (테이블 형식으로 표시) */}
           <View style={styles.formRow}>
             <Text style={styles.label}>참여 멤버</Text>
@@ -526,16 +528,15 @@ const styles = StyleSheet.create({
     marginRight: 10,
     borderRadius: 8,
   },
-  descriptionInput: {
+  titleInput: {
     color: '#434343',
     fontSize: 16,
     backgroundColor: '#FFFFFF',
     width: '95%',
-    minHeight: 80,
+    height: 40,
     padding: 10,
     marginLeft: 8,
-    borderRadius: 8,
-    textAlignVertical: 'top',
+    borderRadius: 10,
   },
   contentText: {
     color: '#434343',
