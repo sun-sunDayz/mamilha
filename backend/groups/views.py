@@ -170,28 +170,29 @@ class GroupDetailAPIView(APIView):
 
         member = []
         num = 0
-        for i in members:
+        for m in members:
             username = None
-            if i.user is not None:
-                username = i.user.username
+            if m.user is not None:
+                username = m.user.username
                 
             member.append({
                 "id": num,
-                "name": i.name,
-                "active": i.active,
+                "name": m.name,
+                "active": m.active,
                 "username": username,
                 "grade": {
-                    "name": i.grades.name,
-                    "admin": i.grades.admin,
-                    "edit": i.grades.edit,
-                    "view": i.grades.view,
-                    "group": i.grades.group,
-                    "member": i.grades.member,
-                    "expense": i.grades.expense,
-                    "view_setting": i.grades.view_setting,
-                    "view_expense": i.grades.view_expense,
-                    "visible": i.grades.visible,
-                    "color": i.grades.color,
+                    "id": m.grades.id,
+                    "name": m.grades.name,
+                    "admin": m.grades.admin,
+                    "edit": m.grades.edit,
+                    "view": m.grades.view,
+                    "group": m.grades.group,
+                    "member": m.grades.member,
+                    "expense": m.grades.expense,
+                    "view_setting": m.grades.view_setting,
+                    "view_expense": m.grades.view_expense,
+                    "visible": m.grades.visible,
+                    "color": m.grades.color,
                 }
             })
             num +=1

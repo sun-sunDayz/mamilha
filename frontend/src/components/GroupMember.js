@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import {React, useState} from 'react';
+import {React, useState, useEffect} from 'react';
 import GradeCategory from './GradeCategory';
 import {
   useFocusEffect,
@@ -15,35 +15,36 @@ import {
 } from '@react-navigation/native';
 
 const GroupMember = ({initialData = {}, onSubmit, buttonLabel, id}) => {
-  const [nickname, setNickname] = useState('');
-  const [grade, setGrade] = useState(null);
-  const [isActive, setIsActive] = useState(true);
+  const [formData, setFormData] = useState({
+    id: initialData.id || null,
+    nickname: initialData.nickname || '',
+    grade: initialData.grade || null,
+    isActive: initialData.isActive || true,
+  });
+
+  useEffect(() => {
+    // console.log('', initialData)
+  }, []);
 
   const handleChange = (name, value) => {
-    if (name === 'grade') {
-      setGrade(value);
-    }
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   const handleSave = async () => {
-    console.log(nickname, grade, isActive);
-    if (nickname === '') {
+    if (formData.nickname === '') {
       Alert.alert('별명을 입력해주세요');
       return;
     }
 
-    if (grade === null) {
+    if (formData.grade === null) {
       Alert.alert('등급을 선택해주세요');
       return;
     }
 
-    const newMemberData = {
-      nickname: nickname,
-      grade: grade,
-      isActive: isActive,
-    };
-
-    onSubmit(newMemberData);
+    onSubmit(formData);
   };
   return (
     <View style={styles.content}>
@@ -59,15 +60,15 @@ const GroupMember = ({initialData = {}, onSubmit, buttonLabel, id}) => {
         <Text style={styles.label}>별명</Text>
         <TextInput
           placeholder="별명 입력"
-          value={nickname}
-          onChangeText={setNickname}
+          value={formData.nickname}
+          onChangeText={(text) => handleChange('nickname', text)} // ID를 업데이트
           style={styles.textInput}
         />
       </View>
       <View style={styles.formRow}>
         <Text style={styles.label}>권한</Text>
         <GradeCategory
-          selectedCategory="1"
+          selectedCategory={formData.grade}
           onChangeCategory={text => handleChange('grade', text)} // ID를 업데이트
         />
       </View>
@@ -77,15 +78,15 @@ const GroupMember = ({initialData = {}, onSubmit, buttonLabel, id}) => {
           <TouchableOpacity
             style={[
               styles.tabButton,
-              isActive ? styles.activeTab : styles.inactiveTab,
+              formData.isActive ? styles.activeTab : styles.inactiveTab,
             ]}
             onPress={() => {
-              setIsActive(true);
+              handleChange('isActive', true)
             }}>
             <Text
               style={[
                 styles.tabText,
-                isActive ? styles.activeTabText : styles.inactiveTabText,
+                formData.isActive ? styles.activeTabText : styles.inactiveTabText,
               ]}>
               활성
             </Text>
@@ -93,15 +94,15 @@ const GroupMember = ({initialData = {}, onSubmit, buttonLabel, id}) => {
           <TouchableOpacity
             style={[
               styles.tabButton,
-              !isActive ? styles.activeTab : styles.inactiveTab,
+              !formData.isActive ? styles.activeTab : styles.inactiveTab,
             ]}
             onPress={() => {
-              setIsActive(false);
+              handleChange('isActive', false)
             }}>
             <Text
               style={[
                 styles.tabText,
-                !isActive ? styles.activeTabText : styles.inactiveTabText,
+                !formData.isActive ? styles.activeTabText : styles.inactiveTabText,
               ]}>
               비활성
             </Text>
