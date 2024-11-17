@@ -26,7 +26,7 @@ const CreateGroup = ({ navigation, route }) => {
           <Ionicons name="settings-outline" size={30} color="transparent" />
         </View>
 
-        <GroupForm screenName={'CreateGroup'} userName={userName}/>
+        <GroupForm screenName={'CreateGroup'} userName={userName} navigation={navigation}/>
 
       </SafeAreaView>
   );

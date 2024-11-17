@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import {
   View, 
   Text, 
@@ -7,15 +7,40 @@ import {
   SafeAreaView, 
   Modal,
 } from 'react-native';
-
+import apiClient from '../services/apiClient';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import GroupForm from '../components/GroupForm';
+import {UserContext} from '../userContext'
 
   const UpdateGroup = ({ route, navigation }) => {
     const group_pk = route.params.group_pk;
-    const initialData = route.params.initialData;
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [modalWidth, setModalWidth] = useState(0);
+    const [initialData, setInitialData] = useState(null)
+    const currentUser = useContext(UserContext);
+    const [currentMember, setCurrentMember] = useState(null);
+
+    useEffect(() => {
+      apiClient.get(`/api/groups/${group_pk}/`)
+      .then(response => {
+        setInitialData(response.data)
+      })
+      .catch(error => {
+          console.error('데이터를 불러오는데 실패했습니다', error);
+      });
+    }, []);
+
+    useEffect(()=> {
+      if(initialData) {
+        if(initialData.members) {
+          const member = initialData.members.find(member => member.username === currentUser.username);
+          setCurrentMember(member);
+        }
+      }
+    }, [initialData]);
+
+    useEffect(()=> {
+    }, [currentMember]);
 
     const handleDeleteGroup = async () => {
       try {
@@ -29,6 +54,10 @@ import GroupForm from '../components/GroupForm';
       setIsDeleteModalOpen(false);
     };
 
+    if((initialData === null) || (currentMember === null)) {
+      return <View></View>
+    }
+
 
     return (
       <SafeAreaView style={styles.Container}>
@@ -39,42 +68,47 @@ import GroupForm from '../components/GroupForm';
           <View>
             <Text style={styles.title}>모임 정보</Text>
           </View>
+          {currentMember && currentMember.grade.group ? (
           <TouchableOpacity onPress={() => setIsDeleteModalOpen(true)}>
             <Text style={styles.deleteText}>삭제</Text>
           </TouchableOpacity>
+          ) : (
+            <TouchableOpacity></TouchableOpacity>
+          )}
         </View>
-          <GroupForm group_pk={group_pk} screenName={'UpdateGroup'} initialData={initialData} />
-          {/* 삭제 모달 */}
-        {isDeleteModalOpen && (
-          <Modal
-            transparent={true}
-            animationType="fade"
-            visible={isDeleteModalOpen}
-            onRequestClose={() => setIsDeleteModalOpen(false)}>
-            <TouchableOpacity
-              style={styles.UpdateModalOverlay}
-              activeOpacity={1}
-              onPressOut={() => setIsDeleteModalOpen(false)}>
-              <View style={styles.updateModal}>
-                <Text style={styles.udateModalTitel}>
-                  모임을 삭제하시겠습니까?
-                </Text>
-                <View style={styles.udateModalButton}>
-                  <TouchableOpacity
-                    onPress={() => setIsDeleteModalOpen(false)}
-                    style={styles.udateModalButtonNo}>
-                    <Text style={styles.udateModalButtonNoText}>아니오</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={handleDeleteGroup}
-                    style={styles.deleteModalButtonYes}>
-                    <Text style={styles.udateModalButtonYesText}>네</Text>
-                  </TouchableOpacity>
-                </View>
+
+        <GroupForm group_pk={group_pk} screenName={'UpdateGroup'} initialData={initialData} currentMember={currentMember} navigation={navigation}/>
+        {/* 삭제 모달 */}
+      {isDeleteModalOpen && (
+        <Modal
+          transparent={true}
+          animationType="fade"
+          visible={isDeleteModalOpen}
+          onRequestClose={() => setIsDeleteModalOpen(false)}>
+          <TouchableOpacity
+            style={styles.UpdateModalOverlay}
+            activeOpacity={1}
+            onPressOut={() => setIsDeleteModalOpen(false)}>
+            <View style={[styles.updateModal, {width: modalWidth}]}>
+              <Text style={styles.udateModalTitel}>
+                모임을 삭제하시겠습니까?
+              </Text>
+              <View style={styles.udateModalButton}>
+                <TouchableOpacity
+                  onPress={() => setIsDeleteModalOpen(false)}
+                  style={styles.udateModalButtonNo}>
+                  <Text style={styles.udateModalButtonNoText}>아니오</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={handleDeleteGroup}
+                  style={styles.deleteModalButtonYes}>
+                  <Text style={styles.udateModalButtonYesText}>네</Text>
+                </TouchableOpacity>
               </View>
-            </TouchableOpacity>
-          </Modal>
-        )}
+            </View>
+          </TouchableOpacity>
+        </Modal>
+      )}
       </SafeAreaView>
     );
   }

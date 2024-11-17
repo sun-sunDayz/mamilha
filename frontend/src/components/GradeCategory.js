@@ -14,13 +14,14 @@ const GradeCategory = ({onChangeCategory, selectedCategory}) => {
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(selectedCategory);
   const [dropdownWidth, setDropdownWidth] = useState(0);
-  const [Data, setData] = useState([]);
+  const [gradeList, setGradeList] = useState([]);
 
   useEffect(() => {
     apiClient
       .get('/api/groups/members/grades/')
       .then(response => {
-        setData(response.data);
+        // console.log('cate', selectedCategory)
+        setGradeList(response.data);
         if (selectedCategory) {
           setSelectedItem(selectedCategory);
         }
@@ -30,14 +31,20 @@ const GradeCategory = ({onChangeCategory, selectedCategory}) => {
       });
   }, []);
 
+  useEffect(() => {
+  }, [selectedItem])
+
   const handleItemPress = item => {
-    setSelectedItem(item.id);
+    setSelectedItem(item);
     setDropdownOpen(false);
-    onChangeCategory(item.id);
+    onChangeCategory(item);
   };
 
   const getSelectedCategoryName = () => {
-    const selectedCategory = Data.find(item => item.id === selectedItem);
+    let selectedCategory = null;
+    if(selectedItem) {
+      selectedCategory = gradeList.find(item => item.id === selectedItem.id);
+    }
     return selectedCategory ? selectedCategory.name : '등급 선택';
   };
 
@@ -74,14 +81,13 @@ const GradeCategory = ({onChangeCategory, selectedCategory}) => {
             onPressOut={() => setDropdownOpen(false)}>
             <View style={[styles.dropdown, {width: dropdownWidth}]}>
               <FlatList
-                data={Data}
+                data={gradeList}
                 keyExtractor={item => item.id.toString()}
                 renderItem={({item}) =>
-                  // finance_type_id가 1인 경우에만 보여준다.
-                  item.finance_type_id == 1 && (
+                  item.visible && (
                     <TouchableOpacity
                       style={
-                        item.id === selectedItem
+                        selectedItem && item.id === selectedItem.id
                           ? styles.selectedDropdownItem
                           : styles.dropdownItem
                       }
@@ -91,7 +97,7 @@ const GradeCategory = ({onChangeCategory, selectedCategory}) => {
                           styles.dropdownItemText,
                           {
                             color:
-                              item.id === selectedItem ? '#ffffff' : '#434343',
+                            selectedItem && item.id === selectedItem.id ? '#ffffff' : '#434343',
                           },
                         ]}>
                         {item.name}
