@@ -68,7 +68,7 @@ const Spending = ({ group_pk }) => {
 
   return (
     <View style={styles.container}>
-      {Data.length === 0 ? (
+      {!Data ? (
         <View style={styles.emptySpendView}>
           <TouchableOpacity onPress={() => handelCreateFinance()}>
             <Ionicons
@@ -119,7 +119,7 @@ const Spending = ({ group_pk }) => {
                       </View>
                       <View style={styles.details}>
                         <CustomText style={styles.name}>
-                          {truncateText(item.description, 14)}
+                          {truncateText(item.title, 14)}
                         </CustomText>
                         <View style={{ flexDirection: 'row', marginTop: 'auto' }}>
                           <CustomText style={styles.payer}>결제자</CustomText>

@@ -116,7 +116,6 @@ import {UserContext} from '../userContext'
   const styles = StyleSheet.create({
     Container: {
       flex: 1,
-      paddingTop: 10,
       backgroundColor: '#f1f1f9',
     },
     header: {
@@ -155,6 +154,7 @@ import {UserContext} from '../userContext'
       backgroundColor: 'rgba(0,0,0,0.2)',
     },
     updateModal: {
+      width: '80%',
       borderWidth: 1,
       borderColor: '#cccccc',
       backgroundColor: '#ffffff',
