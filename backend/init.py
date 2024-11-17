@@ -141,7 +141,7 @@ def add_initial_finance_type():
     initial_data = [
         {'id': 1, 'name': '지출'},
         {'id': 2, 'name': '수입'},
-        {'id': 3, 'name': '정산'},
+        {'id': 3, 'name': '이체'},
     ]
 
     FinanceType.objects.all().delete()
