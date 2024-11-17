@@ -12,17 +12,27 @@ import {
 import {UserContext} from '../userContext';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import GroupMember from '../components/GroupMember';
+import {
+  useNavigation,
+} from '@react-navigation/native';
+import {useMemberContext} from '../memberContext'
 
-const ProfileScreen = ({navigation}) => {
+const CreateGroupMember = ({}) => {
   const currentUser = useContext(UserContext);
+  const navigation = useNavigation();
   const [id, setId] = useState(''); // 아이디는 일반적으로 수정하지 않으므로 기본값을 설정
+  const {updateMemberData} = useMemberContext();
+
   useEffect(() => {
     if (currentUser) {
       setId(currentUser.username);
     }
   }, [currentUser]);
 
-  const handleSave = async () => {}; // 여기 코드 작성 필요
+  const handleSave = (newMemberData) => {
+    updateMemberData(newMemberData);
+    navigation.goBack()
+  }; 
 
   return (
     <SafeAreaView style={styles.container}>
@@ -35,7 +45,7 @@ const ProfileScreen = ({navigation}) => {
         </View>
         <View style={styles.emptyIcon}></View>
       </View>
-      <GroupMember id={id} buttonLabel="추가하기" />
+      <GroupMember id={id} buttonLabel="추가하기" onSubmit={handleSave}/>
     </SafeAreaView>
   );
 };
@@ -148,4 +158,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ProfileScreen;
+export default CreateGroupMember;

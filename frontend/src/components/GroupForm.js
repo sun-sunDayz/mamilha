@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useContext } from 'react';
+import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
 import {
     View,
     Text,
@@ -11,8 +11,8 @@ import {
 import GroupCategory from '../components/GroupCategory';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import apiClient from '../services/apiClient';
-import { useNavigation } from '@react-navigation/native';
-import {UserContext} from '../userContext'
+import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import {useMemberContext} from '../memberContext'
 
 const GRADE = {
     ADMIN: 'admin',
@@ -20,9 +20,9 @@ const GRADE = {
     VIEW: 'view',
 };
 
-const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMember=null}) => {
+const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMember=null, navigation}) => {
     const scrollViewRef = useRef(null);
-    const navigation = useNavigation();
+    const route = useRoute();
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [modalWidth, setModalWidth] = useState(0);
     const [actives, setActives] = useState(initialData.members);
@@ -30,30 +30,47 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMe
     const [formData, setFormData] = useState({
         name: '',
         category: '',
-        members: [{ id: 1, name: '', active: 1, grade: {name:'', group: true, member: false, expense: false, view_setting: false, view_expense: false }}],
-        new_members: [{ id: 1, name: '', active: 1, grade: {name:'', group: true, member: false, expense: false, view_setting: false, view_expense: false} }],
+        members: [],
+        new_members: [],
         update_members: actives,
         ...initialData, // 기존데이터 존제시 자동 추가
     });
     const [inviteCode, setInviteCode] = useState(initialData.invite_code);
     const [inviteCodeErrorMessage, setInviteCodeErrorMessage] = useState('');
+    const {memberData: newMemberData, clearMemberData} = useMemberContext();
+    // 멤버 추가, 삭제 부분
+    const member = screenName === 'CreateGroup' ? 'members' : 'new_members';
 
     useEffect(() => {
-        // console.log('initial data', initialData.members);
-        // console.log('current', currentMember);
     }, []);
 
-    const updateMemberGradeFormData = (memberId, newGrade) => {
-        setFormData((prevFormData) => {
-            const updatedMembers = prevFormData.update_members.map((member) =>
-            member.id === memberId
-                ? { ...member, grade: getMemberGrade(member, newGrade) }
-                : member
-            );
+    useFocusEffect(
+        useCallback(() => {
+            if (newMemberData) {
+                const newUpdateMember = {
+                    name: newMemberData.nickname,
+                    active: newMemberData.isActive,
+                    grade: newMemberData.grade
+                }
+                // console.log('new member data', newUpdateMember)
 
-            return { ...prevFormData, update_members: updatedMembers };
-        });
-    };
+                const newId = formData[member].length > 0 ? formData[member][formData[member].length - 1].id + 1 : 1;
+                handleChange(member, [...formData[member], { ...newUpdateMember, id: newId }]);
+                scrollViewRef.current?.scrollToEnd({ animated: true });
+
+                //멤버 생성 후 초기화
+                clearMemberData()
+            }
+        }, [newMemberData])
+    );
+
+    // GroupForm 화면에서 나갈 때 member data 데이터 초기화
+    useFocusEffect(
+        useCallback(() => {
+            return () => {
+            };
+        }, [])
+    );
 
     const isEditable = () => {
         if(screenName === 'CreateGroup') {
@@ -90,57 +107,23 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMe
         return memberGrade;
     }
 
-    const getMemberGradeStyle = (member) => {
-        if(member.grade.admin) {
-            return GRADE.ADMIN;
-        }
-        if(member.grade.edit) {
-            return GRADE.EDIT;
-        }
-        return GRADE.VIEW;
-    }
-
     const getMemberGradeText = (member) => {
         return member.grade.name;
-        if(member.grade.admin) {
-            return "관리자";
-        }
-        if(member.grade.edit) {
-            return "편집자";
-        }
-        return "뷰어";
-    }
-
-    const updateInviteCode = async () => {
-        try {
-            const response = await apiClient.get(`/api/groups/invite/${group_pk}/`);
-            const newCode = response.data.invite_code
-            setInviteCode(newCode);
-            } catch (error) {
-            alert('초대코드 생성에 실패했습니다: ' + error.response.data.error);
-        }
     }
 
     const handleChange = (name, value) => {
         setFormData({ ...formData, [name]: value });
     };
 
-    // 멤버 추가, 삭제 부분
-    const member = screenName === 'CreateGroup' ? 'members' : 'new_members';
 
     const addInput = () => {
-        const newId = formData[member].length > 0 ? formData[member][formData[member].length - 1].id + 1 : 1;
-        handleChange(member, [...formData[member], { id: newId, name: '', active: 1 }])
-        scrollViewRef.current?.scrollToEnd({ animated: true });
+        navigation.navigate('CreateGroupMember')
     };
 
     const deleteInput = id => {
-        if (formData[member].length > 1) {
-            handleChange(member, formData[member].filter(member => member.id !== id))
-        } else if (formData[member].length == 1) {
-            handleChange(member, [{ id: 1, name: '', active: 1 }])
-        }
+        handleChange(member, formData[member].filter(member => member.id !== id))
     };
+    
 
     // 데이터 저장
     const handleSubmit = async () => {
