@@ -542,6 +542,7 @@ class MemberGradesAPIView(APIView):
                 "expense": grade.expense,
                 "view_setting": grade.view_setting,
                 "view_expense": grade.view_expense,
+                "visible": grade.visible,
                 "color": grade.color,
             })
 

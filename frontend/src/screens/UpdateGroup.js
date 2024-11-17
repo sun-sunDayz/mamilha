@@ -77,7 +77,7 @@ import {UserContext} from '../userContext'
           )}
         </View>
 
-        <GroupForm group_pk={group_pk} screenName={'UpdateGroup'} initialData={initialData} currentMember={currentMember} />
+        <GroupForm group_pk={group_pk} screenName={'UpdateGroup'} initialData={initialData} currentMember={currentMember} navigation={navigation}/>
         {/* 삭제 모달 */}
       {isDeleteModalOpen && (
         <Modal

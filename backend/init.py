@@ -157,7 +157,7 @@ def add_initial_finance_type():
 def add_initial_grade():
     initial_data = [
         {'id': 1, 'name': '관리자', 'admin': False, 'edit': False, 'view': False, 'group': True, 'member': True,
-            'expense': True, 'view_setting': True, 'view_expense': True, 'visible': True, 'color': 'E87979'},
+            'expense': True, 'view_setting': True, 'view_expense': True, 'visible': False, 'color': 'E87979'},
         {'id': 2, 'name': '임원', 'admin': False, 'edit': False, 'view': False, 'group': False, 'member': True,
             'expense': True, 'view_setting': True, 'view_expense': True, 'visible': True, 'color': 'E8AE79'},
         {'id': 3, 'name': '총무', 'admin': False, 'edit': False, 'view': False, 'group': False, 'member': False,
@@ -165,7 +165,7 @@ def add_initial_grade():
         {'id': 4, 'name': '회원', 'admin': False, 'edit': False, 'view': False, 'group': False, 'member': False,
             'expense': False, 'view_setting': True, 'view_expense': True, 'visible': True, 'color': 'A379E8'},
         {'id': 5, 'name': '게스트', 'admin': False, 'edit': False, 'view': False, 'group': False, 'member': False,
-            'expense': False, 'view_setting': False, 'view_expense': False, 'visible': True, 'color': '6C6C6C'},
+            'expense': False, 'view_setting': False, 'view_expense': False, 'visible': False, 'color': '6C6C6C'},
     ]
 
     Grades.objects.all().delete()

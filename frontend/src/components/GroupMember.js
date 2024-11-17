@@ -4,30 +4,46 @@ import {
   StyleSheet,
   TextInput,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import {React, useState} from 'react';
 import GradeCategory from './GradeCategory';
+import {
+  useFocusEffect,
+  useNavigation,
+  useRoute,
+} from '@react-navigation/native';
 
 const GroupMember = ({initialData = {}, onSubmit, buttonLabel, id}) => {
   const [nickname, setNickname] = useState('');
+  const [grade, setGrade] = useState(null);
+  const [isActive, setIsActive] = useState(true);
 
-  const [selectedType, setSelectedType] = useState(
-    '활성', // 여기 수정 필요
-  );
-
-  // TextInput 값이 변경될 때 호출되는 함수 - 여기도 다 수정 필요!
-  const handleChange = (name, value) => {};
+  const handleChange = (name, value) => {
+    if (name === 'grade') {
+      setGrade(value);
+    }
+  };
 
   const handleSave = async () => {
-    // 회원가입 API 호출 로직 추가
-    console.log(name, nickname, email);
-    const result = await updateProfile(name, nickname, email);
-    if (!result) {
-      Alert.alert('회원정보 수정 실패');
+    console.log(nickname, grade, isActive);
+    if (nickname === '') {
+      Alert.alert('별명을 입력해주세요');
       return;
     }
-    Alert.alert('회원정보 수정 완료');
-    navigation.navigate('Main');
+
+    if (grade === null) {
+      Alert.alert('등급을 선택해주세요');
+      return;
+    }
+
+    const newMemberData = {
+      nickname: nickname,
+      grade: grade,
+      isActive: isActive,
+    };
+
+    onSubmit(newMemberData);
   };
   return (
     <View style={styles.content}>
@@ -52,7 +68,7 @@ const GroupMember = ({initialData = {}, onSubmit, buttonLabel, id}) => {
         <Text style={styles.label}>권한</Text>
         <GradeCategory
           selectedCategory="1"
-          onChangeCategory={text => handleChange('finance_category', text)} // ID를 업데이트
+          onChangeCategory={text => handleChange('grade', text)} // ID를 업데이트
         />
       </View>
       <View style={styles.formRow}>
@@ -61,18 +77,15 @@ const GroupMember = ({initialData = {}, onSubmit, buttonLabel, id}) => {
           <TouchableOpacity
             style={[
               styles.tabButton,
-              selectedType === '활성' ? styles.activeTab : styles.inactiveTab,
+              isActive ? styles.activeTab : styles.inactiveTab,
             ]}
             onPress={() => {
-              setSelectedType('활성');
-              handleChange('finance_category', null);
+              setIsActive(true);
             }}>
             <Text
               style={[
                 styles.tabText,
-                selectedType === '활성'
-                  ? styles.activeTabText
-                  : styles.inactiveTabText,
+                isActive ? styles.activeTabText : styles.inactiveTabText,
               ]}>
               활성
             </Text>
@@ -80,18 +93,15 @@ const GroupMember = ({initialData = {}, onSubmit, buttonLabel, id}) => {
           <TouchableOpacity
             style={[
               styles.tabButton,
-              selectedType === '비활성' ? styles.activeTab : styles.inactiveTab,
+              !isActive ? styles.activeTab : styles.inactiveTab,
             ]}
             onPress={() => {
-              setSelectedType('비활성');
-              handleChange('finance_category', 12);
+              setIsActive(false);
             }}>
             <Text
               style={[
                 styles.tabText,
-                selectedType === '비활성'
-                  ? styles.activeTabText
-                  : styles.inactiveTabText,
+                !isActive ? styles.activeTabText : styles.inactiveTabText,
               ]}>
               비활성
             </Text>
