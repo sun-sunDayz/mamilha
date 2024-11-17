@@ -11,18 +11,11 @@ import {
 import GroupCategory from '../components/GroupCategory';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import apiClient from '../services/apiClient';
-import { useFocusEffect, useNavigation, useRoute } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
 import {useMemberContext} from '../memberContext'
-
-const GRADE = {
-    ADMIN: 'admin',
-    EDIT: 'edit',
-    VIEW: 'view',
-};
 
 const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMember=null, navigation}) => {
     const scrollViewRef = useRef(null);
-    const route = useRoute();
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [modalWidth, setModalWidth] = useState(0);
     const [actives, setActives] = useState(initialData.members);
@@ -84,30 +77,6 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMe
             //Assert fail
             return false
         }
-    }
-
-    const getMemberGrade = (member, grade) => {
-        let memberGrade = {
-            name: member.grade.name,
-            admin: false,
-            edit: false,
-            view: false,
-        }
-
-        if(grade === GRADE.ADMIN) {
-            memberGrade.admin = true;
-            memberGrade.edit = true;
-            memberGrade.view = true;
-        } else if(grade === GRADE.EDIT) {
-            memberGrade.admin = false;
-            memberGrade.edit = true;
-            memberGrade.view = true;
-        } else if(grade === GRADE.VIEW) {
-            memberGrade.admin = false;
-            memberGrade.edit = false;
-            memberGrade.view = true;
-        }
-        return memberGrade;
     }
 
     const getMemberGradeText = (member) => {
