@@ -19,6 +19,7 @@ import CreateFinance from './src/screens/CreateFinance';
 import UpdateFinance from './src/screens/UpdateFinance';
 import FinanceDetail from './src/screens/FinanceDetail';
 import CreateGroupMember from './src/screens/CreateGroupMember';
+import UpdateGroupMember from './src/screens/UpdateGroupMember';
 import {UserProvider} from './src/userContext';
 import {MemberProvider} from './src/memberContext';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -61,6 +62,7 @@ const App = () => {
           <Stack.Screen name="FinanceDetail" component={FinanceDetail} />
           <Stack.Screen name="UpdateGroup" component={UpdateGroup} />
           <Stack.Screen name="CreateGroupMember" component={CreateGroupMember} />
+          <Stack.Screen name="UpdateGroupMember" component={UpdateGroupMember} />
         </Stack.Navigator>
         </MemberProvider>
       </UserProvider>

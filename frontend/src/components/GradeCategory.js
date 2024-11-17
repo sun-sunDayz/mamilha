@@ -20,6 +20,7 @@ const GradeCategory = ({onChangeCategory, selectedCategory}) => {
     apiClient
       .get('/api/groups/members/grades/')
       .then(response => {
+        // console.log('cate', selectedCategory)
         setGradeList(response.data);
         if (selectedCategory) {
           setSelectedItem(selectedCategory);
@@ -40,7 +41,10 @@ const GradeCategory = ({onChangeCategory, selectedCategory}) => {
   };
 
   const getSelectedCategoryName = () => {
-    const selectedCategory = gradeList.find(item => item.id === selectedItem.id);
+    let selectedCategory = null;
+    if(selectedItem) {
+      selectedCategory = gradeList.find(item => item.id === selectedItem.id);
+    }
     return selectedCategory ? selectedCategory.name : '등급 선택';
   };
 
@@ -83,7 +87,7 @@ const GradeCategory = ({onChangeCategory, selectedCategory}) => {
                   item.visible && (
                     <TouchableOpacity
                       style={
-                        item.id === selectedItem.id
+                        selectedItem && item.id === selectedItem.id
                           ? styles.selectedDropdownItem
                           : styles.dropdownItem
                       }
@@ -93,7 +97,7 @@ const GradeCategory = ({onChangeCategory, selectedCategory}) => {
                           styles.dropdownItemText,
                           {
                             color:
-                              item.id === selectedItem ? '#ffffff' : '#434343',
+                            selectedItem && item.id === selectedItem.id ? '#ffffff' : '#434343',
                           },
                         ]}>
                         {item.name}

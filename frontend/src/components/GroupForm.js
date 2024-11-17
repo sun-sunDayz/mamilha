@@ -47,29 +47,32 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMe
     useFocusEffect(
         useCallback(() => {
             if (newMemberData) {
-                const newUpdateMember = {
+                const data = {
+                    id: newMemberData.id,
                     name: newMemberData.nickname,
                     active: newMemberData.isActive,
                     grade: newMemberData.grade
                 }
-                // console.log('new member data', newUpdateMember)
 
-                const newId = formData[member].length > 0 ? formData[member][formData[member].length - 1].id + 1 : 1;
-                handleChange(member, [...formData[member], { ...newUpdateMember, id: newId }]);
-                scrollViewRef.current?.scrollToEnd({ animated: true });
+                if(data.id) {
+                    const newInputs = formData.update_members.map(item =>
+                        item.id === data['id'] ? { ...item, 
+                            name: data.name,
+                            active: data.active,
+                            grade: data.grade,
+                        } : item);
+                    console.log('new ',newInputs)
+                    handleChange('update_members', newInputs);
+                } else {
+                    const newId = formData[member].length > 0 ? formData[member][formData[member].length - 1].id + 1 : 1;
+                    handleChange(member, [...formData[member], { ...data, id: newId }]);
+                    scrollViewRef.current?.scrollToEnd({ animated: true });
+                }
 
                 //멤버 생성 후 초기화
                 clearMemberData()
             }
         }, [newMemberData])
-    );
-
-    // GroupForm 화면에서 나갈 때 member data 데이터 초기화
-    useFocusEffect(
-        useCallback(() => {
-            return () => {
-            };
-        }, [])
     );
 
     const isEditable = () => {
@@ -130,10 +133,13 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMe
         try {
             if (screenName === 'CreateGroup') {
                 // Create인 경우 POST 요청
+                const newMembers = [{ id: 0, name: nickName || userName, active: 1 }, ...formData.members];
+                console.log('members ', newMembers)
+
                 await apiClient.post('/api/groups/', {
                     ...formData,
                     // nickName빈 값일 경울 로그인 유저 닉네임 추가
-                    members: [{ id: 0, name: nickName || userName, active: 1 }, ...formData.members ]
+                    members: newMembers,
                 });
             } else if (screenName === 'UpdateGroup') {
                 // Update인 경우 PUT 요청
@@ -226,7 +232,15 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMe
                         {screenName === 'UpdateGroup' &&
                             <View>
                                 {formData.update_members.map((member, index) => (
-                                    <View key={member['id']} style={styles.MemberUserContainer}>
+                                    <TouchableOpacity key={member['id']} style={styles.MemberUserContainer} onPress={() => {
+                                        navigation.navigate('UpdateGroupMember', 
+                                            {
+                                                id: member.id,
+                                                nickname: member.name, 
+                                                grade: member.grade, 
+                                                isActive: member.active
+                                            })
+                                    }}>
                                         <TextInput
                                             style={styles.MemberUserName}
                                             placeholder="멤버 별명 입력"
@@ -244,29 +258,24 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMe
                                         )}
                                         <View style={styles.memberRightContainer}>
                                             {isMemberConnected(member) && 
-                                                <TouchableOpacity 
+                                                <View 
                                                     style={[styles.accountLabel, {backgroundColor:`#${member.grade.color}33`, borderColor:`#${member.grade.color}`} ]}>
                                                     <Text style={[styles.accountLabelText, {color:`#${member.grade.color}`}]}>
                                                         {getMemberGradeText(member)}
                                                     </Text>
-                                                </TouchableOpacity>
+                                                </View>
                                             }
-                                            <TouchableOpacity
-                                                onPress={() => {
-                                                    const newInputs = formData.update_members.map(item =>
-                                                        item.id === member.id ? { ...item, active: item.active ? 0 : 1 } : item
-                                                    );
-                                                    handleChange('update_members', newInputs);
-                                                }}
+                                            <View
+
                                                 style={member.active ? styles.activeButton : styles.inActiveButton}
                                             >
                                                 <Text style={member.active ? styles.activeText : styles.inActiveText}>
                                                     {member.active ? '활성' : '비활성'}
                                                 </Text>
-                                            </TouchableOpacity>
+                                            </View>
                                         </View>
 
-                                    </View>
+                                    </TouchableOpacity>
                                 ))}
                             </View>}
                         {screenName === 'CreateGroup' &&
