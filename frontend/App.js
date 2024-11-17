@@ -18,8 +18,10 @@ import {NavigationContainer} from '@react-navigation/native';
 import CreateFinance from './src/screens/CreateFinance';
 import UpdateFinance from './src/screens/UpdateFinance';
 import FinanceDetail from './src/screens/FinanceDetail';
+import CreateGroupMember from './src/screens/CreateGroupMember';
+import UpdateGroupMember from './src/screens/UpdateGroupMember';
 import {UserProvider} from './src/userContext';
-
+import {MemberProvider} from './src/memberContext';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 const App = () => {
@@ -38,9 +40,11 @@ const App = () => {
       </Tab.Navigator>
     );
   };
+
   return (
     <NavigationContainer>
       <UserProvider>
+        <MemberProvider>
         <Stack.Navigator screenOptions={{headerShown: false}}>
           <Stack.Screen name="BottomTabScreen" component={BottomTabScreen} />
           <Stack.Screen name="Main" component={Main} />
@@ -52,12 +56,15 @@ const App = () => {
           <Stack.Screen name="Profile" component={Profile} />
           <Stack.Screen name="Login" component={Login} />
           <Stack.Screen name="PasswordChange" component={PasswordChange} />
-          <Stack.Screen name="UpdateGroup" component={UpdateGroup} />
           <Stack.Screen name="Finances" component={Finances} />
           <Stack.Screen name="CreateFinance" component={CreateFinance} />
           <Stack.Screen name="UpdateFinance" component={UpdateFinance} />
           <Stack.Screen name="FinanceDetail" component={FinanceDetail} />
+          <Stack.Screen name="UpdateGroup" component={UpdateGroup} />
+          <Stack.Screen name="CreateGroupMember" component={CreateGroupMember} />
+          <Stack.Screen name="UpdateGroupMember" component={UpdateGroupMember} />
         </Stack.Navigator>
+        </MemberProvider>
       </UserProvider>
     </NavigationContainer>
   );
