@@ -201,14 +201,16 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMe
                         {screenName === 'UpdateGroup' &&
                             <View>
                                 {formData.update_members.map((member, index) => (
-                                    <TouchableOpacity key={member['id']} style={styles.MemberUserContainer} onPress={() => {
-                                        navigation.navigate('UpdateGroupMember', 
-                                            {
-                                                id: member.id,
-                                                nickname: member.name, 
-                                                grade: member.grade, 
-                                                isActive: member.active
-                                            })
+                                    <TouchableOpacity key={member['id']} style={styles.MemberUserContainer} 
+                                        disabled={member.grade.group}   //관리자인 경우 편집 불가
+                                        onPress={() => {
+                                            navigation.navigate('UpdateGroupMember', 
+                                                {
+                                                    id: member.id,
+                                                    nickname: member.name, 
+                                                    grade: member.grade, 
+                                                    isActive: member.active
+                                                })
                                     }}>
                                         <TextInput
                                             style={styles.MemberUserName}
