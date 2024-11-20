@@ -480,7 +480,7 @@ class MemberAccountAPIView(APIView):
 
         data = request.data
         name = data.get('name')
-        grades = Grades.objects.get(admin=0, edit=0, view=1)
+        grades = Grades.objects.get_member()
         active = True
         user = request.user
 
