@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext, useCallback } from 'react';
 import {
     View,
     Text,
@@ -11,11 +11,11 @@ import {
 import GroupCategory from '../components/GroupCategory';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import apiClient from '../services/apiClient';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect } from '@react-navigation/native';
+import {useMemberContext} from '../memberContext'
 
-const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
+const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMember=null, navigation}) => {
     const scrollViewRef = useRef(null);
-    const navigation = useNavigation();
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
     const [modalWidth, setModalWidth] = useState(0);
     const [actives, setActives] = useState(initialData.members);
@@ -23,54 +23,92 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
     const [formData, setFormData] = useState({
         name: '',
         category: '',
-        members: [{ id: 1, name: '', active: 1 }],
-        new_members: [{ id: 1, name: '', active: 1 }],
+        members: [],
+        new_members: [],
         update_members: actives,
         ...initialData, // 기존데이터 존제시 자동 추가
     });
     const [inviteCode, setInviteCode] = useState(initialData.invite_code);
     const [inviteCodeErrorMessage, setInviteCodeErrorMessage] = useState('');
+    const {memberData: newMemberData, clearMemberData} = useMemberContext();
+    // 멤버 추가, 삭제 부분
+    const member = screenName === 'CreateGroup' ? 'members' : 'new_members';
 
-    const updateInviteCode = async () => {
-        try {
-            const response = await apiClient.get(`/api/groups/invite/${group_pk}/`);
-            const newCode = response.data.invite_code
-            setInviteCode(newCode);
-            } catch (error) {
-            alert('초대코드 생성에 실패했습니다: ' + error.response.data.error);
+    useEffect(() => {
+    }, []);
+
+    useFocusEffect(
+        useCallback(() => {
+            if (newMemberData) {
+                const data = {
+                    id: newMemberData.id,
+                    name: newMemberData.nickname,
+                    active: newMemberData.isActive,
+                    grade: newMemberData.grade
+                }
+
+                if(data.id) {
+                    const newInputs = formData.update_members.map(item =>
+                        item.id === data['id'] ? { ...item, 
+                            name: data.name,
+                            active: data.active,
+                            grade: data.grade,
+                        } : item);
+                    console.log('new ',newInputs)
+                    handleChange('update_members', newInputs);
+                } else {
+                    const newId = formData[member].length > 0 ? formData[member][formData[member].length - 1].id + 1 : 1;
+                    handleChange(member, [...formData[member], { ...data, id: newId }]);
+                    scrollViewRef.current?.scrollToEnd({ animated: true });
+                }
+
+                //멤버 생성 후 초기화
+                clearMemberData()
+            }
+        }, [newMemberData])
+    );
+
+    const isEditable = () => {
+        if(screenName === 'CreateGroup') {
+            return true;
+        } else if(screenName === 'UpdateGroup') {
+            return currentMember && currentMember.grade.group;
+        } else{
+            //Assert fail
+            return false
         }
+    }
+
+    const getMemberGradeText = (member) => {
+        return member.grade.name;
     }
 
     const handleChange = (name, value) => {
         setFormData({ ...formData, [name]: value });
     };
 
-    // 멤버 추가, 삭제 부분
-    const member = screenName === 'CreateGroup' ? 'members' : 'new_members';
 
     const addInput = () => {
-        const newId = formData[member].length > 0 ? formData[member][formData[member].length - 1].id + 1 : 1;
-        handleChange(member, [...formData[member], { id: newId, name: '', active: 1 }])
-        scrollViewRef.current?.scrollToEnd({ animated: true });
+        navigation.navigate('CreateGroupMember')
     };
 
     const deleteInput = id => {
-        if (formData[member].length > 1) {
-            handleChange(member, formData[member].filter(member => member.id !== id))
-        } else if (formData[member].length == 1) {
-            handleChange(member, [{ id: 1, name: '', active: 1 }])
-        }
+        handleChange(member, formData[member].filter(member => member.id !== id))
     };
+    
 
     // 데이터 저장
     const handleSubmit = async () => {
         try {
             if (screenName === 'CreateGroup') {
                 // Create인 경우 POST 요청
+                const newMembers = [{ id: 0, name: nickName || userName, active: 1 }, ...formData.members];
+                console.log('members ', newMembers)
+
                 await apiClient.post('/api/groups/', {
                     ...formData,
                     // nickName빈 값일 경울 로그인 유저 닉네임 추가
-                    members: [{ id: 0, name: nickName || userName, active: 1 }, ...formData.members ]
+                    members: newMembers,
                 });
             } else if (screenName === 'UpdateGroup') {
                 // Update인 경우 PUT 요청
@@ -106,9 +144,15 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
         return member.username !== null;
     };
 
+    const getButtonColor = () => {
+        return "FFDDAA";
+    }
+
     return (
         <View >
-            <View style={styles.content}>
+            <View style={styles.content} 
+            pointerEvents={isEditable() ? "auto" : "none"}
+            >
                 <ScrollView ref={scrollViewRef} contentContainerStyle={styles.ScrollViewContent}>
                     <View style={styles.formRow}>
                         <Text style={styles.label}>모임 이름</Text>
@@ -157,7 +201,15 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
                         {screenName === 'UpdateGroup' &&
                             <View>
                                 {formData.update_members.map((member, index) => (
-                                    <View key={member['id']} style={styles.MemberUserContainer}>
+                                    <TouchableOpacity key={member['id']} style={styles.MemberUserContainer} onPress={() => {
+                                        navigation.navigate('UpdateGroupMember', 
+                                            {
+                                                id: member.id,
+                                                nickname: member.name, 
+                                                grade: member.grade, 
+                                                isActive: member.active
+                                            })
+                                    }}>
                                         <TextInput
                                             style={styles.MemberUserName}
                                             placeholder="멤버 별명 입력"
@@ -170,33 +222,29 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
                                                 handleChange('update_members', newInputs);
                                             }}
                                         />
-                                        {member['id'] === 0 && (
+                                        {member['id'] === currentMember.id && (
                                             <Text style={styles.MemberUserMe}>(나)</Text>
                                         )}
                                         <View style={styles.memberRightContainer}>
                                             {isMemberConnected(member) && 
-                                                <View style={[styles.accountLabel]}>
-                                                    <Text style={styles.activeAccountLabelText}>
-                                                        계정연결
+                                                <View 
+                                                    style={[styles.accountLabel, {backgroundColor:`#${member.grade.color}33`, borderColor:`#${member.grade.color}`} ]}>
+                                                    <Text style={[styles.accountLabelText, {color:`#${member.grade.color}`}]}>
+                                                        {getMemberGradeText(member)}
                                                     </Text>
                                                 </View>
                                             }
-                                            <TouchableOpacity
-                                                onPress={() => {
-                                                    const newInputs = formData.update_members.map(item =>
-                                                        item.id === member.id ? { ...item, active: item.active ? 0 : 1 } : item
-                                                    );
-                                                    handleChange('update_members', newInputs);
-                                                }}
+                                            <View
+
                                                 style={member.active ? styles.activeButton : styles.inActiveButton}
                                             >
                                                 <Text style={member.active ? styles.activeText : styles.inActiveText}>
                                                     {member.active ? '활성' : '비활성'}
                                                 </Text>
-                                            </TouchableOpacity>
+                                            </View>
                                         </View>
 
-                                    </View>
+                                    </TouchableOpacity>
                                 ))}
                             </View>}
                         {screenName === 'CreateGroup' &&
@@ -237,29 +285,33 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName }) => {
                                     </View>
                                 ))}
                             </View>
+                            {
+                            isEditable() &&
                             <View style={{ alignItems: 'center', marginTop: 10 }}>
                                 <TouchableOpacity onPress={addInput} style={styles.addButton}>
                                     <Ionicons name="add-circle" size={35} color='#5DAF6A' />
                                 </TouchableOpacity>
                             </View>
+                            }
                         </View>
                     </View>
                 </ScrollView>
             </View>
             {screenName == 'CreateGroup' ?
-                    <TouchableOpacity onPress={handleSubmit} style={styles.CreateGroupButton} >
-                        <Text style={styles.CreateGroupButtonText}>생성하기</Text>
-                    </TouchableOpacity>
-                :
-                    <TouchableOpacity onPress={() => setIsUpdateModalOpen(true)}
-                        style={styles.CreateGroupButton}
-                        onLayout={(event) => {
-                            const { width } = event.nativeEvent.layout;
-                            setModalWidth(width);
-                        }}>
-                        <Text style={styles.CreateGroupButtonText}>수정하기</Text>
-                    </TouchableOpacity>
+                <TouchableOpacity onPress={handleSubmit} style={styles.CreateGroupButton} >
+                    <Text style={styles.CreateGroupButtonText}>생성하기</Text>
+                </TouchableOpacity>
+                : (isEditable() && (
+                <TouchableOpacity onPress={() => setIsUpdateModalOpen(true)}
+                    style={styles.CreateGroupButton}
+                    onLayout={(event) => {
+                        const { width } = event.nativeEvent.layout;
+                        setModalWidth(width);
+                    }}>
+                    <Text style={styles.CreateGroupButtonText}>수정하기</Text>
+                </TouchableOpacity>))
             }
+
             {isUpdateModalOpen && (
                 <Modal
                     transparent={true}
@@ -427,9 +479,31 @@ const styles = StyleSheet.create({
         borderColor: '#79C7E8',
         backgroundColor: 'rgba(121,199,232,0.2)',
     },
-    activeAccountLabelText: {
+    accountLabelText: {
         fontSize: 14,
-        color: '#79C7E8'
+    },
+    adminAccountBackground: {
+        backgroundColor: 'rgba(232, 121, 121, 0.2)',
+        borderColor: 'rgba(232, 121, 121, 1.0)',
+    },
+    adminAccountText: {
+        color: 'rgba(232, 121, 121, 1.0)',
+    },
+
+    editAccountBackground: {
+        backgroundColor: 'rgba(232, 174, 121, 0.2)',
+        borderColor: 'rgba(232, 174, 121, 1.0)',
+    },
+    editAccountText: {
+        color: 'rgba(232, 174, 121, 1.0)',
+    },
+
+    viewAccountBackground: {
+        backgroundColor: 'rgba(121,199,232,0.2)',
+        borderColor: 'rgba(121,199,232,1.0)',
+    },
+    viewAccountText: {
+        color: 'rgba(121,199,232,1.0)',
     },
     //모달창
     UpdateModalOverlay: {
@@ -525,6 +599,11 @@ const styles = StyleSheet.create({
         color: 'red',
         fontSize: 14,
         marginTop: 8,
+    },
+    gradeText: {
+        backgroundColor: '#EEEEEE',
+        color: 'red',
+        fontSize: 10,
     },
 });
 

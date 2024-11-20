@@ -16,7 +16,7 @@ def validate_group_data(name, category_id):
         return Response({'error': "그룹 이름이 없습니다"},
                         status=status.HTTP_400_BAD_REQUEST)
     #카테고리가 빈 값일 경우 Error처리
-    if category_id is '':
+    if category_id == '':
         return Response({'error': "그룹 카테고리를 선택해 주세요"},
                         status=status.HTTP_400_BAD_REQUEST)
     #없는 카테고리, 통화 선택시 error처리
@@ -43,25 +43,29 @@ class GroupAPIView(APIView):
     def get(self, request):
         user = request.user
         # deleted가 False인 그룹만 가져오기
-        groups_list = user.Member_user.filter(group__deleted=False)
+        groups_list = Group.objects.filter(Member_group__user=user, Member_group__deleted=False)  # 삭제되지 않은 그룹만 가져옴
+        # groups_list = user.Member_user.filter(group__deleted=False)
 
         groups = []
         for i in groups_list:
-            invite_code = get_group_invite_code(i.group_id)
-            members = Member.objects.filter(group_id=i.group_id)
+            invite_code = get_group_invite_code(i.id)
+            members = Member.objects.filter(group_id=i.id)
+
+            # members = i.Member_group
             # members[0]은 언제나 관리자
-            groups.append({
-                "id":  i.group_id,
-                "name": i.group.name,
-                "category_id": i.group.category.id,
-                "category": i.group.category.name,
-                "category_icon": i.group.category.icon,
-                "category_icon_color": i.group.category.icon_color,
-                "currency": i.group.currency.currency, 
+            group = {
+                "id":  i.id,
+                "name": i.name,
+                "category_id": i.category.id,
+                "category": i.category.name,
+                "category_icon": i.category.icon,
+                "category_icon_color": i.category.icon_color,
+                "currency": i.currency.currency, 
                 "user": {"userName": members[0].name, "userID":members[0].user_id},
                 "members": len(members),
                 "invite_code": invite_code,
-            })
+            }
+            groups.append(group)
 
         return Response(groups,
                         status=status.HTTP_200_OK)
@@ -107,10 +111,12 @@ class GroupAPIView(APIView):
         for member in member_validated:
             if member['id'] == 0:
                 user=user
-                grades = Grades.objects.get(admin=1)
+                grades = Grades.objects.get_admin()
+                # grades = Grades.objects.get(admin=1)
             else:
                 user=None
-                grades=Grades.objects.get(admin=0, edit=0, view=1)
+                grades = Grades.objects.get_member()
+                # grades=Grades.objects.get(admin=0, edit=0, view=1)
                 
             Member.objects.create(
             name=member['name'],
@@ -164,13 +170,30 @@ class GroupDetailAPIView(APIView):
 
         member = []
         num = 0
-        for i in members:
-            username = i.user.username if i.user is not None else None
+        for m in members:
+            username = None
+            if m.user is not None:
+                username = m.user.username
+                
             member.append({
                 "id": num,
-                "name": i.name,
-                "active": i.active,
+                "name": m.name,
+                "active": m.active,
                 "username": username,
+                "grade": {
+                    "id": m.grades.id,
+                    "name": m.grades.name,
+                    "admin": m.grades.admin,
+                    "edit": m.grades.edit,
+                    "view": m.grades.view,
+                    "group": m.grades.group,
+                    "member": m.grades.member,
+                    "expense": m.grades.expense,
+                    "view_setting": m.grades.view_setting,
+                    "view_expense": m.grades.view_expense,
+                    "visible": m.grades.visible,
+                    "color": m.grades.color,
+                }
             })
             num +=1
 
@@ -226,13 +249,19 @@ class GroupDetailAPIView(APIView):
 
         group.name = validated_data["name"]
         group.category = validated_data["category"]
-        group.currency.currency = Currency.objects.get(id=0)
+        group.currency.currency = Currency.objects.all().first()
         group.save()
 
         # 기존의 멤버 업데이트
         for i in range(len(old_members)):
             old_members[i].name = update_members[i]['name']
             old_members[i].active = update_members[i]['active']
+
+            # TODO : 권한 적용 block
+            # admin = update_members[i]['grade']['admin']
+            # edit = update_members[i]['grade']['edit']
+            # view = update_members[i]['grade']['view']
+            # old_members[i].grades = Grades.objects.get(admin=admin, edit=edit, view=view)
             old_members[i].save()
 
         # 새로운 멤버는 추가, 없으면 추가 안함
@@ -241,7 +270,7 @@ class GroupDetailAPIView(APIView):
                 Member.objects.create(
                     name=i,
                     user=None,
-                    grades=Grades.objects.get(admin=0, edit=0, view=1),
+                    grades=Grades.objects.get_member(),
                     group=group)
 
         return Response({
@@ -449,7 +478,7 @@ class MemberAccountAPIView(APIView):
 
         data = request.data
         name = data.get('name')
-        grades = Grades.objects.get(admin=0, edit=0, view=1)
+        grades = Grades.objects.get_member()
         active = True
         user = request.user
 
@@ -509,6 +538,13 @@ class MemberGradesAPIView(APIView):
                 "admin": grade.admin,
                 "edit": grade.edit,
                 "view": grade.view,
+                "group": grade.group,
+                "member": grade.member,
+                "expense": grade.expense,
+                "view_setting": grade.view_setting,
+                "view_expense": grade.view_expense,
+                "visible": grade.visible,
+                "color": grade.color,
             })
 
         return Response(grades, status=status.HTTP_200_OK)

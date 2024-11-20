@@ -28,7 +28,7 @@ const truncateAmount = amount => {
 };
 
 const Spending = ({ group_pk }) => {
-  const [Data, setData] = useState([]);
+  const [data, setData] = useState([]);
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
 
@@ -68,7 +68,7 @@ const Spending = ({ group_pk }) => {
 
   return (
     <View style={styles.container}>
-      {Data.length === 0 ? (
+      {data.length === 0 ? (
         <View style={styles.emptySpendView}>
           <TouchableOpacity onPress={() => handelCreateFinance()}>
             <Ionicons
@@ -87,7 +87,7 @@ const Spending = ({ group_pk }) => {
         <>
           <ScrollView contentContainerStyle={styles.scrollView}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-            {Data.map(item => {
+            {data.map(item => {
               const currentDate = moment(item.date).format('YYYY.MM.DD'); // 현재 아이템의 날짜
               const showDate = currentDate !== lastDate; // 현재 날짜와 마지막 날짜가 다르면 표시
               lastDate = currentDate; // 마지막 날짜 업데이트
