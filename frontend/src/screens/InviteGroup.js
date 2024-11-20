@@ -56,7 +56,7 @@ const InviteGroup = ({navigation, route}) => {
         </TouchableOpacity>
         <Ionicons name="settings-outline" size={30} color="transparent" />
       </View>
-      <View style={styles.container}>
+      <View style={styles.content}>
         <Text style={styles.title}>초대코드를 입력해주세요</Text>
         <TextInput
           style={styles.input}
@@ -81,9 +81,7 @@ const InviteGroup = ({navigation, route}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 10,
     backgroundColor: '#f1f1f9',
-    paddingHorizontal: 20,
   },
   content: {
     justifyContent: 'space-between',
@@ -98,10 +96,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
-    textAlign: 'left',
-    marginBottom: 20,
+    color: 'black',
   },
   input: {
     height: 40,

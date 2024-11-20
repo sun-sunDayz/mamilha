@@ -316,6 +316,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
                     ? styles.activeTab
                     : styles.inactiveTab,
                 ]}
+
                 onPress={() => {setSelectedType('이체');
                   handleChange('finance_category', 12); }}>
                 <Text
