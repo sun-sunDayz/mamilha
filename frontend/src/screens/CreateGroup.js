@@ -15,7 +15,7 @@ const CreateGroup = ({ navigation, route }) => {
   const userName = route.params.nickname;
 
   return (
-      <SafeAreaView SafeAreaView style={styles.Container}>
+      <SafeAreaView SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Ionicons name="close" size={30} color="#616161" />
@@ -35,7 +35,7 @@ const CreateGroup = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f1f1f9',
+    backgroundColor: '#F1F1F9',
   },
   content: {
     justifyContent: 'space-between',
