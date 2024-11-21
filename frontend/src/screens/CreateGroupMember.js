@@ -20,13 +20,9 @@ import {useMemberContext} from '../memberContext'
 const CreateGroupMember = ({}) => {
   const currentUser = useContext(UserContext);
   const navigation = useNavigation();
-  const [id, setId] = useState(''); // 아이디는 일반적으로 수정하지 않으므로 기본값을 설정
   const {updateMemberData} = useMemberContext();
 
   useEffect(() => {
-    if (currentUser) {
-      setId(currentUser.username);
-    }
   }, [currentUser]);
 
   const handleSave = (newMemberData) => {
@@ -45,7 +41,7 @@ const CreateGroupMember = ({}) => {
         </View>
         <View style={styles.emptyIcon}></View>
       </View>
-      <GroupMember id={id} buttonLabel="추가하기" onSubmit={handleSave}/>
+      <GroupMember buttonLabel="추가하기" onSubmit={handleSave}/>
     </SafeAreaView>
   );
 };

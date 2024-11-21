@@ -35,6 +35,7 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMe
     const member = screenName === 'CreateGroup' ? 'members' : 'new_members';
 
     useEffect(() => {
+        // console.log(formData.update_members)
     }, []);
 
     useFocusEffect(
@@ -201,10 +202,13 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMe
                         {screenName === 'UpdateGroup' &&
                             <View>
                                 {formData.update_members.map((member, index) => (
-                                    <TouchableOpacity key={member['id']} style={styles.MemberUserContainer} onPress={() => {
+                                    <TouchableOpacity key={member['id']} style={styles.MemberUserContainer} 
+                                    disabled={member.grade.group}   //관리자인 경우 편집 불가
+                                    onPress={() => {
                                         navigation.navigate('UpdateGroupMember', 
                                             {
                                                 id: member.id,
+                                                username: member.username, 
                                                 nickname: member.name, 
                                                 grade: member.grade, 
                                                 isActive: member.active
@@ -216,6 +220,7 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMe
                                             placeholderTextColor="#ADAFBD"
                                             keyboardType="default"
                                             value={member['name']}
+                                            disabled={true}
                                             onChangeText={text => {
                                                 const newInputs = formData.update_members.map(item =>
                                                     item.id === member['id'] ? { ...item, name: text } : item);
