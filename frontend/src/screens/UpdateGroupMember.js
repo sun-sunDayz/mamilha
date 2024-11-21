@@ -19,6 +19,7 @@ const UpdateGroupMember = ({navigation, route}) => {
   const [id, setId] = useState(''); // 아이디는 일반적으로 수정하지 않으므로 기본값을 설정
   const initialData = {
     id: route.params.id,
+    username: route.params.username,
     nickname: route.params.nickname,
     grade: route.params.grade,
     isActive: route.params.isActive,
@@ -26,9 +27,6 @@ const UpdateGroupMember = ({navigation, route}) => {
   const {updateMemberData} = useMemberContext();
 
   useEffect(() => {
-    if (currentUser) {
-      setId(currentUser.username);
-    }
   }, [currentUser]);
 
   useEffect(() => {
@@ -51,7 +49,7 @@ const UpdateGroupMember = ({navigation, route}) => {
         </View>
         <View style={styles.emptyIcon}></View>
       </View>
-      <GroupMember id={id} buttonLabel="수정하기" initialData={initialData} onSubmit={handleSave}/>
+      <GroupMember buttonLabel="수정하기" initialData={initialData} onSubmit={handleSave}/>
     </SafeAreaView>
   );
 };
