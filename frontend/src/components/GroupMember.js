@@ -14,9 +14,10 @@ import {
   useRoute,
 } from '@react-navigation/native';
 
-const GroupMember = ({initialData = {}, onSubmit, buttonLabel, id}) => {
+const GroupMember = ({initialData = {}, onSubmit, buttonLabel}) => {
   const [formData, setFormData] = useState({
     id: initialData.id || null,
+    username: initialData.username || null,
     nickname: initialData.nickname || '',
     grade: initialData.grade || null,
     isActive: initialData.isActive || true,
@@ -39,23 +40,26 @@ const GroupMember = ({initialData = {}, onSubmit, buttonLabel, id}) => {
       return;
     }
 
-    if (formData.grade === null) {
-      Alert.alert('등급을 선택해주세요');
-      return;
+    if(formData.username !== null) {
+      if (formData.grade === null) {
+        Alert.alert('등급을 선택해주세요');
+        return;
+      }
     }
 
     onSubmit(formData);
   };
   return (
     <View style={styles.content}>
-      <View style={styles.formRow}>
-        <Text style={styles.label}>아이디</Text>
-        <TextInput
-          value={id}
-          editable={false} // 아이디는 수정 불가능하게 설정
-          style={[styles.textInput, styles.disabledInput]}
-        />
-      </View>
+        {formData.username && 
+        <View style={styles.formRow}>
+          <Text style={styles.label}>아이디</Text>
+          <TextInput
+            value={formData.username}
+            editable={false} // 아이디는 수정 불가능하게 설정
+            style={[styles.textInput, styles.disabledInput]}
+          />
+        </View>}
       <View style={styles.formRow}>
         <Text style={styles.label}>별명</Text>
         <TextInput
@@ -65,13 +69,14 @@ const GroupMember = ({initialData = {}, onSubmit, buttonLabel, id}) => {
           style={styles.textInput}
         />
       </View>
+      {formData.username && 
       <View style={styles.formRow}>
         <Text style={styles.label}>권한</Text>
         <GradeCategory
           selectedCategory={formData.grade}
           onChangeCategory={text => handleChange('grade', text)} // ID를 업데이트
         />
-      </View>
+      </View>}
       <View style={styles.formRow}>
         <Text style={styles.label}>상태</Text>
         <View style={styles.tabContainer}>
