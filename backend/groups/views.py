@@ -310,11 +310,10 @@ class GroupSplitAPIView(APIView):
                     "finance_id": split.finance.id,
                     "finance_type": split.finance.finance_type.name,
                     "payer": {"name":split.finance.payer.name, "id":split.finance.payer.id},
-                    "member": [{"name": split.member.name, "id": split.member.id}],
+                    "member": {"name": split.member.name, "id": split.member.id},
                     "finance_title": split.finance.title,  # 추가 정보 포함
                     "amount": split.amount,
                 })
-
         return Response(data, status=status.HTTP_200_OK)
 
 
