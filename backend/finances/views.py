@@ -41,8 +41,10 @@ class FinancesAPIView(APIView):
         elif title == '' :
             return Response({"message": "제목을 입력해주세요."}, status=status.HTTP_400_BAD_REQUEST)
         
+        if len(amount) > 8:
+            return Response({"message": "금액은 1억을 초과할 수 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
         amount = int(str(amount).replace(",", ""))
-
+        
         # 하단의 정보들은 테이블에서 레코드 탐색을 해야함
         payer = data.get('payer', None)
         finance_type = data.get('finance_type', None)
