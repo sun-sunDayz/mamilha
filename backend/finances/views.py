@@ -35,10 +35,14 @@ class FinancesAPIView(APIView):
         amount = data.get('amount', None)
         select_members = data.get('members', [])
         title = data.get('title', None)
-
+        
+        if len(title) > 100 :
+            return Response({"message": "제목은 100자를 초과할 수 없습니다"}, status=status.HTTP_400_BAD_REQUEST)
+        
         if amount == '' :
             return Response({"message": "금액을 입력해주세요."}, status=status.HTTP_400_BAD_REQUEST)
-        elif title == '' :
+
+        if not title.replace(" ", "") :
             return Response({"message": "제목을 입력해주세요."}, status=status.HTTP_400_BAD_REQUEST)
         
         if len(amount) > 8:

@@ -87,7 +87,7 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMe
 
     const handleChange = (name, value) => {
         if (name == 'name' && value.length >= 15) {
-            Alert.alert("그룹 이름은 15자를 넘을 수 없습니다.")
+            Alert.alert("그룹 이름은 15자를 초과할 수 없습니다.")
         }
         setFormData({ ...formData, [name]: value });
     };
