@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert,
 } from 'react-native';
 import React, {useEffect, useState, useContext} from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -169,6 +170,9 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
     if (name === 'amount') {
       (value = value.replace(/,/g, '')), 10;
     }
+    if (name === 'title' && value.length > 100) {
+      Alert.alert("제목은 100자를 초과할 수 없습니다")
+    }
     setFormData({...formData, [name]: value});
   };
 
@@ -191,8 +195,24 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
   const handleSubmit = async () => {
     const checkedCount = members.filter(member => member.checked).length;
 
+    if (!formData.title.trim()) {
+      Alert.alert('제목을 입력해 주세요.');
+      return;
+    }
+    if (!formData.finance_category) {
+      Alert.alert('카테고리를 선택해 주세요.');
+      return;
+    }
+    if (!formData.payer) {
+      Alert.alert('결제자를 선택해 주세요.');
+      return;
+    }
+    if (!formData.amount) {
+      Alert.alert('금액을 입력해 주세요.');
+      return;
+    }
     if (checkedCount === 0) {
-      alert('참여 멤버를 선택해 주세요.');
+      Alert.alert('참여 멤버를 선택해 주세요.');
       return;
     }
 
@@ -263,6 +283,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
               multiline
               value={formData.title}
               onChangeText={text => handleChange('title', text)}
+              maxLength={100}
             />
           </View>
           <View style={styles.formRow}>
@@ -537,7 +558,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#FFFFFF',
     width: '95%',
-    height: 40,
+    // height: 40,
     padding: 10,
     marginLeft: 8,
     borderRadius: 10,
