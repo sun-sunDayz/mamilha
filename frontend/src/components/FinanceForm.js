@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert,
 } from 'react-native';
 import React, {useEffect, useState, useContext} from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -169,6 +170,9 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
     if (name === 'amount') {
       (value = value.replace(/,/g, '')), 10;
     }
+    if (name === 'title' && value.length > 100) {
+      Alert.alert("제목은 100자를 초과할 수 없습니다")
+    }
     setFormData({...formData, [name]: value});
   };
 
@@ -191,8 +195,24 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
   const handleSubmit = async () => {
     const checkedCount = members.filter(member => member.checked).length;
 
+    if (!formData.title.trim()) {
+      Alert.alert('제목을 입력해 주세요.');
+      return;
+    }
+    if (!formData.finance_category) {
+      Alert.alert('카테고리를 선택해 주세요.');
+      return;
+    }
+    if (!formData.payer) {
+      Alert.alert('결제자를 선택해 주세요.');
+      return;
+    }
+    if (!formData.amount) {
+      Alert.alert('금액을 입력해 주세요.');
+      return;
+    }
     if (checkedCount === 0) {
-      alert('참여 멤버를 선택해 주세요.');
+      Alert.alert('참여 멤버를 선택해 주세요.');
       return;
     }
 
@@ -221,8 +241,8 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
     };
 
     let message = '' //등록와 수정에 따라 메시지값 저장 
+    let response 
     try {
-      let response 
       if (onSubmit == 'create'){
         // 지출 등록 API post
         response = await apiClient.post(`/api/finances/${group_pk}/`, data, headers);
@@ -239,10 +259,10 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
         navigation.navigate('Finances', {group_pk: group_pk});
         // Form reset or navigation can be handled here
       } else {
-        alert('저장 실패: ' + result.message);
+        alert('저장 실패: ' + response.data.message);
       }
     } catch (error) {
-      alert('저장 중 오류 발생: ' + error.message);
+      alert('저장 중 오류 발생: ' + error.response.data.message);
     }
   };
 
@@ -263,6 +283,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
               multiline
               value={formData.title}
               onChangeText={text => handleChange('title', text)}
+              maxLength={100}
             />
           </View>
           <View style={styles.formRow}>
@@ -350,6 +371,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
             />
           </View>
 
+          { selectedType === '지출' &&
           <View style={styles.formRow}>
             <Text style={styles.label}>방식</Text>
             <View style={styles.tabContainer}>
@@ -403,6 +425,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
               </TouchableOpacity>
             </View>
           </View>
+          }
 
           <View style={styles.formRow}>
             <Text style={styles.label}>금액</Text>
@@ -412,7 +435,9 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
                 style={styles.amountInput}
                 value={comma(formData.amount)}
                 keyboardType="numeric"
-                onChangeText={text => handleChange('amount', text)}
+                onChangeText={(text) => {
+                  text.length > 10 ? handleChange('amount', formData.amount) : handleChange('amount', text)
+                }}
               />
               <Text style={styles.contentText}>원</Text>
             </View>
@@ -533,7 +558,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: '#FFFFFF',
     width: '95%',
-    height: 40,
+    // height: 40,
     padding: 10,
     marginLeft: 8,
     borderRadius: 10,
