@@ -14,6 +14,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import apiClient from '../services/apiClient';
 import { useFocusEffect } from '@react-navigation/native';
 import {useMemberContext} from '../memberContext'
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMember=null, navigation}) => {
     const scrollViewRef = useRef(null);
@@ -352,20 +353,19 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMe
                     <TouchableOpacity
                         style={styles.UpdateModalOverlay}
                         activeOpacity={1}
-                        onPressOut={() => setIsUpdateModalOpen(false)}
-                    >
+                        onPressOut={() => setIsUpdateModalOpen(false)}>
                         <View style={[styles.updateModal, { width: modalWidth }]}>
-                            <Text style={styles.udateModalTitel}>모임 정보를 수정하시겠습니까?</Text>
-                            <View style={styles.udateModalButton}>
+                            <Text style={styles.updateModalTitle}>모임 정보를 수정하시겠습니까?</Text>
+                            <View style={styles.updateModalButton}>
                                 <TouchableOpacity
                                     onPress={() => setIsUpdateModalOpen(false)}
-                                    style={styles.udateModalButtonNo} >
-                                    <Text style={styles.udateModalButtonNoText}>아니오</Text>
+                                    style={styles.updateModalButtonNo} >
+                                    <Text style={styles.updateModalButtonNoText}>아니오</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     onPress={handleSubmit}
-                                    style={styles.udateModalButtonYes}>
-                                    <Text style={styles.udateModalButtonYesText} >네</Text>
+                                    style={styles.updateModalButtonYes}>
+                                    <Text style={styles.updateModalButtonYesText} >네</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -544,6 +544,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.2)',
     },
     updateModal: {
+        width: '80%',
         borderWidth: 1,
         borderColor: '#cccccc',
         backgroundColor: '#ffffff',
@@ -552,28 +553,28 @@ const styles = StyleSheet.create({
         paddingBottom: 30,
         alignItems: 'center',
     },
-    udateModalTitel: {
+    updateModalTitle: {
         fontSize: 18,
         fontWeight: '700',
         marginBottom: 30,
         color: '#434343',
     },
-    udateModalButton: {
+    updateModalButton: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
     },
-    udateModalButtonNo: {
+    updateModalButtonNo: {
         width: '40%',
         alignItems: 'center',
         padding: 10,
     },
-    udateModalButtonNoText: {
+    updateModalButtonNoText: {
         color: '#5DAF6A',
         fontSize: 18,
         fontWeight: '700',
     },
-    udateModalButtonYes: {
+    updateModalButtonYes: {
         width: '40%',
         alignItems: 'center',
         backgroundColor: '#5DAF6A',
@@ -581,15 +582,7 @@ const styles = StyleSheet.create({
         paddingTop: 13,
         paddingBottom: 13,
     },
-    deleteModalButtonYes: {
-        width: '40%',
-        alignItems: 'center',
-        backgroundColor: '#FF5A5A',
-        borderRadius: 10,
-        paddingTop: 13,
-        paddingBottom: 13,
-    },
-    udateModalButtonYesText: {
+    updateModalButtonYesText: {
         fontSize: 18,
         fontWeight: '700',
         color: '#ffffff',
