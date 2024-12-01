@@ -69,7 +69,11 @@ import {UserContext} from '../userContext'
             <Text style={styles.title}>모임 정보</Text>
           </View>
           {currentMember && currentMember.grade.group ? (
-          <TouchableOpacity onPress={() => setIsDeleteModalOpen(true)}>
+          <TouchableOpacity onPress={() => setIsDeleteModalOpen(true)}
+            onLayout={(event) => {
+            const { width } = event.nativeEvent.layout;
+            setModalWidth(width);
+            }}>
             <Text style={styles.deleteText}>삭제</Text>
           </TouchableOpacity>
           ) : (
@@ -79,39 +83,36 @@ import {UserContext} from '../userContext'
 
         <GroupForm group_pk={group_pk} screenName={'UpdateGroup'} initialData={initialData} currentMember={currentMember} navigation={navigation}/>
         {/* 삭제 모달 */}
-      {isDeleteModalOpen && (
-        <Modal
-          transparent={true}
-          animationType="fade"
-          visible={isDeleteModalOpen}
-          onRequestClose={() => setIsDeleteModalOpen(false)}>
-          <TouchableOpacity
-            style={styles.UpdateModalOverlay}
-            activeOpacity={1}
-            onPressOut={() => setIsDeleteModalOpen(false)}>
-            <View style={[styles.updateModal, {width: modalWidth}]}>
-              <Text style={styles.udateModalTitel}>
-                모임을 삭제하시겠습니까?
-              </Text>
-              <View style={styles.udateModalButton}>
-                <TouchableOpacity
-                  onPress={() => setIsDeleteModalOpen(false)}
-                  style={styles.udateModalButtonNo}>
-                  <Text style={styles.udateModalButtonNoText}>아니오</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleDeleteGroup}
-                  style={styles.deleteModalButtonYes}>
-                  <Text style={styles.udateModalButtonYesText}>네</Text>
-                </TouchableOpacity>
+        {isDeleteModalOpen && (
+          <Modal
+            transparent={true}
+            animationType="fade"
+            visible={isDeleteModalOpen}
+            onRequestClose={() => setIsDeleteModalOpen(false)}>
+            <TouchableOpacity
+              style={styles.UpdateModalOverlay}
+              activeOpacity={1}
+              onPressOut={() => setIsDeleteModalOpen(false)}>
+              <View style={[styles.updateModal]}>
+                <Text style={styles.updateModalTitle}>모임을 삭제하시겠습니까?</Text>
+                <View style={styles.updateModalButton}>
+                  <TouchableOpacity
+                    onPress={() => setIsDeleteModalOpen(false)}
+                    style={styles.updateModalButtonNo}>
+                    <Text style={styles.updateModalButtonNoText}>아니오</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={handleDeleteGroup}
+                    style={styles.deleteModalButtonYes}>
+                    <Text style={styles.updateModalButtonYesText}>네</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          </TouchableOpacity>
-        </Modal>
-      )}
+            </TouchableOpacity>
+          </Modal>)}
       </SafeAreaView>
     );
-  }
+  };
 
   const styles = StyleSheet.create({
     Container: {
@@ -155,6 +156,7 @@ import {UserContext} from '../userContext'
     },
     updateModal: {
       width: '80%',
+      maxWidth:400,
       borderWidth: 1,
       borderColor: '#cccccc',
       backgroundColor: '#ffffff',
@@ -163,34 +165,26 @@ import {UserContext} from '../userContext'
       paddingBottom: 30,
       alignItems: 'center',
     },
-    udateModalTitel: {
+    updateModalTitle: {
       fontSize: 18,
       fontWeight: '700',
       marginBottom: 30,
       color: '#434343',
     },
-    udateModalButton: {
+    updateModalButton: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
     },
-    udateModalButtonNo: {
+    updateModalButtonNo: {
       width: '40%',
       alignItems: 'center',
       padding: 10,
     },
-    udateModalButtonNoText: {
+    updateModalButtonNoText: {
       color: '#5DAF6A',
       fontSize: 18,
       fontWeight: '700',
-    },
-    udateModalButtonYes: {
-      width: '40%',
-      alignItems: 'center',
-      backgroundColor: '#5DAF6A',
-      borderRadius: 10,
-      paddingTop: 13,
-      paddingBottom: 13,
     },
     deleteModalButtonYes: {
       width: '40%',
@@ -200,7 +194,7 @@ import {UserContext} from '../userContext'
       paddingTop: 13,
       paddingBottom: 13,
     },
-    udateModalButtonYesText: {
+    updateModalButtonYesText: {
       fontSize: 18,
       fontWeight: '700',
       color: '#ffffff',
