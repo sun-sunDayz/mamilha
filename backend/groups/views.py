@@ -12,8 +12,12 @@ import string
 
 def validate_group_data(name, category_id):
     #이름이 빈 값일 경우 Error처리
-    if not name:
+    if not name.replace(" ",""):
         return Response({'error': "그룹 이름이 없습니다"},
+                        status=status.HTTP_400_BAD_REQUEST)
+    #이름이 15자 이상인 경우 
+    if len(name) > 15:
+        return Response({'error': "그룹 이름은 15자를 초과할 수 없습니다."},
                         status=status.HTTP_400_BAD_REQUEST)
     #카테고리가 빈 값일 경우 Error처리
     if category_id == '':
@@ -122,7 +126,9 @@ class GroupAPIView(APIView):
             name=member['name'],
             user=user,
             grades=grades,
-            group=group)
+            group=group,
+            active=member['active']
+            )
 
         return Response({'message': "그릅은 만들었습니다.",
                         'group_pk': group.pk,

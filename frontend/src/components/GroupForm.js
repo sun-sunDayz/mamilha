@@ -6,7 +6,8 @@ import {
     StyleSheet,
     TextInput,
     TouchableOpacity,
-    Modal
+    Modal,
+    Alert,
 } from 'react-native';
 import GroupCategory from '../components/GroupCategory';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -85,6 +86,9 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMe
     }
 
     const handleChange = (name, value) => {
+        if (name == 'name' && value.length >= 15) {
+            Alert.alert("그룹 이름은 15자를 초과할 수 없습니다.")
+        }
         setFormData({ ...formData, [name]: value });
     };
 
@@ -97,31 +101,52 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMe
         handleChange(member, formData[member].filter(member => member.id !== id))
     };
     
+    // form 데이터 검사
+    const validateFormData = () =>{
+        if (!formData.name.trim()){
+            Alert.alert("그룹 이름이 없습니다")
+            return false
+        }
+        if (!formData.category){
+            Alert.alert("그룹 카테고리를 선택해 주세요")
+            return false
+        }
+        const newMembers = [{ id: 0, name: nickName || userName, active: 1 }, ...formData.members];
+        if (newMembers.length === 1){
+            Alert.alert("멤버는 한명 이상 있어야 합니다")
+            return false
+        } 
+        return true
+    }
 
     // 데이터 저장
     const handleSubmit = async () => {
-        try {
-            if (screenName === 'CreateGroup') {
-                // Create인 경우 POST 요청
-                const newMembers = [{ id: 0, name: nickName || userName, active: 1 }, ...formData.members];
-                console.log('members ', newMembers)
-
-                await apiClient.post('/api/groups/', {
-                    ...formData,
-                    // nickName빈 값일 경울 로그인 유저 닉네임 추가
-                    members: newMembers,
-                });
-            } else if (screenName === 'UpdateGroup') {
-                // Update인 경우 PUT 요청
-                await apiClient.put(`/api/groups/${group_pk}/`, {
-                    ...formData,
-                });
+        if (validateFormData()) {
+            try {
+                if (screenName === 'CreateGroup') {
+                    // Create인 경우 POST 요청
+                    const newMembers = [{ id: 0, name: nickName || userName, active: 1 }, ...formData.members];
+                    console.log('members ', newMembers)
+    
+                    await apiClient.post('/api/groups/', {
+                        ...formData,
+                        // nickName빈 값일 경울 로그인 유저 닉네임 추가
+                        members: newMembers,
+                    });
+                } else if (screenName === 'UpdateGroup') {
+                    // Update인 경우 PUT 요청
+                    await apiClient.put(`/api/groups/${group_pk}/`, {
+                        ...formData,
+                    });
+                    setIsUpdateModalOpen(false);
+                }
+                navigation.goBack();
+            } catch (error) {
+                Alert.alert(error.response?.data?.error || "요청 실패");
                 setIsUpdateModalOpen(false);
             }
-            navigation.goBack();
-        } catch (error) {
-            alert(error.response?.data?.error || "요청 실패");
-            setIsUpdateModalOpen(false);
+        } else {
+            return
         }
     };
 
@@ -137,7 +162,7 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMe
                 setInviteCodeErrorMessage(result.message)
             }
         } catch (error) {
-            alert('초대코드 생성에 실패했습니다: ' + error.response.data.error);
+            Alert.alert('초대코드 생성에 실패했습니다: ' + error.response.data.error);
         }
     };
 
@@ -163,6 +188,7 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMe
                             placeholderTextColor="#ADAFBD"
                             style={styles.GroupNameInput}
                             value={formData.name}
+                            maxLength={15}
                             onChangeText={text => handleChange('name', text)}
                         />
                     </View>
