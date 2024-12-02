@@ -51,7 +51,10 @@ const ProfileScreen = ({navigation}) => {
     try {
       await logout();
       Alert.alert('로그아웃 완료');
-      navigation.navigate('Intro'); // 로그아웃 후 시작 화면으로 이동
+      navigation.reset({
+        index: 0, // 스택의 첫 번째 화면
+        routes: [{name: 'Intro'}], // 새로운 스택에 추가될 화면
+      });
     } catch (error) {
       console.log('Logout Error: ', error);
       Alert.alert('로그아웃 실패');
