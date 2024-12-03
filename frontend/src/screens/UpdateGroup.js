@@ -6,6 +6,7 @@ import {
   TouchableOpacity, 
   SafeAreaView, 
   Modal,
+  Alert,
 } from 'react-native';
 import apiClient from '../services/apiClient';
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -49,7 +50,7 @@ import {UserContext} from '../userContext'
           deletedGroupId: group_pk,
         }); // 삭제 후 메인 화면으로 돌아가기
       } catch (error) {
-        alert('그룹 삭제에 실패했습니다: ' + error.response.data.error);
+        Alert.alert('그룹 삭제에 실패했습니다: ' + error.response.data.error);
       }
       setIsDeleteModalOpen(false);
     };
