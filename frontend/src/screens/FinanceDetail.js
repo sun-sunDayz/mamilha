@@ -1,12 +1,21 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect} from 'react';
 import {
-    View, Text, ScrollView, StyleSheet, StatusBar, TouchableOpacity, SafeAreaView, Modal
+    View, 
+    Text, 
+    ScrollView, 
+    StyleSheet, 
+    StatusBar, 
+    TouchableOpacity, 
+    SafeAreaView, 
+    Modal, 
+    Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import Icon from 'react-native-vector-icons/Ionicons'
 import apiClient from '../services/apiClient';
 import CustomText from '../../CustomText';
+
 
 const FinanceDetail = ({ route }) => {
     const navigation = useNavigation();
@@ -67,7 +76,7 @@ const FinanceDetail = ({ route }) => {
             await apiClient.delete(`/api/finances/${group_pk}/${finance_pk}/`);
             navigation.goBack();
         } catch (error) {
-            alert(error.response.data.error);
+            Alert.alert(error.response.data.error);
         }
     }; 
 
@@ -75,9 +84,11 @@ const FinanceDetail = ({ route }) => {
     const handleUpdate = () => {
         navigation.navigate('UpdateFinance', 
         {
-        'data':data, 
-        'group_pk':group_pk,
-        'finance_pk':finance_pk 
+        data:{...data,
+            finance_category: data.finance_category.id, 
+            payer: data.payer.id }, 
+        group_pk:group_pk,
+        finance_pk:finance_pk 
         });
     }; 
 

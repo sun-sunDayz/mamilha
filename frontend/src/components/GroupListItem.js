@@ -6,11 +6,19 @@ const GroupListItem = ({ onPress, title, leader, members, icon, icon_color, curr
   useEffect(() => {
   }, []);
 
+  // 제목 15자 이상 시 ...으로 표시
+  const truncateText = (text, limit) => {
+    if (text.length > limit) {
+      return text.substring(0, limit) + '...';
+    }
+    return text;
+  };
+
   return (
     <TouchableOpacity style={styles.list} onPress={onPress}>
       <Ionicon name={icon} size={30} color={`#${icon_color}`} />
       <View style={styles.listContainer}>
-        <Text style={styles.listText}>{title}</Text>
+        <Text style={styles.listText}>{truncateText(title, 15)}</Text>
         <View style={styles.listContainer2}>
           <View style={styles.flexTitle}>
             <Text style={styles.listTextSubTitle}>모임장</Text>
