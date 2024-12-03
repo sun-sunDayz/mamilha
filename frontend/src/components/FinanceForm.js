@@ -86,9 +86,6 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
         
         setMembers(membersData);
 
-        if (membersData.length > 0) {
-          setPayer(membersData[0].value); // 일치하는 값이 있으면 설정
-        }
       } catch (error) {
         console.error('Error fetching members:', error);
       }
@@ -270,7 +267,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
     const noCamma = String(amount).replace(/,/g, '');
     return noCamma.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
-  
+  // console.log(formData.payer)
   return (
     <View style={styles.formContainer}>
       <View style={styles.content}>
