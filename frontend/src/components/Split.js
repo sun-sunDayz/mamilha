@@ -139,8 +139,15 @@ const Split = ({ group_pk }) => {
         }, []),
     );
 
-    const handelCreate = (item) => {
-        navigation.navigate('CreateFinance', { group_pk: group_pk, data: item });
+    const handelCreate = (item, finalAmount) => {
+        navigation.navigate('CreateFinance', { group_pk: group_pk, 
+                                                data: {
+                                                    title: item.finance_title,
+                                                    amount: finalAmount, //분활된 값으로 보내기
+                                                    finance_type: "이체",
+                                                    payer: item.payer,
+                                                    member: [item.member]
+                                                } });
     };
 
     return (
@@ -158,7 +165,7 @@ const Split = ({ group_pk }) => {
                         <TouchableOpacity
                             key={index}
                             style={styles.listItem}
-                            onPress={()=>handelCreate(data[index])}>
+                            onPress={()=>handelCreate(data[index], item.amount)}>
                             <View style={styles.memberContainer}>
                                 <Ionicons name="person-circle-outline" size={36} color="#E87979" />
                                 <Text style={styles.name}>{truncateText(item.debtor, 3)}</Text>
