@@ -20,11 +20,6 @@ import {UserContext} from '../userContext'
 const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance_pk}) => {
   const navigation = useNavigation(); // 네비게이션 객체 가져오기
   const currentUser = useContext(UserContext);
-  const processedInitialData = {
-    ...initialData,
-    finance_category: initialData.finance_category ? initialData.finance_category.id : null,
-    payer: initialData.payer ? initialData.payer.id : null,
-  }; // initiaData 값이 존제 하는 경유 변경해서 가져오기
   const [formData, setFormData] = useState({
     date: '',
     finance_type: '지출',
@@ -35,7 +30,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
     title: '',
     member: null,
     split_method: '고정분할',
-    ...processedInitialData, // 초기값 설정 (update 에서 사용)
+    ...initialData, // 초기값 설정 (update 에서 사용)
   });
 
   // 일시 (Date)
@@ -83,12 +78,10 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
           amount: 0,
           user_id: item.user_id
         }));
-        
-        setMembers(membersData);
+        //initialData.member 값이 있는경우 금액 다시게산
+        AmountMember =  distributeAmount(membersData);
+        setMembers(AmountMember);
 
-        if (membersData.length > 0) {
-          setPayer(membersData[0].value); // 일치하는 값이 있으면 설정
-        }
       } catch (error) {
         console.error('Error fetching members:', error);
       }
@@ -255,14 +248,14 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
       
       // 등록, 수정의 상태코드에 따라 판단
       if (response.status === 201 || response.status === 200) {
-        alert(message);
+        Alert.alert(message);
         navigation.navigate('Finances', {group_pk: group_pk});
         // Form reset or navigation can be handled here
       } else {
-        alert('저장 실패: ' + response.data.message);
+        Alert.alert('저장 실패: ' + response.data.message);
       }
     } catch (error) {
-      alert('저장 중 오류 발생: ' + error.response.data.message);
+      Alert.alert('저장 중 오류 발생: ' + error.response.data.message);
     }
   };
 
@@ -270,7 +263,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
     const noCamma = String(amount).replace(/,/g, '');
     return noCamma.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
-  
+  // console.log(formData.payer)
   return (
     <View style={styles.formContainer}>
       <View style={styles.content}>
@@ -449,7 +442,7 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
             <Text style={styles.label}>참여 멤버</Text>
             <View style={styles.table}>
               {members.map((member, index) => (
-                (selectedType !== '이체' || currentUser.user_id !== member.user_id) && (
+                (
                 <View key={member.value} style={[
                   styles.tableRow,
                   // 마지막 멤버인 경우 밑줄 삭제
