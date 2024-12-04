@@ -37,11 +37,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F1F1F9',
   },
-  content: {
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -53,23 +48,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: 'black',
-  },
-  TopContainer: {
-    position: 'relative',
-  },
-  CloseIcon: {
-    paddingHorizontal: 15,
-  },
-  TitleContainer: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 10,
-  },
-  TitleText: {
-    fontSize: 25,
-    fontWeight: '700',
-    textAlign: 'center',
   },
 });
 
