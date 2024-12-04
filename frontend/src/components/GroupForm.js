@@ -176,7 +176,7 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMe
     }
 
     return (
-        <View >
+        <View>
             <View style={styles.content} 
             pointerEvents={isEditable() ? "auto" : "none"}
             >

@@ -7,7 +7,7 @@ import {
   View,
   Alert,
 } from 'react-native';
-import React, {useEffect, useState, useContext} from 'react';
+import React, {useEffect, useState, useContext, useRef,} from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import DatePicker from 'react-native-date-picker';
 import apiClient from '../services/apiClient';
@@ -19,6 +19,7 @@ import {UserContext} from '../userContext'
 
 const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance_pk}) => {
   const navigation = useNavigation(); // 네비게이션 객체 가져오기
+  const scrollViewRef = useRef(null);
   const currentUser = useContext(UserContext);
   const [formData, setFormData] = useState({
     date: '',
@@ -263,11 +264,10 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
     const noCamma = String(amount).replace(/,/g, '');
     return noCamma.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
-  // console.log(formData.payer)
   return (
-    <View style={styles.formContainer}>
+    <View>
       <View style={styles.content}>
-        <ScrollView style={styles.scrollContainer}>
+        <ScrollView ref={scrollViewRef} contentContainerStyle={styles.ScrollViewContent}>
         <View style={styles.formRow}>
             <Text style={styles.label}>제목</Text>
             <TextInput
@@ -471,10 +471,12 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
             </View>
           </View>
         </ScrollView>
+        <TouchableOpacity 
+          style={styles.floatingButton} 
+          onPress={handleSubmit}>
+          <Text style={styles.buttonText}>{buttonLabel}</Text>
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.floatingButton} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>{buttonLabel}</Text>
-      </TouchableOpacity>
     </View>
   );
 };
@@ -482,13 +484,14 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
 export default FinanceForm;
 
 const styles = StyleSheet.create({
-  formContainer: {
+  content: {
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     marginBottom: 20,
   },
-  content: {paddingBottom: 120},
-  scrollContainer: {},
+  ScrollViewContent: {
+    paddingBottom: 200,
+  },
   formRow: {
     flexDirection: 'column',
     marginBottom: 16,
@@ -503,16 +506,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     margin: 8,
-  },
-  input: {
-    color: '#434343',
-    fontSize: 16,
-    backgroundColor: '#FFFFFF',
-    width: '95%',
-    height: 40,
-    padding: 10,
-    marginLeft: 8,
-    borderRadius: 8,
   },
   timepicker: {
     flexDirection: 'row',
@@ -560,21 +553,26 @@ const styles = StyleSheet.create({
     color: '#434343',
     fontSize: 16,
   },
-  floatingButton: {
+  bottomContainer: {
     position: 'absolute',
     alignSelf: 'center',
-    height: 40,
+    bottom: 0,
     width: '95%',
-    bottom: 60,
-    backgroundColor: '#5DAF6A',
-    borderRadius: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
+  },
+  floatingButton: {
+    position: 'absolute',
+        alignSelf: 'center',
+        top: 500,
+        width: '85%',
+        padding: 15,
+        alignItems: 'center',
+        backgroundColor: '#5DAF6A',
+        borderRadius: 10,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: '#ffffff',
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '800',
   },
   tabContainer: {
     flexDirection: 'row',
@@ -608,26 +606,6 @@ const styles = StyleSheet.create({
   },
   inactiveTabText: {
     color: '#5DAF6A',
-  },
-  dropdown: {
-    height: 40,
-    borderRadius: 8,
-    padding: 10,
-    backgroundColor: '#FFFFFF',
-    width: '95%',
-    marginLeft: 8,
-  },
-  placeholderStyle: {
-    fontSize: 16,
-    color: '#ADAFBD',
-  },
-  selectedTextStyle: {
-    fontSize: 16,
-    color: '#434343',
-  },
-  iconStyle: {
-    width: 20,
-    height: 20,
   },
   table: {
     borderRadius: 8,
