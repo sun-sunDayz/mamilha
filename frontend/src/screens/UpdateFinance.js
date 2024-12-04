@@ -26,7 +26,7 @@ const UpdateFinance = ({route}) => {
         <FinanceForm
           initialData={data}
           onSubmit="update"
-          buttonLabel="Save"
+          buttonLabel="수정하기"
           group_pk={group_pk}
           finance_pk={finance_pk}
         />
