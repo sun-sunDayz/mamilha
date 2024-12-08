@@ -111,7 +111,7 @@ const Split = ({ group_pk }) => {
     const [data, setData] = useState([]);
     const [finalSettlements, setFinalSettlements] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
@@ -121,7 +121,6 @@ const Split = ({ group_pk }) => {
     }, []);
 
     const getSplits = async () => {
-        setLoading(true);
         try {
             const response = await apiClient.get(`/api/groups/${group_pk}/splits/`);
             const splits = response.data;
