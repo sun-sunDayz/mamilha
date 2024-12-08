@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   ScrollView,
   RefreshControl,
+  ActivityIndicator,
 } from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import React, { useState, useEffect, useCallback } from 'react';
@@ -31,25 +32,28 @@ const Spending = ({ group_pk }) => {
   const [data, setData] = useState([]);
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const onRefresh = useCallback(() => {
-      setRefreshing(true);
-      setTimeout(() => {
-          setRefreshing(false);
-      }, 2000);
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
   }, []);
 
   const getFinances = async () => {
+    setLoading(true);
     try {
       const response = await apiClient.get(`/api/finances/${group_pk}/`);
       // 날짜를 기반으로 데이터 정렬
       const sortedData = response.data.sort((a, b) => new Date(a.date) - new Date(b.date)).reverse();
       setData(sortedData);
+      setTimeout(() => setLoading(false), 500);
     } catch (error) {
       console.error('Error fetching data: ', error);
     }
   };
-  
+
   useEffect(() => {
     getFinances();
   }, []);
@@ -68,86 +72,90 @@ const Spending = ({ group_pk }) => {
 
   return (
     <View style={styles.container}>
-      {data.length === 0 ? (
+      {loading ? (
         <View style={styles.emptySpendView}>
-          <TouchableOpacity onPress={() => handelCreateFinance()}>
-            <Ionicons
-              style={{ marginBottom: 20 }}
-              name="add-circle"
-              size={150}
-              color="#A379E8"
-            />
-          </TouchableOpacity>
-          <CustomText style={styles.emptyText}>
-            아직 등록된 지출 내역이 없습니다.
-          </CustomText>
-          <CustomText style={styles.emptyText}>지출을 등록해주세요!</CustomText>
+          <ActivityIndicator size="large" color='#616161' />
         </View>
-      ) : (
-        <>
-          <ScrollView contentContainerStyle={styles.scrollView}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
-            {data.map(item => {
-              const currentDate = moment(item.date).format('YYYY.MM.DD'); // 현재 아이템의 날짜
-              const showDate = currentDate !== lastDate; // 현재 날짜와 마지막 날짜가 다르면 표시
-              lastDate = currentDate; // 마지막 날짜 업데이트
-
-              return (
-                <View key={item.id.toString()}>
-                  {showDate && (
-                    <View style={styles.dateContainer}>
-                      <Text style={styles.dateText}>{currentDate}</Text>
-                    </View>
-                  )}
-                  <TouchableOpacity
-                    onPress={() => {
-                      navigation.navigate('FinanceDetail', {
-                        group_pk: group_pk,
-                        finance_pk: item.id,
-                      });
-                    }}>
-                    <View style={styles.listItem}>
-                      <View
-                        style={[styles.iconContainer]}
-                        backgroundColor={`#${item.finance_category_icon_color}`}
-                        >
-                        <Ionicons
-                          name={item.finance_category_icon || 'ellipsis-horizontal-circle-outline'}
-                          size={25}
-                          color="white"
-                        />
-                      </View>
-                      <View style={styles.details}>
-                        <CustomText style={styles.name}>
-                          {truncateText(item.title, 14)}
-                        </CustomText>
-                        <View style={{ flexDirection: 'row', marginTop: 'auto' }}>
-                          <CustomText style={styles.payer}>결제자</CustomText>
-                          <CustomText style={styles.date}>
-                            {truncateText(item.payer, 30)}
-                          </CustomText>
-                        </View>
-                      </View>
-                      <View style={{ flex: 4 }}>
-                        <CustomText style={styles.amount}>{truncateAmount(item.amount)}</CustomText>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              );
-            })}
-          </ScrollView>
-            <View style={styles.addButtonContainer}>
-              <TouchableOpacity
-              style={styles.addButton}
-              activeOpacity={1}
-              onPress={() => handelCreateFinance()} 
-              >
-                <Ionicons name="add-circle" size={50} color="#5DAF6A" />
+      ) : data.length === 0 ? (
+            <View style={styles.emptySpendView}>
+              <TouchableOpacity onPress={() => handelCreateFinance()}>
+                <Ionicons
+                  style={{ marginBottom: 20 }}
+                  name="add-circle"
+                  size={150}
+                  color="#A379E8"
+                />
               </TouchableOpacity>
+              <CustomText style={styles.emptyText}>
+                아직 등록된 지출 내역이 없습니다.
+              </CustomText>
+              <CustomText style={styles.emptyText}>지출을 등록해주세요!</CustomText>
             </View>
-        </>
-      )}
+          ) : (
+            <>
+              <ScrollView contentContainerStyle={styles.scrollView}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
+                {data.map(item => {
+                  const currentDate = moment(item.date).format('YYYY.MM.DD'); // 현재 아이템의 날짜
+                  const showDate = currentDate !== lastDate; // 현재 날짜와 마지막 날짜가 다르면 표시
+                  lastDate = currentDate; // 마지막 날짜 업데이트
+
+                  return (
+                    <View key={item.id.toString()}>
+                      {showDate && (
+                        <View style={styles.dateContainer}>
+                          <Text style={styles.dateText}>{currentDate}</Text>
+                        </View>
+                      )}
+                      <TouchableOpacity
+                        onPress={() => {
+                          navigation.navigate('FinanceDetail', {
+                            group_pk: group_pk,
+                            finance_pk: item.id,
+                          });
+                        }}>
+                        <View style={styles.listItem}>
+                          <View
+                            style={[styles.iconContainer]}
+                            backgroundColor={`#${item.finance_category_icon_color}`}
+                          >
+                            <Ionicons
+                              name={item.finance_category_icon || 'ellipsis-horizontal-circle-outline'}
+                              size={25}
+                              color="white"
+                            />
+                          </View>
+                          <View style={styles.details}>
+                            <CustomText style={styles.name}>
+                              {truncateText(item.title, 14)}
+                            </CustomText>
+                            <View style={{ flexDirection: 'row', marginTop: 'auto' }}>
+                              <CustomText style={styles.payer}>결제자</CustomText>
+                              <CustomText style={styles.date}>
+                                {truncateText(item.payer, 30)}
+                              </CustomText>
+                            </View>
+                          </View>
+                          <View style={{ flex: 4 }}>
+                            <CustomText style={styles.amount}>{truncateAmount(item.amount)}</CustomText>
+                          </View>
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                })}
+              </ScrollView>
+              <View style={styles.addButtonContainer}>
+                <TouchableOpacity
+                  style={styles.addButton}
+                  activeOpacity={1}
+                  onPress={() => handelCreateFinance()}
+                >
+                  <Ionicons name="add-circle" size={50} color="#5DAF6A" />
+                </TouchableOpacity>
+              </View>
+            </>
+          )}
     </View>
   );
 };
