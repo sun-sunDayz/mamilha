@@ -1,4 +1,14 @@
-import { StyleSheet, Text, View, FlatList, Image, ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
+import {
+    StyleSheet,
+    Text,
+    View,
+    FlatList,
+    Image,
+    ScrollView,
+    RefreshControl,
+    TouchableOpacity,
+    ActivityIndicator,
+} from 'react-native';
 import React, { useState, useEffect, useCallback } from 'react';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -101,6 +111,7 @@ const Split = ({ group_pk }) => {
     const [data, setData] = useState([]);
     const [finalSettlements, setFinalSettlements] = useState([]);
     const [refreshing, setRefreshing] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
@@ -110,6 +121,7 @@ const Split = ({ group_pk }) => {
     }, []);
 
     const getSplits = async () => {
+        setLoading(true);
         try {
             const response = await apiClient.get(`/api/groups/${group_pk}/splits/`);
             const splits = response.data;
@@ -122,6 +134,7 @@ const Split = ({ group_pk }) => {
             const balances = calculateBalances(transactions);
             const finalTransactions = simplifyBalances(balances);
             setFinalSettlements(finalTransactions);
+            setTimeout(() => setLoading(false), 500);
         } catch (error) {
             console.error('Error fetching data: ', error);
         }
@@ -140,54 +153,60 @@ const Split = ({ group_pk }) => {
     );
 
     const handelCreate = (item, finalAmount) => {
-        navigation.navigate('CreateFinance', { group_pk: group_pk, 
-                                                data: {
-                                                    title: item.finance_title,
-                                                    amount: finalAmount, //분활된 값으로 보내기
-                                                    finance_type: "이체",
-                                                    payer: item.payer,
-                                                    member: [item.member]
-                                                } });
+        navigation.navigate('CreateFinance', {
+            group_pk: group_pk,
+            data: {
+                title: item.finance_title,
+                amount: finalAmount, //분활된 값으로 보내기
+                finance_type: "이체",
+                payer: item.payer,
+                member: [item.member]
+            }
+        });
     };
 
     return (
         <View style={styles.container}>
-            {finalSettlements.length === 0 ? (
+            {loading ? (
                 <View style={styles.emptySpendView}>
-                    <Ionicons style={styles.emptyIcon} name="checkmark-done-circle" size={150} color="#79C7E8" />
-                    <Text style={styles.emptyText}>정산이 모두 완료되었어요!</Text>
+                    <ActivityIndicator size="large" color='#616161' />
                 </View>
-            ) : (
-                <ScrollView
-                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-                >
-                    {finalSettlements.map((item, index) => (
-                        <TouchableOpacity
-                            key={index}
-                            style={styles.listItem}
-                            onPress={()=>handelCreate(data[index], item.amount)}>
-                            <View style={styles.memberContainer}>
-                                <Ionicons name="person-circle-outline" size={36} color="#E87979" />
-                                <Text style={styles.name}>{truncateText(item.debtor, 3)}</Text>
-                            </View>
-                            <Image
-                                source={require('../../assets/line.png')}
-                                style={{ width: 6, height: 6, flex: 3, alignItems: 'center' }}
-                            />
-                            <Text style={styles.price}>{truncateAmount(item.amount)}</Text>
-                            <Image
-                                source={require('../../assets/arrow_right.png')}
-                                style={{ width: 6, height: 6, resizeMode: 'cover', flex: 3, alignItems: 'center' }}
-                            />
-                            <View style={styles.memberContainer}>
-                                <Ionicons name="person-circle-outline" size={36} color="#E8AE79" />
-                                <Text style={styles.name}>{truncateText(item.creditor, 3)}</Text>
-                            </View>
-                        </TouchableOpacity>
-                    ))}
-                </ScrollView>
-
-            )}
+            ) :
+                finalSettlements.length === 0 ? (
+                    <View style={styles.emptySpendView}>
+                        <Ionicons style={styles.emptyIcon} name="checkmark-done-circle" size={150} color="#79C7E8" />
+                        <Text style={styles.emptyText}>정산이 모두 완료되었어요!</Text>
+                    </View>
+                ) : (
+                    <ScrollView
+                        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                    >
+                        {finalSettlements.map((item, index) => (
+                            <TouchableOpacity
+                                key={index}
+                                style={styles.listItem}
+                                onPress={() => handelCreate(data[index], item.amount)}>
+                                <View style={styles.memberContainer}>
+                                    <Ionicons name="person-circle-outline" size={36} color="#E87979" />
+                                    <Text style={styles.name}>{truncateText(item.debtor, 3)}</Text>
+                                </View>
+                                <Image
+                                    source={require('../../assets/line.png')}
+                                    style={{ width: 6, height: 6, flex: 3, alignItems: 'center' }}
+                                />
+                                <Text style={styles.price}>{truncateAmount(item.amount)}</Text>
+                                <Image
+                                    source={require('../../assets/arrow_right.png')}
+                                    style={{ width: 6, height: 6, resizeMode: 'cover', flex: 3, alignItems: 'center' }}
+                                />
+                                <View style={styles.memberContainer}>
+                                    <Ionicons name="person-circle-outline" size={36} color="#E8AE79" />
+                                    <Text style={styles.name}>{truncateText(item.creditor, 3)}</Text>
+                                </View>
+                            </TouchableOpacity>
+                        ))}
+                    </ScrollView>
+                )}
         </View>
     );
 };
