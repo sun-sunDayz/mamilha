@@ -32,7 +32,7 @@ const Spending = ({ group_pk }) => {
   const [data, setData] = useState([]);
   const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -42,7 +42,6 @@ const Spending = ({ group_pk }) => {
   }, []);
 
   const getFinances = async () => {
-    setLoading(true);
     try {
       const response = await apiClient.get(`/api/finances/${group_pk}/`);
       // 날짜를 기반으로 데이터 정렬
@@ -51,6 +50,7 @@ const Spending = ({ group_pk }) => {
       setTimeout(() => setLoading(false), 500);
     } catch (error) {
       console.error('Error fetching data: ', error);
+      setLoading(false);
     }
   };
 
