@@ -51,6 +51,7 @@ const Spending = ({ group_pk }) => {
       setTimeout(() => setLoading(false), 500);
     } catch (error) {
       console.error('Error fetching data: ', error);
+      setLoading(false);
     }
   };
 
