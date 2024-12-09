@@ -29,6 +29,8 @@ def add_initial_finance_categories():
         {'id': 10, 'name': '여가/취미', 'icon': 'bowling-ball', 'icon_color': '79C7E8'},
         {'id': 11, 'name': '기타', 'icon': 'ellipsis-horizontal-circle-sharp',
             'icon_color': 'A379E8'},
+        {'id': 12, 'name': '이체', 'icon': 'wallet-outline',
+            'icon_color': '97A1B6', 'finance_type_id':3},
     ]
 
     FinanceCategory.objects.all().delete()
@@ -38,8 +40,7 @@ def add_initial_finance_categories():
 
     print('register finance category')
     for category in FinanceCategory.objects.all():
-        print(f'{category.id}: {category.name}, {
-              category.icon}, {category.icon_color}')
+        print(f'{category.id}: {category.name}, {category.icon}, {category.icon_color}')
 
 
 def add_initial_group_categories():
@@ -68,8 +69,7 @@ def add_initial_group_categories():
 
     print('register group category')
     for category in Group_category.objects.all():
-        print(f'{category.id}: {category.name}, {
-              category.icon}, {category.icon_color}')
+        print(f'{category.id}: {category.name}, {category.icon}, {category.icon_color}')
 
 
 def add_initial_currency_categories():
@@ -101,8 +101,7 @@ def add_initial_grades():
 
     print('register grade')
     for g in Grades.objects.all():
-        print(f'{g.id}: {g.name}, admin:{
-              g.admin}, edit:{g.edit}, view:{g.view}')
+        print(f'{g.id}: {g.name}, admin:{g.admin}, edit:{g.edit}, view:{g.view}')
 
 
 def add_initial_split_method():

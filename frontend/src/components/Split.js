@@ -159,7 +159,8 @@ const Split = ({ group_pk }) => {
                 title: item.finance_title,
                 amount: finalAmount, //분활된 값으로 보내기
                 finance_type: "이체",
-                payer: item.payer,
+                finance_category: 12,
+                payer: item.payer.id,
                 member: [item.member]
             }
         });
