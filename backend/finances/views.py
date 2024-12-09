@@ -45,7 +45,7 @@ class FinancesAPIView(APIView):
         if amount == '' :
             return Response({"message": "금액을 입력해주세요."}, status=status.HTTP_400_BAD_REQUEST)
         
-        if len(amount) > 8:
+        if len(str(amount)) > 8:
             return Response({"message": "금액은 1억을 초과할 수 없습니다."}, status=status.HTTP_400_BAD_REQUEST)
         amount = int(str(amount).replace(",", ""))
         
