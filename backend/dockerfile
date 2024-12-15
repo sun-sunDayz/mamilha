@@ -3,12 +3,12 @@ FROM python:3.13-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
+COPY ./backend/requirements.txt .
 
 RUN pip install -r requirements.txt
 
-COPY . .
+COPY ./backend /app/
 
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8000"]
 
 EXPOSE 8000
