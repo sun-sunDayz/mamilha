@@ -1,12 +1,8 @@
 # Mamihla
 
 <div align="center">
-  <img src="https://github.com/user-attachments/assets/db367248-3624-4b68-b405-03681a481a15" alt="Mamihla logo" width="15%">
+  <img src="https://github.com/user-attachments/assets/bdddc656-fede-44c0-ad25-5fdf2ffa1a69" alt="mamihla" width="30%">
 </div>
-<div align="center" >
-  <img src="https://github.com/user-attachments/assets/33ea486f-8de5-46c4-890a-d72dc85526d2" alt="Mamihla" width="15%">
-</div>
-
 
 
 ## 목차
