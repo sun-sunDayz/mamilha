@@ -267,7 +267,6 @@ const GroupForm = ({ group_pk, initialData = {}, screenName, userName, currentMe
                                                 </View>
                                             }
                                             <View
-
                                                 style={member.active ? styles.activeButton : styles.inActiveButton}
                                             >
                                                 <Text style={member.active ? styles.activeText : styles.inActiveText}>
@@ -404,16 +403,16 @@ const styles = StyleSheet.create({
         margin: 8,
     },
     MemberUserContainer: {
-        flexDirection: 'row',
         backgroundColor: '#FFFFFF',
         width: '95%',
-        padding: 10,
+        paddingLeft: 10,
         marginLeft: 8,
         marginTop: 8,
         borderRadius: 8,
+        flexDirection: 'row', 
+        alignItems: 'center',
     },
     MemberUserName: {
-        // flex: 1,
         fontSize: 16,
         color: '#434343',
     },
@@ -421,13 +420,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '700',
         color: '#5DAF6A',
-        marginLeft: 5,
-        // position: 'absolute',
+        paddingBottom: 5 ,
     },
     input: {
         backgroundColor: '#ffffff',
         width: '95%',
-        padding: 10,
+        paddingLeft: 10,
         marginLeft: 8,
         borderRadius: 8,
         marginTop: 8,
@@ -469,6 +467,7 @@ const styles = StyleSheet.create({
     memberRightContainer: {
         flexDirection: 'row',
         marginLeft: 'auto',
+        paddingRight: 10,
     },
     // 활성화버튼
     activeButton: {
