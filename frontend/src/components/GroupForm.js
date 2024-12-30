@@ -404,13 +404,15 @@ const styles = StyleSheet.create({
         margin: 8,
     },
     MemberUserContainer: {
-        flexDirection: 'row',
         backgroundColor: '#FFFFFF',
         width: '95%',
-        padding: 10,
+        paddingLeft: 10,
+        paddingRight: 10,
         marginLeft: 8,
         marginTop: 8,
         borderRadius: 8,
+        flexDirection: 'row', 
+        alignItems: 'center',
     },
     MemberUserName: {
         // flex: 1,
