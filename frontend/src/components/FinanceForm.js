@@ -265,7 +265,6 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
     return noCamma.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
   return (
-    <View>
       <View style={styles.content}>
         <ScrollView ref={scrollViewRef} contentContainerStyle={styles.ScrollViewContent}>
         <View style={styles.formRow}>
@@ -477,7 +476,6 @@ const FinanceForm = ({initialData = {}, onSubmit, buttonLabel, group_pk, finance
           <Text style={styles.buttonText}>{buttonLabel}</Text>
         </TouchableOpacity>
       </View>
-    </View>
   );
 };
 
@@ -485,12 +483,10 @@ export default FinanceForm;
 
 const styles = StyleSheet.create({
   content: {
-    justifyContent: 'space-between',
+    flex: 1,
     paddingHorizontal: 20,
-    marginBottom: 20,
   },
   ScrollViewContent: {
-    paddingBottom: 200,
   },
   formRow: {
     flexDirection: 'column',
@@ -560,14 +556,12 @@ const styles = StyleSheet.create({
     width: '95%',
   },
   floatingButton: {
-    position: 'absolute',
-        alignSelf: 'center',
-        top: 500,
-        width: '85%',
-        padding: 15,
-        alignItems: 'center',
-        backgroundColor: '#5DAF6A',
-        borderRadius: 10,
+    width: '100%',
+    padding: 15,
+    marginBottom: 10,
+    alignItems: 'center',
+    backgroundColor: '#5DAF6A',
+    borderRadius: 10,
   },
   buttonText: {
     color: '#ffffff',
