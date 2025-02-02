@@ -81,8 +81,9 @@ import {UserContext} from '../userContext'
             <TouchableOpacity></TouchableOpacity>
           )}
         </View>
-
-        <GroupForm group_pk={group_pk} screenName={'UpdateGroup'} initialData={initialData} currentMember={currentMember} navigation={navigation}/>
+        <View style={styles.content}>
+          <GroupForm group_pk={group_pk} screenName={'UpdateGroup'} initialData={initialData} currentMember={currentMember} navigation={navigation}/>
+        </View>
         {/* 삭제 모달 */}
         {isDeleteModalOpen && (
           <Modal
@@ -200,6 +201,9 @@ import {UserContext} from '../userContext'
       fontWeight: '700',
       color: '#ffffff',
     },
+    content: {
+      flex: 1,
+    }
   });
 
   export default UpdateGroup;
