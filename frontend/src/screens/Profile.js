@@ -118,14 +118,12 @@ const ProfileScreen = ({navigation}) => {
             />
           </View>
         </ScrollView>
-        <View style={styles.bottomContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleSave}>
-            <Text style={styles.buttonText}>수정하기</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button2} onPress={handleLogout}>
-            <Text style={styles.button2Text}>로그아웃</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.button} onPress={handleSave}>
+          <Text style={styles.buttonText}>수정하기</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button2} onPress={handleLogout}>
+          <Text style={styles.button2Text}>로그아웃</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -137,9 +135,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#f1f1f9',
   },
   content: {
+    flex: 1,
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    marginBottom: 20,
   },
   header: {
     flexDirection: 'row',
@@ -158,7 +156,7 @@ const styles = StyleSheet.create({
     width: 30,
   },
   scrollContainer: {
-    paddingBottom: 200, // ScrollView 내용물 아래 여유 공간 추가
+    flex: 1
   },
   formRow: {
     flexDirection: 'column',
@@ -206,13 +204,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     margin: 20, // 좌우 여백
   },
-  bottomContainer: {
-    position: 'absolute',
-    alignSelf: 'center',
-    bottom: 0,
-    width: '95%',
-  },
+
   button: {
+    marginTop: 10,
     width: '100%',
     padding: 15,
     alignItems: 'center',
@@ -230,7 +224,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#ffffff',
     borderRadius: 10,
-    marginTop: 20,
+    marginTop: 10,
+    marginBottom: 10,
   },
   button2Text: {
     color: '#5DAF6A',

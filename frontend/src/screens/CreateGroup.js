@@ -25,8 +25,9 @@ const CreateGroup = ({ navigation, route }) => {
           </View>
           <Ionicons name="settings-outline" size={30} color="transparent" />
         </View>
-
-        <GroupForm screenName={'CreateGroup'} userName={userName} navigation={navigation}/>
+        <View style={styles.content}>
+          <GroupForm screenName={'CreateGroup'} userName={userName} navigation={navigation}/>
+        </View>
 
       </SafeAreaView>
   );
@@ -49,6 +50,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'black',
   },
+  content: {
+    flex: 1,
+  }
 });
 
 export default CreateGroup;
