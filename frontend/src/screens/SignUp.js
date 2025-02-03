@@ -376,12 +376,9 @@ const SignUpScreen = ({navigation}) => {
             ) : null}
           </View>
         </ScrollView>
-        
-        <View style={styles.bottomContainer}>
-          <TouchableOpacity style={styles.button} onPress={handleSignUp}>
-            <Text style={styles.buttonText}>가입하기</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity style={styles.button} onPress={handleSignUp}>
+          <Text style={styles.buttonText}>가입하기</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -393,9 +390,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F1F9',
   },
   content: {
+    flex: 1,
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    marginBottom: 20,
   },
   header: {
     flexDirection: 'row',
@@ -414,7 +411,7 @@ const styles = StyleSheet.create({
     width: 30,
   },
   scrollContainer: {
-    paddingBottom: 200,
+    flex: 1,
   },
   formRow: {
     flexDirection: 'column',
@@ -435,15 +432,10 @@ const styles = StyleSheet.create({
     marginLeft: 8,
     color: '#434343',
   },
-  bottomContainer: {
-    position: 'absolute',
-    alignSelf: 'center',
-    bottom: 0,
-    width: '95%',
-  },
   button: {
     width: '100%',
     padding: 15,
+    marginBottom: 10,
     alignItems: 'center',
     backgroundColor: '#5DAF6A',
     borderRadius: 10,
