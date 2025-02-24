@@ -10,3 +10,6 @@
 
 venv/
 .env
+
+nginx.conf
+nginx/
